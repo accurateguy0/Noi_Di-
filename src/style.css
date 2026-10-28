@@ -9564,6 +9564,10 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 }
 
 /* ==================== ZABLOKOWANE POSTACIE NA EKRANIE WYBORU BOHATERA ==================== */
+.cs-hero-pip-btn.is-locked-pip .cs-pip-dice img {
+  filter: brightness(0);
+}
+
 .cs-hero-pedestal-sprite.is-locked-hero {
   filter: brightness(0);
 }

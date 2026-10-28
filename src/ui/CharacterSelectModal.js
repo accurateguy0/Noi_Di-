@@ -284,25 +284,20 @@ export function openCharacterSelectModal(app) {
     const selectedPip = heroProgress.selected || 1;
     const selectedEp = hero.episodes.find((ep) => ep.pip === selectedPip) || hero.episodes[0];
 
-    // Budowanie paska ikonek 6 bohaterów u góry sceny (dokładnie jak w Dicey Dungeons)
+    // Budowanie paska ikonek 6 bohaterów u góry sceny (nasze postacie z avatarów)
     const heroIconsHtml = HEROES.map((h, idx) => {
       const isUnlocked = episodeManager.isHeroUnlocked(h.id);
       const isActive = idx === currentHeroIndex;
-      // 6. postać (Błazen / Zablokowany) gdy zablokowana pokazuje czarną kostkę die_locked.png
-      let iconSrc = h.diceIcon || h.avatar;
-      if (h.id === 'jester' && !isUnlocked) {
-        iconSrc = './assets/dice_heads/die_locked.png';
-      }
 
       return `
         <button
           type="button"
-          class="cs-hero-pip-btn ${isActive ? 'is-active' : ''}"
+          class="cs-hero-pip-btn ${isActive ? 'is-active' : ''} ${!isUnlocked ? 'is-locked-pip' : ''}"
           data-hero-idx="${idx}"
           title="${h.name} (${isUnlocked ? 'Odblokowany' : 'Zablokowany'})"
         >
           <div class="cs-pip-dice">
-            <img src="${iconSrc}" alt="${h.name}" draggable="false" />
+            <img src="${h.avatar}" alt="${h.name}" draggable="false" />
           </div>
           ${isActive ? `
             <svg class="cs-pip-bracket-svg" viewBox="0 0 44 42" fill="none" xmlns="http://www.w3.org/2000/svg">
