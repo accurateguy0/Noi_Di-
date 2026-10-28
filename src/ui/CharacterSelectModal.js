@@ -336,7 +336,7 @@ export function openCharacterSelectModal(app) {
                       </div>
                     </div>
                     <div class="cs-ep-status-pill">
-                      ${isCompleted ? '👑' : isSelected ? '▶' : ''}
+                      ${isSelected ? '▶' : ''}
                     </div>
                   </div>
                 `;

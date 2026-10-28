@@ -9190,11 +9190,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   color: #475569;
 }
 
-.cs-episode-badge.is-completed .cs-ep-status-pill {
-  color: #d97706;
-}
-
-.cs-episode-badge.is-selected:not(.is-completed) .cs-ep-status-pill {
+.cs-episode-badge.is-selected .cs-ep-status-pill {
   color: #2563eb;
 }
 
