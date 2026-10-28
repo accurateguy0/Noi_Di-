@@ -4,6 +4,7 @@ import { sound } from '../audio/sound.js';
 import { playJaggedCurtainWipe } from './victoryScreen.js';
 import { getPlayerDamage } from '../data/vocabulary.js';
 import { ALL_ITEMS_CATALOG } from '../data/shopItems.js';
+import { addItemToPlayerInventory } from './WordBookModal.js';
 
 export function openShopModal(app, node) {
   if (node) {
@@ -190,6 +191,8 @@ export function openShopModal(app, node) {
         if (item.id === 'sneakers') {
           app.player.boughtSneakers = true;
         }
+
+        addItemToPlayerInventory(app.player, item);
 
         sound.speakPolish(`Kupiono ${item.namePl}!`);
         app.showTemporaryPlayerBubble(`Kupiono: ${item.namePl}! ${item.badgePl}`, 1800);
