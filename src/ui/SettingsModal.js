@@ -73,16 +73,8 @@ export function openSettingsModal(app, initialView = 'main') {
     if (e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
-      if (currentView === 'main') {
-        closeModal();
-      } else if (currentView === 'options' || currentView === 'edit_progress') {
-        currentView = 'main';
-        resetStep = 0;
-        render();
-      } else {
-        currentView = 'options';
-        render();
-      }
+      // Ponowne naciśnięcie Esc zawsze zamyka interfejs Esc, niezależnie od aktualnego podmenu
+      closeModal();
     }
   };
   window.addEventListener('keydown', keyHandler);
