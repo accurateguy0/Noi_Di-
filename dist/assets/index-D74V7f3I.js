@@ -3294,10 +3294,6 @@ Posłuchaj
             </div>
           </div>
 
-          <!-- Przycisk Pominięcia Przeciwnika -->
-          <button type="button" class="btn-dd-skip-opponent" id="skip-opponent-btn" title="Pomiń aktualnego przeciwnika lub walkę">
-            ⏩ POMIŃ
-          </button>
 
           <!-- Kontener na aktywny poziom Wordwall / Arenę -->
           <div id="arena-mount" class="arena-mount hidden"></div>
