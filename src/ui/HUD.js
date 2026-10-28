@@ -79,22 +79,22 @@ export class HUDManager {
     if (lvlTitle) {
       lvlTitle.textContent =
         player.level >= MAX_PLAYER_LEVEL
-          ? `LEVEL ${player.level} (MAX)`
-          : `LEVEL ${player.level}`;
+          ? `POZIOM ${player.level} (MAKS)`
+          : `POZIOM ${player.level}`;
     }
 
     if (xpSub) {
       if (player.level >= MAX_PLAYER_LEVEL) {
-        xpSub.textContent = 'Max Level';
+        xpSub.textContent = 'Maks. Poziom';
       } else {
         const remainingXp = Math.max(1, player.xpToNext - player.xp);
-        xpSub.textContent = `Level up in ★ ${remainingXp}`;
+        xpSub.textContent = `Awans za ★ ${remainingXp}`;
       }
     }
 
     if (floorTitle) {
       const curFloor = this.app.currentFloor === 0 ? 1 : this.app.currentFloor;
-      floorTitle.textContent = `Floor ${curFloor}`;
+      floorTitle.textContent = `Piętro ${curFloor}`;
     }
 
     const skullsWrap = document.getElementById('hud-floor-skulls');

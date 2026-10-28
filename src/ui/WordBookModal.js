@@ -308,8 +308,8 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
               <img id="inv-hud-portrait-img" src="${heroAvatar}" alt="${heroName}" onerror="this.src='./assets/Warrior.png'" />
             </div>
             <div class="hud-level-info">
-              <div class="hud-level-text" id="inv-hud-level-title">LEVEL ${app.player.level || 1}</div>
-              <div class="hud-levelup-sub" id="inv-hud-xp-sub">Level up in ★ ${xpToNext}</div>
+              <div class="hud-level-text" id="inv-hud-level-title">POZIOM ${app.player.level || 1}</div>
+              <div class="hud-levelup-sub" id="inv-hud-xp-sub">Awans za ★ ${xpToNext}</div>
             </div>
           </div>
 
@@ -345,7 +345,7 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
                 <span class="hud-boss-hood ${curFloor === 6 ? 'is-current' : (curFloor > 6 ? 'is-cleared' : '')}" data-floor="6">🦹</span>
               </div>
             </div>
-            <div class="hud-floor-label">Floor ${curFloor}</div>
+            <div class="hud-floor-label">Piętro ${curFloor}</div>
           </div>
         </footer>
       </div>

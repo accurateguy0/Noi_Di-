@@ -177,16 +177,16 @@ class NoiDiGameApp {
           <div id="arena-mount" class="arena-mount hidden"></div>
         </main>
 
-        <!-- Dolny pasek HUD (Styl Dicey Dungeons: przezroczysty, poziom, HP, RULES, EQUIPMENT, Floor) -->
+        <!-- Dolny pasek HUD (Styl Dicey Dungeons: przezroczysty, poziom, HP, EKWIPUNEK, Piętro) -->
         <footer class="dicey-hud-bar">
           <!-- Lewa strona: Awatar + LEVEL + EXP -->
           <div class="hud-hero-cluster">
-            <div class="hud-dice-avatar-frame" id="hud-character-card" title="Zmień bohatera (Warrior, Thief, Witch, Inventor, Robot, Jester)">
+            <div class="hud-dice-avatar-frame" id="hud-character-card" title="Zmień bohatera (Wojownik, Złodziej, Czarownica, Wynalazczyni, Robot, Błazen)">
               <img id="hud-portrait-img" src="${this.player.avatar || './assets/Warrior.png'}" alt="${this.player.characterClass || 'Warrior'}" onerror="this.src='./assets/Warrior.png'" />
             </div>
             <div class="hud-level-info">
-              <div class="hud-level-text" id="hud-level-title">LEVEL ${this.player.level || 1}</div>
-              <div class="hud-levelup-sub" id="hud-xp-sub">Level up in ★ ${Math.max(1, (this.player.xpToNext || 2) - (this.player.xp || 0))}</div>
+              <div class="hud-level-text" id="hud-level-title">POZIOM ${this.player.level || 1}</div>
+              <div class="hud-levelup-sub" id="hud-xp-sub">Awans za ★ ${Math.max(1, (this.player.xpToNext || 2) - (this.player.xp || 0))}</div>
             </div>
           </div>
 
@@ -202,10 +202,10 @@ class NoiDiGameApp {
             </div>
           </div>
 
-          <!-- Środek-Prawo: Przycisk EQUIPMENT -->
+          <!-- Środek-Prawo: Przycisk EKWIPUNEK -->
           <div class="hud-buttons-cluster">
             <button type="button" class="btn-dd-hud-pill btn-dd-equipment" id="hud-inventory-btn" title="Otwórz Ekwipunek (Plecak)">
-              EQUIPMENT
+              EKWIPUNEK
             </button>
           </div>
 
@@ -222,7 +222,7 @@ class NoiDiGameApp {
                 <span class="hud-boss-hood" data-floor="6">🦹</span>
               </div>
             </div>
-            <div class="hud-floor-label" id="hud-floor-title">Floor ${this.currentFloor === 0 ? 1 : this.currentFloor}</div>
+            <div class="hud-floor-label" id="hud-floor-title">Piętro ${this.currentFloor === 0 ? 1 : this.currentFloor}</div>
           </div>
         </footer>
       </div>
