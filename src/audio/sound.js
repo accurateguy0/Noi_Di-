@@ -6,6 +6,7 @@ class SoundManager {
     this.ctx = null;
     this.muted = false;
     this.sfxVolume = 0.92;
+    this.masterVolume = 1.0;
     this.characterVoiceVolume = 1.0;
     this.audioBuffers = new Map();
     this.loadingPromises = new Map();
@@ -53,6 +54,22 @@ class SoundManager {
 
   getSfxVolume() {
     return this.sfxVolume;
+  }
+
+  setMasterVolume(vol) {
+    this.masterVolume = Math.max(0, Math.min(1, Number(vol) || 0));
+  }
+
+  getMasterVolume() {
+    return this.masterVolume ?? 1.0;
+  }
+
+  setVoiceVolume(vol) {
+    this.characterVoiceVolume = Math.max(0, Math.min(1, Number(vol) || 0));
+  }
+
+  getVoiceVolume() {
+    return this.characterVoiceVolume ?? 1.0;
   }
 
   init() {
@@ -232,9 +249,9 @@ class SoundManager {
     if (this.muted) return null;
     this.init();
 
-    // Pozwól na wzmocnienie (gain do 1.65) dla cichszych próbek .ogg w Web Audio API
-    const webGain = Math.max(0, Math.min(1.65, volume));
-    const htmlVol = Math.max(0, Math.min(1.0, volume));
+    const effectiveVol = volume * (this.masterVolume ?? 1.0);
+    const webGain = Math.max(0, Math.min(1.65, effectiveVol));
+    const htmlVol = Math.max(0, Math.min(1.0, effectiveVol));
 
     // 1. Odtwarzanie z bufora Web Audio API (0ms opóźnienia, brak limitu nakładania)
     const buffer = this.audioBuffers.get(filename) || this.audioBuffers.get(filename.toLowerCase());
@@ -805,6 +822,7 @@ class SoundManager {
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = 'pl-PL';
+      utter.volume = Math.max(0, Math.min(1.0, (this.characterVoiceVolume ?? 1.0) * (this.masterVolume ?? 1.0)));
 
       const rate = typeof options === 'number' ? options : (options?.rate ?? 0.92);
       utter.rate = rate;

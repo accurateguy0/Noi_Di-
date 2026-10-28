@@ -74,9 +74,10 @@ export function openSettingsModal(app, initialView = 'main') {
 
   const render = () => {
     const isFullscreen = Boolean(document.fullscreenElement);
-    const bgmVol = Math.round(musicManager.getVolume() * 100);
-    const sfxVol = Math.round((sound.getSfxVolume ? sound.getSfxVolume() : 0.9) * 100);
-    const isMuted = sound.isMuted();
+    const mainVol = Math.round((sound.getMasterVolume ? sound.getMasterVolume() : 1.0) * 100);
+    const musicVol = Math.round(musicManager.getVolume() * 100);
+    const sfxVol = Math.round((sound.getSfxVolume ? sound.getSfxVolume() : 0.92) * 100);
+    const voicesVol = Math.round((sound.getVoiceVolume ? sound.getVoiceVolume() : 1.0) * 100);
 
     let contentHtml = '';
 
@@ -212,56 +213,76 @@ export function openSettingsModal(app, initialView = 'main') {
     }
 
     // ==========================================
-    // 4. WIDOK: DŹWIĘK (SOUND)
-    // Suwaki BGM, SFX, wyciszenie, BACK
+    // 4. WIDOK: DŹWIĘK (SOUND) (Wzór Dicey Dungeons z 4 suwakami)
     // ==========================================
     else if (currentView === 'sound') {
       contentHtml = `
-        <div class="esc-menu-container" style="max-width: 440px;">
-          <h2 class="esc-menu-title">SOUND</h2>
+        <div class="esc-menu-container" style="max-width: 380px; gap: 16px;">
+          <h2 class="esc-menu-title" style="margin-bottom: 6px;">SOUND</h2>
 
-          <div style="width: 100%; display: flex; flex-direction: column; gap: 14px; background: rgba(15,23,42,0.6); padding: 18px; border-radius: 14px; border: 2px solid #334155;">
-            <!-- Suwak BGM -->
-            <div>
-              <div style="display: flex; justify-content: space-between; color: white; font-family: 'Fredoka', sans-serif; font-size: 1rem; margin-bottom: 4px;">
-                <span>🎵 Muzyka (BGM)</span>
-                <span id="bgm-label" style="color: #60a5fa; font-weight: 800;">${bgmVol}%</span>
-              </div>
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 20px;">
+            <!-- 1. Main volume -->
+            <div class="dd-sound-slider-group">
               <input
                 type="range"
-                id="bgm-range"
+                id="slider-main-vol"
+                class="dd-dicey-slider"
                 min="0"
                 max="100"
-                value="${bgmVol}"
-                style="width: 100%; height: 8px; accent-color: #3b82f6; cursor: pointer;"
+                value="${mainVol}"
               />
+              <div class="dd-sound-row">
+                <span class="dd-sound-label">Main volume:</span>
+                <span class="dd-sound-val" id="val-main-vol">${mainVol}</span>
+              </div>
             </div>
 
-            <!-- Suwak SFX -->
-            <div>
-              <div style="display: flex; justify-content: space-between; color: white; font-family: 'Fredoka', sans-serif; font-size: 1rem; margin-bottom: 4px;">
-                <span>🔊 Dźwięki (SFX)</span>
-                <span id="sfx-label" style="color: #34d399; font-weight: 800;">${sfxVol}%</span>
-              </div>
+            <!-- 2. Music volume -->
+            <div class="dd-sound-slider-group">
               <input
                 type="range"
-                id="sfx-range"
+                id="slider-music-vol"
+                class="dd-dicey-slider"
+                min="0"
+                max="100"
+                value="${musicVol}"
+              />
+              <div class="dd-sound-row">
+                <span class="dd-sound-label">Music volume:</span>
+                <span class="dd-sound-val" id="val-music-vol">${musicVol}</span>
+              </div>
+            </div>
+
+            <!-- 3. SFX volume -->
+            <div class="dd-sound-slider-group">
+              <input
+                type="range"
+                id="slider-sfx-vol"
+                class="dd-dicey-slider"
                 min="0"
                 max="100"
                 value="${sfxVol}"
-                style="width: 100%; height: 8px; accent-color: #10b981; cursor: pointer;"
               />
+              <div class="dd-sound-row">
+                <span class="dd-sound-label">SFX volume:</span>
+                <span class="dd-sound-val" id="val-sfx-vol">${sfxVol}</span>
+              </div>
             </div>
 
-            <!-- Przełącznik wyciszenia -->
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);">
-              <span style="color: white; font-family: 'Fredoka', sans-serif;">Status dźwięku:</span>
-              <button
-                id="btn-toggle-mute"
-                style="padding: 6px 16px; border-radius: 8px; border: none; font-family: 'Fredoka', sans-serif; font-weight: 800; color: white; background: ${isMuted ? '#ef4444' : '#10b981'}; cursor: pointer;"
-              >
-                ${isMuted ? 'WYCISZONY' : 'WŁĄCZONY'}
-              </button>
+            <!-- 4. Voices volume -->
+            <div class="dd-sound-slider-group">
+              <input
+                type="range"
+                id="slider-voices-vol"
+                class="dd-dicey-slider"
+                min="0"
+                max="100"
+                value="${voicesVol}"
+              />
+              <div class="dd-sound-row">
+                <span class="dd-sound-label">Voices volume:</span>
+                <span class="dd-sound-val" id="val-voices-vol">${voicesVol}</span>
+              </div>
             </div>
           </div>
 
@@ -414,30 +435,50 @@ export function openSettingsModal(app, initialView = 'main') {
       render();
     });
 
-    // 4. Widok Sound
-    const bgmRange = document.getElementById('bgm-range');
-    if (bgmRange) {
-      bgmRange.addEventListener('input', (e) => {
+    // 4. Widok Sound (4 suwaki)
+    const mainSlider = document.getElementById('slider-main-vol');
+    if (mainSlider) {
+      mainSlider.addEventListener('input', (e) => {
         const val = Number(e.target.value);
-        document.getElementById('bgm-label').textContent = `${val}%`;
+        document.getElementById('val-main-vol').textContent = `${val}`;
+        sound.setMasterVolume(val / 100);
+        musicManager.setMasterVolume(val / 100);
+      });
+    }
+
+    const musicSlider = document.getElementById('slider-music-vol');
+    if (musicSlider) {
+      musicSlider.addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        document.getElementById('val-music-vol').textContent = `${val}`;
         musicManager.setVolume(val / 100);
       });
     }
-    const sfxRange = document.getElementById('sfx-range');
-    if (sfxRange) {
-      sfxRange.addEventListener('input', (e) => {
+
+    const sfxSlider = document.getElementById('slider-sfx-vol');
+    if (sfxSlider) {
+      sfxSlider.addEventListener('input', (e) => {
         const val = Number(e.target.value);
-        document.getElementById('sfx-label').textContent = `${val}%`;
-        if (sound.setSfxVolume) sound.setSfxVolume(val / 100);
+        document.getElementById('val-sfx-vol').textContent = `${val}`;
+        sound.setSfxVolume(val / 100);
       });
-      sfxRange.addEventListener('change', () => {
+      sfxSlider.addEventListener('change', () => {
         sound.playHitImpact();
       });
     }
-    document.getElementById('btn-toggle-mute')?.addEventListener('click', () => {
-      sound.toggleMute();
-      render();
-    });
+
+    const voicesSlider = document.getElementById('slider-voices-vol');
+    if (voicesSlider) {
+      voicesSlider.addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        document.getElementById('val-voices-vol').textContent = `${val}`;
+        sound.setVoiceVolume(val / 100);
+      });
+      voicesSlider.addEventListener('change', () => {
+        sound.speakPolish('Głośność lektora');
+      });
+    }
+
     document.getElementById('sound-btn-back')?.addEventListener('click', () => {
       sound.playStep();
       currentView = 'options';

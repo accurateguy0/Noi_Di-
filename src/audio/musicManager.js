@@ -60,10 +60,23 @@ class MusicManager {
     return `./assets/music/${encoded}`;
   }
 
+  setMasterVolume(vol) {
+    this.masterVolume = Math.max(0, Math.min(1, Number(vol) || 0));
+    if (this.currentTrack && !this.muted) {
+      const duckMult = this.isEscDucked ? 0.25 : 1.0;
+      this.currentTrack.volume = this.volume * this.masterVolume * duckMult;
+    }
+  }
+
+  getMasterVolume() {
+    return this.masterVolume ?? 1.0;
+  }
+
   setVolume(vol) {
     this.volume = Math.max(0, Math.min(1, Number(vol) || 0));
     if (this.currentTrack && !this.muted) {
-      this.currentTrack.volume = this.volume;
+      const duckMult = this.isEscDucked ? 0.25 : 1.0;
+      this.currentTrack.volume = this.volume * (this.masterVolume ?? 1.0) * duckMult;
     }
   }
 
@@ -76,7 +89,8 @@ class MusicManager {
     this.isEscDucked = Boolean(isDucked);
     if (this.muted || !this.currentTrack) return;
     try {
-      this.currentTrack.volume = this.isEscDucked ? Math.max(0.04, this.volume * 0.25) : this.volume;
+      const duckMult = this.isEscDucked ? 0.25 : 1.0;
+      this.currentTrack.volume = this.volume * (this.masterVolume ?? 1.0) * duckMult;
     } catch (e) {}
   }
 
