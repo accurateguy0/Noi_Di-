@@ -599,6 +599,10 @@ class SoundManager {
     this.playFile('nastepna_plansza.ogg', 0.9);
   }
 
+  playWhoosh() {
+    this.playFile('transition_1.ogg', 0.95);
+  }
+
   playTransition1() {
     this.playFile('transition_1.ogg', 0.95);
   }

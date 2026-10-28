@@ -275,7 +275,30 @@ export function openCharacterSelectModal(app) {
   let currentHeroIndex = HEROES.findIndex((h) => h.id === activeHeroId);
   if (currentHeroIndex < 0) currentHeroIndex = 0;
 
-  const renderStage = () => {
+  let isSwitchingHero = false;
+
+  const switchToHero = (newIndex) => {
+    if (isSwitchingHero) return;
+    if (newIndex === currentHeroIndex) return;
+    if (newIndex < 0 || newIndex >= HEROES.length) return;
+
+    isSwitchingHero = true;
+    sound.playWhoosh();
+
+    const currentSprite = document.getElementById('cs-hero-sprite');
+    if (currentSprite) {
+      currentSprite.classList.remove('hero-popping');
+      currentSprite.classList.add('hero-shrinking');
+    }
+
+    setTimeout(() => {
+      currentHeroIndex = newIndex;
+      sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
+      renderStage(true);
+    }, 160);
+  };
+
+  const renderStage = (isNewHero = false) => {
     const hero = HEROES[currentHeroIndex];
     const isHeroUnlocked = episodeManager.isHeroUnlocked(hero.id);
     const prevHeroId = episodeManager.getPreviousHeroId(hero.id);
@@ -364,7 +387,7 @@ export function openCharacterSelectModal(app) {
 
           <!-- 6. Centralny podest i postać bohatera (Pedestal Sprite) -->
           <div class="cs-center-hero-wrap">
-            <img class="cs-hero-pedestal-sprite ${!isHeroUnlocked ? 'is-locked-hero' : ''}" id="cs-hero-sprite" src="${hero.avatar}" alt="${hero.name}" onerror="this.src='${hero.fallbackAvatar}'" />
+            <img class="cs-hero-pedestal-sprite ${!isHeroUnlocked ? 'is-locked-hero' : ''} ${isNewHero ? 'hero-popping' : ''}" id="cs-hero-sprite" src="${hero.avatar}" alt="${hero.name}" onerror="this.src='${hero.fallbackAvatar}'" />
           </div>
 
           <!-- 7. Prawa świecąca tablica: Epizody LUB Zablokowane -->
@@ -446,10 +469,20 @@ export function openCharacterSelectModal(app) {
       </div>
     `;
 
-    bindStageEvents();
+    bindStageEvents(isNewHero);
   };
 
-  const bindStageEvents = () => {
+  const bindStageEvents = (isNewHero = false) => {
+    if (isNewHero) {
+      const sprite = document.getElementById('cs-hero-sprite');
+      setTimeout(() => {
+        if (sprite) sprite.classList.remove('hero-popping');
+        isSwitchingHero = false;
+      }, 230);
+    } else {
+      isSwitchingHero = false;
+    }
+
     // 1. Menu
     document.getElementById('cs-btn-menu')?.addEventListener('click', () => {
       sound.playStep();
@@ -468,14 +501,12 @@ export function openCharacterSelectModal(app) {
       openFloorPickerModal(app);
     });
 
-    // 3. Kliknięcie w kość bohatera u góry
+    // 3. Kliknięcie w postać / kość bohatera u góry
     screen.querySelectorAll('.cs-hero-pip-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const idx = Number(btn.getAttribute('data-hero-idx'));
         if (!isNaN(idx) && idx >= 0 && idx < HEROES.length) {
-          currentHeroIndex = idx;
-          sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
-          renderStage();
+          switchToHero(idx);
         }
       });
     });
@@ -488,7 +519,7 @@ export function openCharacterSelectModal(app) {
         if (episodeManager.isEpisodeUnlocked(hero.id, pip)) {
           episodeManager.setSelectedEpisode(hero.id, pip);
           sound.playStep();
-          renderStage();
+          renderStage(false);
         }
       });
     });
@@ -504,18 +535,14 @@ export function openCharacterSelectModal(app) {
       }
     });
 
-    // 5. Strzałka w lewo (bez efektów dźwiękowych podczas przełączania postaci!)
+    // 5. Strzałka w lewo (ze zmniejszeniem postaci i dźwiękiem whoosh)
     document.getElementById('cs-arrow-left')?.addEventListener('click', () => {
-      currentHeroIndex = (currentHeroIndex - 1 + HEROES.length) % HEROES.length;
-      sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
-      renderStage();
+      switchToHero((currentHeroIndex - 1 + HEROES.length) % HEROES.length);
     });
 
-    // 6. Strzałka w prawo (bez efektów dźwiękowych podczas przełączania postaci!)
+    // 6. Strzałka w prawo (ze zmniejszeniem postaci i dźwiękiem whoosh)
     document.getElementById('cs-arrow-right')?.addEventListener('click', () => {
-      currentHeroIndex = (currentHeroIndex + 1) % HEROES.length;
-      sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
-      renderStage();
+      switchToHero((currentHeroIndex + 1) % HEROES.length);
     });
 
     // 7. Przycisk START
@@ -566,7 +593,7 @@ export function openCharacterSelectModal(app) {
     });
   };
 
-  // Obsługa klawiatury (Strzałki lewo/prawo bez dźwięków przy przełączaniu postaci, Enter, Escape)
+  // Obsługa klawiatury (Strzałki lewo/prawo z dźwiękiem whoosh i przełączeniem, Enter, Escape)
   const onKeyHandler = (e) => {
     if (screen.classList.contains('hidden')) {
       window.removeEventListener('keydown', onKeyHandler);
@@ -580,13 +607,9 @@ export function openCharacterSelectModal(app) {
     }
 
     if (e.key === 'ArrowLeft') {
-      currentHeroIndex = (currentHeroIndex - 1 + HEROES.length) % HEROES.length;
-      sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
-      renderStage();
+      switchToHero((currentHeroIndex - 1 + HEROES.length) % HEROES.length);
     } else if (e.key === 'ArrowRight') {
-      currentHeroIndex = (currentHeroIndex + 1) % HEROES.length;
-      sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
-      renderStage();
+      switchToHero((currentHeroIndex + 1) % HEROES.length);
     } else if (e.key === 'Enter') {
       document.getElementById('cs-btn-start')?.click();
     } else if (e.key === 'Escape') {
