@@ -211,21 +211,31 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
             style="--card-theme-color: ${item.color || '#38b000'};"
             data-location="backpack"
             data-index="${i}"
-            title="${item.name}"
+            draggable="true"
           >
             <div class="dd-gear-card-face" style="background: ${item.color || '#38b000'};">
               <div class="dd-gear-card-icon">
-                ${item.icon ? `<img src="${item.icon}" alt="${item.name}" />` : '🎒'}
+                ${item.icon ? `<img src="${item.icon}" alt="${item.name}" draggable="false" />` : '🎒'}
               </div>
               <div class="dd-gear-card-title">${item.name}</div>
               <div class="dd-gear-card-stat">${item.bigStat || item.statBadge}</div>
+            </div>
+            <div class="dd-card-hover-tooltip">
+              <div class="dd-tt-title">${item.name} <span class="dd-tt-stat">${item.bigStat || item.statBadge}</span></div>
+              <div class="dd-tt-desc">${item.descPl || ''}</div>
+              ${item.descVn ? `<div class="dd-tt-vn">${item.descVn}</div>` : ''}
+              ${item.actionType === 'eat' ? `
+                <button type="button" class="btn-tooltip-eat" data-eat-loc="backpack" data-eat-idx="${i}">
+                  🍖 Zjedz (+${item.healAmount || 10} HP)
+                </button>
+              ` : ''}
             </div>
           </div>
         `);
       } else {
         backpackSlotsHtml.push(`
           <div
-            class="dd-gear-slot slot-empty ${isSelected ? 'is-selected' : ''}"
+            class="dd-gear-slot slot-empty"
             data-location="backpack"
             data-index="${i}"
           ></div>
@@ -246,21 +256,31 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
             style="--card-theme-color: ${item.color || '#38b000'};"
             data-location="equipped"
             data-index="${i}"
-            title="${item.name}"
+            draggable="true"
           >
             <div class="dd-gear-card-face" style="background: ${item.color || '#38b000'};">
               <div class="dd-gear-card-icon">
-                ${item.icon ? `<img src="${item.icon}" alt="${item.name}" />` : '⚔️'}
+                ${item.icon ? `<img src="${item.icon}" alt="${item.name}" draggable="false" />` : '⚔️'}
               </div>
               <div class="dd-gear-card-title">${item.name}</div>
               <div class="dd-gear-card-stat">${item.bigStat || item.statBadge}</div>
+            </div>
+            <div class="dd-card-hover-tooltip">
+              <div class="dd-tt-title">${item.name} <span class="dd-tt-stat">${item.bigStat || item.statBadge}</span></div>
+              <div class="dd-tt-desc">${item.descPl || ''}</div>
+              ${item.descVn ? `<div class="dd-tt-vn">${item.descVn}</div>` : ''}
+              ${item.actionType === 'eat' ? `
+                <button type="button" class="btn-tooltip-eat" data-eat-loc="equipped" data-eat-idx="${i}">
+                  🍖 Zjedz (+${item.healAmount || 10} HP)
+                </button>
+              ` : ''}
             </div>
           </div>
         `);
       } else {
         equippedSlotsHtml.push(`
           <div
-            class="dd-gear-slot slot-empty ${isSelected ? 'is-selected' : ''}"
+            class="dd-gear-slot slot-empty"
             data-location="equipped"
             data-index="${i}"
           ></div>
@@ -292,33 +312,6 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
               ${equippedSlotsHtml.join('')}
             </div>
           </div>
-        </div>
-
-        <!-- Pasek informacyjny wybranego przedmiotu (unobtrusive, tuż nad dolnym HUD-em) -->
-        <div class="dd-inv-floating-info-bar ${selectedItem ? 'is-visible' : ''}">
-          ${selectedItem ? `
-            <div class="dd-info-tag-name">${selectedItem.name}</div>
-            <div class="dd-info-tag-stat">${selectedItem.bigStat || selectedItem.statBadge}</div>
-            <div class="dd-info-tag-desc">${selectedItem.descPl || ''}</div>
-            <div class="dd-info-actions">
-              ${selectedLocation === 'backpack' ? `
-                <button type="button" class="btn-dd-quick-act btn-act-equip" id="inv-quick-equip-btn">
-                  ⭐ ZAŁÓŻ
-                </button>
-              ` : `
-                <button type="button" class="btn-dd-quick-act btn-act-unequip" id="inv-quick-unequip-btn">
-                  🎒 SCHOWAJ
-                </button>
-              `}
-              ${selectedItem.actionType === 'eat' ? `
-                <button type="button" class="btn-dd-quick-act btn-act-eat" id="inv-quick-eat-btn">
-                  🍖 ZJEDZ (+${selectedItem.healAmount || 10} HP)
-                </button>
-              ` : ''}
-            </div>
-          ` : `
-            <div class="dd-info-placeholder">Kliknij przedmiot, aby go założyć lub schować do plecaka</div>
-          `}
         </div>
 
         <!-- Pełnowymiarowy dolny pasek HUD (1:1 Dicey Dungeons na całej szerokości ekranu) -->
@@ -378,13 +371,99 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
     const backBtn = modalMount.querySelector('#inv-hud-back-btn');
     if (backBtn) backBtn.addEventListener('click', handleClose);
 
-    // Bezpośrednie kliknięcie w kartę lub slot:
-    // - Kliknięcie w przedmiot w plecaku: natychmiastowe wyposażenie (lub zamiana ze slotem 0 gdy pełne)
-    // - Kliknięcie w wyposażony przedmiot: natychmiastowe schowanie z powrotem do plecaka
-    modalMount.querySelectorAll('[data-location]').forEach((el) => {
-      el.addEventListener('click', () => {
-        const loc = el.dataset.location;
-        const idx = Number(el.dataset.index);
+    // ==================== OBSŁUGA PRZECIĄGANIA I UPUSZCZANIA KART (DRAG & DROP) ====================
+    modalMount.querySelectorAll('.dd-gear-slot').forEach((slot) => {
+      // 1. Rozpoczęcie przeciągania
+      slot.addEventListener('dragstart', (e) => {
+        const loc = slot.dataset.location;
+        const idx = Number(slot.dataset.index);
+        const item = loc === 'equipped' ? app.player.equippedItems[idx] : app.player.backpackItems[idx];
+        if (!item) {
+          e.preventDefault();
+          return;
+        }
+
+        e.dataTransfer.setData('text/plain', JSON.stringify({ loc, idx }));
+        e.dataTransfer.effectAllowed = 'move';
+        slot.classList.add('is-dragging');
+        sound.playStep();
+      });
+
+      // 2. Zakończenie przeciągania (wyczyszczenie stylów)
+      slot.addEventListener('dragend', () => {
+        slot.classList.remove('is-dragging');
+        modalMount.querySelectorAll('.slot-drag-over').forEach((el) => el.classList.remove('slot-drag-over'));
+      });
+
+      // 3. Najechanie przeciąganej karty nad slot
+      slot.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+
+      slot.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        slot.classList.add('slot-drag-over');
+      });
+
+      slot.addEventListener('dragleave', (e) => {
+        if (e.target === slot) {
+          slot.classList.remove('slot-drag-over');
+        }
+      });
+
+      // 4. Upuszczenie karty na slot (przeniesienie lub zamiana miejsc)
+      slot.addEventListener('drop', (e) => {
+        e.preventDefault();
+        slot.classList.remove('slot-drag-over');
+
+        try {
+          const dataStr = e.dataTransfer.getData('text/plain');
+          if (!dataStr) return;
+          const source = JSON.parse(dataStr);
+          const targetLoc = slot.dataset.location;
+          const targetIdx = Number(slot.dataset.index);
+
+          // Jeśli upuszczono na ten sam slot, nic nie rób
+          if (source.loc === targetLoc && source.idx === targetIdx) return;
+
+          const sourceArr = source.loc === 'equipped' ? app.player.equippedItems : app.player.backpackItems;
+          const targetArr = targetLoc === 'equipped' ? app.player.equippedItems : app.player.backpackItems;
+
+          const sourceItem = sourceArr[source.idx];
+          if (!sourceItem) return;
+
+          const targetItem = targetArr[targetIdx];
+
+          // Zamiana lub przeniesienie
+          targetArr[targetIdx] = sourceItem;
+          sourceArr[source.idx] = targetItem;
+
+          if (targetLoc === 'equipped') {
+            sound.playSuccess();
+          } else {
+            sound.playStep();
+          }
+
+          selectedLocation = targetLoc;
+          selectedIndex = targetIdx;
+
+          app.updateHUD();
+          renderInventory();
+        } catch (err) {
+          console.error('Błąd drag-and-drop:', err);
+        }
+      });
+
+      // 5. Kliknięcie w kartę jako szybka alternatywa dla przeciągania:
+      // Klik w plecak -> przenosi do pierwszego wolnego slotu w equipped (lub zamienia)
+      // Klik w equipped -> przenosi do pierwszego wolnego slotu w plecaku
+      slot.addEventListener('click', (e) => {
+        // Jeśli kliknięto w przycisk jedzenia w tooltipie, nie przenoś karty
+        if (e.target.closest('.btn-tooltip-eat')) return;
+
+        const loc = slot.dataset.location;
+        const idx = Number(slot.dataset.index);
 
         selectedLocation = loc;
         selectedIndex = idx;
@@ -422,82 +501,39 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
               sound.playMiss();
             }
           }
+          app.updateHUD();
+          renderInventory();
+        }
+      });
+    });
+
+    // Obsługa jedzenia przedmiotu z tooltipa karty
+    modalMount.querySelectorAll('.btn-tooltip-eat').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const loc = btn.dataset.eatLoc;
+        const idx = Number(btn.dataset.eatIdx);
+        const item = loc === 'equipped' ? app.player.equippedItems[idx] : app.player.backpackItems[idx];
+        if (!item) return;
+
+        sound.playHeal();
+        const healAmt = item.healAmount || 10;
+        app.player.hp = Math.min(app.player.maxHp, app.player.hp + healAmt);
+
+        if (loc === 'backpack') {
+          app.player.backpackItems[idx] = null;
         } else {
-          sound.playStep();
+          app.player.equippedItems[idx] = null;
+        }
+
+        if (item.id === 'kebab' && app.player.kebabs > 0) {
+          app.player.kebabs--;
         }
 
         app.updateHUD();
         renderInventory();
       });
     });
-
-    // Obsługa przycisków szybkiej akcji w dolnym pasku info
-    const quickEquip = modalMount.querySelector('#inv-quick-equip-btn');
-    if (quickEquip) {
-      quickEquip.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const it = app.player.backpackItems[selectedIndex];
-        if (!it) return;
-        sound.playSuccess();
-        const freeEq = app.player.equippedItems.findIndex((s) => s === null);
-        if (freeEq !== -1) {
-          app.player.equippedItems[freeEq] = it;
-          app.player.backpackItems[selectedIndex] = null;
-          selectedLocation = 'equipped';
-          selectedIndex = freeEq;
-        } else {
-          const old = app.player.equippedItems[0];
-          app.player.equippedItems[0] = it;
-          app.player.backpackItems[selectedIndex] = old;
-          selectedLocation = 'equipped';
-          selectedIndex = 0;
-        }
-        app.updateHUD();
-        renderInventory();
-      });
-    }
-
-    const quickUnequip = modalMount.querySelector('#inv-quick-unequip-btn');
-    if (quickUnequip) {
-      quickUnequip.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const it = app.player.equippedItems[selectedIndex];
-        if (!it) return;
-        const freeBp = app.player.backpackItems.findIndex((s) => s === null);
-        if (freeBp !== -1) {
-          sound.playStep();
-          app.player.backpackItems[freeBp] = it;
-          app.player.equippedItems[selectedIndex] = null;
-          selectedLocation = 'backpack';
-          selectedIndex = freeBp;
-        } else {
-          sound.playMiss();
-        }
-        app.updateHUD();
-        renderInventory();
-      });
-    }
-
-    const quickEat = modalMount.querySelector('#inv-quick-eat-btn');
-    if (quickEat && selectedItem) {
-      quickEat.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sound.playHeal();
-        const healAmt = selectedItem.healAmount || 10;
-        app.player.hp = Math.min(app.player.maxHp, app.player.hp + healAmt);
-
-        if (selectedLocation === 'backpack') {
-          app.player.backpackItems[selectedIndex] = null;
-        } else {
-          app.player.equippedItems[selectedIndex] = null;
-        }
-        if (selectedItem.id === 'kebab' && app.player.kebabs > 0) {
-          app.player.kebabs--;
-        }
-        app.updateHUD();
-        renderInventory();
-      });
-    }
   };
 
   renderInventory();
