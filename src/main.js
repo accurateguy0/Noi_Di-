@@ -238,7 +238,9 @@ class NoiDiGameApp {
       openCharacterSelectModal(this);
     });
     document.getElementById('hud-inventory-btn')?.addEventListener('click', () => {
-      this.openInventoryModal(null, 'equipment');
+      playJaggedCurtainWipe(() => {
+        this.openInventoryModal(null, 'equipment');
+      });
     });
   }
 

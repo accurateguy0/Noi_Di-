@@ -237,6 +237,9 @@ export async function playJaggedCurtainWipe(onCovered, options = 'left') {
   document.body.appendChild(curtain);
 
   try {
+    // Dźwięk pierwszej fazy tranzycji: ząbkowana czarna kurtyna zasłania ekran
+    sound.playTransition1();
+
     // Krok 1: Wjazd czarnej ząbkowanej kurtyny do środka (zasłonięcie planszy)
     const coverAnim = curtain.animate(
       [
@@ -255,6 +258,9 @@ export async function playJaggedCurtainWipe(onCovered, options = 'left') {
     if (onCovered) {
       await onCovered();
     }
+
+    // Dźwięk drugiej fazy tranzycji: ząbkowana kurtyna odsłania nową scenę
+    sound.playTransition2();
 
     // Daj przeglądarce 2 klatki na wyrenderowanie nowej sceny w tle
     await new Promise((r) => requestAnimationFrame(r));

@@ -5413,6 +5413,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   box-sizing: border-box;
   overflow: hidden;
   user-select: none;
+  padding-bottom: 84px;
 }
 
 /* Środkowy obszar ze stołem ekwipunku: IN BACKPACK po lewej, EQUIPPED po prawej */
@@ -5685,175 +5686,15 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 
 
-/* ==================== DOLNY PASEK HUD EKWIPUNKU (1:1 DICEY DUNGEONS) ==================== */
-.dd-inv-bottom-hud-bar {
-  position: fixed;
+/* ==================== DOLNY PASEK HUD EKWIPUNKU (IDENTYCZNY Z PASKIEM PLANSZY) ==================== */
+.dicey-hud-bar.dd-inv-bottom-hud-bar {
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   width: 100%;
-  height: 68px;
-  background: #2b1d24;
-  border-top: 1px solid rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 36px;
   box-sizing: border-box;
   z-index: 1002;
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.5);
-}
-
-.dd-hud-left-group {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.dd-hud-avatar-box {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dd-hud-avatar-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.dd-hud-hero-label {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-}
-
-.dd-hud-hp-capsule-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: 12px;
-}
-
-.dd-hud-hp-capsule {
-  background: #ff5565;
-  color: #ffffff;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 800;
-  padding: 3px 24px;
-  border-radius: 999px;
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25), 0 2px 6px rgba(0, 0, 0, 0.4);
-}
-
-.dd-hud-sub-stats {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-top: 3px;
-}
-
-.dd-sub-coin {
-  color: #ffd166;
-}
-
-.dd-sub-dice {
-  color: #ffffff;
-}
-
-/* Środek: LEVEL + Level up */
-.dd-hud-center-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.dd-hud-level-line {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-}
-
-.dd-hud-xp-line {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: #ffffff;
-  opacity: 0.9;
-}
-
-/* Przycisk BACK */
-.dd-hud-back-group {
-  display: flex;
-  align-items: center;
-}
-
-.btn-dicey-hud-back {
-  background: #5d636e;
-  color: #ffffff;
-  font-family: 'Fredoka', 'Nunito', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  border: 2px solid #43474f;
-  border-radius: 8px;
-  padding: 9px 44px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
-  transition: all 0.15s ease;
-}
-
-.btn-dicey-hud-back:hover {
-  background: #6e7683;
-  border-color: #555b65;
-  transform: translateY(-1px);
-}
-
-.btn-dicey-hud-back:active {
-  transform: translateY(1px);
-}
-
-/* Prawa strona: Czaszki + Floor */
-.dd-hud-right-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-
-.dd-hud-skulls-strip {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 1.1rem;
-}
-
-.dd-hud-skull-icon {
-  opacity: 0.35;
-  filter: grayscale(1);
-}
-
-.dd-hud-skull-icon.is-reached {
-  opacity: 1;
-  filter: none;
-}
-
-.dd-hud-floor-label {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #ffffff;
 }
 
 @media (max-width: 900px) {

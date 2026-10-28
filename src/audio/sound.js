@@ -188,7 +188,9 @@ class SoundManager {
       'mala_kalamarnica_dzwiek.ogg',
       'Dzwonek_Szkolny.mp3',
       "Referee's whistle.mp3",
-      'pilka_kopniecie.wav'
+      'pilka_kopniecie.wav',
+      'transition_1.ogg',
+      'transition_2.ogg'
     ];
     coreFiles.forEach((f) => this.loadBuffer(f));
   }
@@ -595,6 +597,14 @@ class SoundManager {
 
   playNextBoard() {
     this.playFile('nastepna_plansza.ogg', 0.9);
+  }
+
+  playTransition1() {
+    this.playFile('transition_1.ogg', 0.95);
+  }
+
+  playTransition2() {
+    this.playFile('transition_2.ogg', 0.95);
   }
 
   playSpinWheel() {

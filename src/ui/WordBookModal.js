@@ -8,6 +8,7 @@ import { musicManager } from '../audio/musicManager.js';
 import { playJaggedCurtainWipe } from './victoryScreen.js';
 import { ALL_ITEMS_CATALOG } from '../data/shopItems.js';
 import {
+  getPlayerDamage,
   SLANG_WORDS,
   BOARD_3_WORDS,
   BOARD_4_WORDS,
@@ -169,8 +170,6 @@ export function addItemToPlayerInventory(player, catalogItem) {
 
 export function openInventoryModal(app, initialSelectedId = null, filterCategory = null) {
   // NIE ZMIENIAJ MUZYKI podczas wejścia w ekwipunek: muzyka z planszy gra dalej w tle!
-  sound.playStep();
-
   initPlayerEquipment(app.player);
 
   const modalMount = document.getElementById('modal-mount');
@@ -314,58 +313,65 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
           </div>
         </div>
 
-        <!-- Pełnowymiarowy dolny pasek HUD (1:1 Dicey Dungeons na całej szerokości ekranu) -->
-        <footer class="dd-inv-bottom-hud-bar">
-          <!-- Lewa strona: Awatar + Nazwa + HP + Monety + Kości -->
-          <div class="dd-hud-left-group">
-            <div class="dd-hud-avatar-box">
-              <img src="${heroAvatar}" alt="${heroName}" onerror="this.src='./assets/Warrior.png'" />
+        <!-- Dolny pasek HUD (Identyczny jak na planszy z przyciskiem BACK) -->
+        <footer class="dicey-hud-bar dd-inv-bottom-hud-bar">
+          <!-- Lewa strona: Awatar + LEVEL + EXP -->
+          <div class="hud-hero-cluster">
+            <div class="hud-dice-avatar-frame" id="inv-hud-character-card">
+              <img id="inv-hud-portrait-img" src="${heroAvatar}" alt="${heroName}" onerror="this.src='./assets/Warrior.png'" />
             </div>
-            <div class="dd-hud-hero-label">${heroName}</div>
-            <div class="dd-hud-hp-capsule-wrap">
-              <div class="dd-hud-hp-capsule">${app.player.hp}/${app.player.maxHp}</div>
-              <div class="dd-hud-sub-stats">
-                <span class="dd-sub-coin">🪙 ${app.player.coins || 0}</span>
-                <span class="dd-sub-dice">🎲 x${app.player.diceCount || 2}</span>
-              </div>
+            <div class="hud-level-info">
+              <div class="hud-level-text" id="inv-hud-level-title">LEVEL ${app.player.level || 1}</div>
+              <div class="hud-levelup-sub" id="inv-hud-xp-sub">Level up in ★ ${xpToNext}</div>
             </div>
           </div>
 
-          <!-- Środek: LEVEL + EXP -->
-          <div class="dd-hud-center-group">
-            <div class="dd-hud-level-line">LEVEL ${app.player.level || 1}</div>
-            <div class="dd-hud-xp-line">Level up in ★ ${xpToNext}</div>
+          <!-- Środek-Lewo: Pasek HP + monety i siła ataku DMG -->
+          <div class="hud-hp-cluster">
+            <div class="hud-hp-pill">
+              <div class="hud-hp-pill-fill" style="width: ${Math.max(0, Math.min(100, (app.player.hp / app.player.maxHp) * 100))}%;"></div>
+              <span class="hud-hp-pill-label">${app.player.hp}/${app.player.maxHp}</span>
+            </div>
+            <div class="hud-stats-under-hp">
+              <span class="hud-stat-coin" title="Złote monety">🪙 <b>${app.player.coins || 0}</b></span>
+              <span class="hud-stat-dmg" title="Siła ataku (DMG)">⚔️ <b>${getPlayerDamage(app.player)}</b></span>
+            </div>
           </div>
 
-          <!-- Przycisk BACK (szary zaokrąglony prostokąt w pasku HUD jak w Dicey Dungeons) -->
-          <div class="dd-hud-back-group">
-            <button type="button" class="btn-dicey-hud-back" id="inv-hud-back-btn">
+          <!-- Środek-Prawo: Przycisk BACK -->
+          <div class="hud-buttons-cluster">
+            <button type="button" class="btn-dd-hud-pill btn-dd-equipment" id="inv-hud-back-btn" title="Wróć na planszę">
               BACK
             </button>
           </div>
 
-          <!-- Prawa strona: Czaszki + Piętro -->
-          <div class="dd-hud-right-group">
-            <div class="dd-hud-skulls-strip">
-              <span class="dd-hud-skull-icon ${curFloor >= 1 ? 'is-reached' : ''}">💀</span>
-              <span class="dd-hud-skull-icon ${curFloor >= 2 ? 'is-reached' : ''}">💀</span>
-              <span class="dd-hud-skull-icon ${curFloor >= 3 ? 'is-reached' : ''}">💀</span>
-              <span class="dd-hud-skull-icon ${curFloor >= 4 ? 'is-reached' : ''}">💀</span>
-              <span class="dd-hud-skull-icon ${curFloor >= 5 ? 'is-reached' : ''}">💀</span>
+          <!-- Prawa strona: Drabina + Piętra z czaszkami i kapturem bossa -->
+          <div class="hud-floor-cluster" title="Aktualne piętro">
+            <div class="hud-floor-top-row">
+              <span class="hud-floor-stair-icon">🪜</span>
+              <div class="hud-floor-skulls">
+                <span class="hud-skull ${curFloor === 1 ? 'is-current' : (curFloor > 1 ? 'is-cleared' : '')}" data-floor="1">💀</span>
+                <span class="hud-skull ${curFloor === 2 ? 'is-current' : (curFloor > 2 ? 'is-cleared' : '')}" data-floor="2">💀</span>
+                <span class="hud-skull ${curFloor === 3 ? 'is-current' : (curFloor > 3 ? 'is-cleared' : '')}" data-floor="3">💀</span>
+                <span class="hud-skull ${curFloor === 4 ? 'is-current' : (curFloor > 4 ? 'is-cleared' : '')}" data-floor="4">💀</span>
+                <span class="hud-skull ${curFloor === 5 ? 'is-current' : (curFloor > 5 ? 'is-cleared' : '')}" data-floor="5">💀</span>
+                <span class="hud-boss-hood ${curFloor === 6 ? 'is-current' : (curFloor > 6 ? 'is-cleared' : '')}" data-floor="6">🦹</span>
+              </div>
             </div>
-            <div class="dd-hud-floor-label">Floor ${curFloor}</div>
+            <div class="hud-floor-label">Floor ${curFloor}</div>
           </div>
         </footer>
       </div>
     `;
 
-    // Zamknięcie ekwipunku i powrót na planszę (bez zmiany/restartu muzyki)
+    // Zamknięcie ekwipunku i powrót na planszę za pomocą ząbkowanej kurtyny
     const handleClose = () => {
-      sound.playStep();
-      modalMount.classList.remove('modal-mount-inventory');
-      app.closeModal();
-      app.renderBoard();
-      app.updateHUD();
+      playJaggedCurtainWipe(() => {
+        modalMount.classList.remove('modal-mount-inventory');
+        app.closeModal();
+        app.renderBoard();
+        app.updateHUD();
+      });
     };
 
     const backBtn = modalMount.querySelector('#inv-hud-back-btn');
