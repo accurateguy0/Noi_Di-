@@ -114,13 +114,13 @@ export function openSettingsModal(app, initialView = 'main') {
 
     // ==========================================
     // 2. PODMENU OPCJE (Obrazek 2)
-    // Tytuł: SETTINGS
+    // Tytuł: OPCJE
     // Przyciski: WYŚWIETL, DŹWIĘK, GRA, ZAMKNIJ OPCJE
     // ==========================================
     else if (currentView === 'options') {
       contentHtml = `
         <div class="esc-menu-container">
-          <h2 class="esc-menu-title">SETTINGS</h2>
+          <h2 class="esc-menu-title">OPCJE</h2>
 
           <button class="btn-dd-block" id="options-btn-display">
             WYŚWIETL
@@ -143,13 +143,13 @@ export function openSettingsModal(app, initialView = 'main') {
 
     // ==========================================
     // 3. WIDOK: WYŚWIETL (Obrazek 3)
-    // Tytuł: DISPLAY
-    // FULLSCREEN / WINDOWED, checkboxy, suwak animacji, BACK
+    // Tytuł: EKRAN
+    // FULLSCREEN / WINDOWED, checkboxy, suwak animacji, POWRÓT
     // ==========================================
     else if (currentView === 'display') {
       contentHtml = `
         <div class="esc-menu-container" style="max-width: 480px;">
-          <h2 class="esc-menu-title">DISPLAY</h2>
+          <h2 class="esc-menu-title">EKRAN</h2>
 
           <!-- Przełącznik Fullscreen / Windowed -->
           <div style="display: flex; gap: 12px; margin-bottom: 6px;">
@@ -213,21 +213,21 @@ export function openSettingsModal(app, initialView = 'main') {
             </div>
           </div>
 
-          <!-- Przycisk BACK -->
+          <!-- Przycisk POWRÓT -->
           <button class="btn-dd-block" id="disp-btn-back" style="margin-top: 14px;">
-            BACK
+            POWRÓT
           </button>
         </div>
       `;
     }
 
     // ==========================================
-    // 4. WIDOK: DŹWIĘK (SOUND) (Wzór Dicey Dungeons z 4 suwakami)
+    // 4. WIDOK: DŹWIĘK (SOUND) (Wzór Dicey Dungeons z 4 suwakami po polsku)
     // ==========================================
     else if (currentView === 'sound') {
       contentHtml = `
         <div class="esc-menu-container" style="max-width: 380px; gap: 16px;">
-          <h2 class="esc-menu-title" style="margin-bottom: 6px;">SOUND</h2>
+          <h2 class="esc-menu-title" style="margin-bottom: 6px;">DŹWIĘK</h2>
 
           <div style="width: 100%; display: flex; flex-direction: column; gap: 20px;">
             <!-- 1. Main volume -->
@@ -241,7 +241,7 @@ export function openSettingsModal(app, initialView = 'main') {
                 value="${mainVol}"
               />
               <div class="dd-sound-row">
-                <span class="dd-sound-label">Main volume:</span>
+                <span class="dd-sound-label">Głośność główna:</span>
                 <span class="dd-sound-val" id="val-main-vol">${mainVol}</span>
               </div>
             </div>
@@ -257,7 +257,7 @@ export function openSettingsModal(app, initialView = 'main') {
                 value="${musicVol}"
               />
               <div class="dd-sound-row">
-                <span class="dd-sound-label">Music volume:</span>
+                <span class="dd-sound-label">Głośność muzyki:</span>
                 <span class="dd-sound-val" id="val-music-vol">${musicVol}</span>
               </div>
             </div>
@@ -273,7 +273,7 @@ export function openSettingsModal(app, initialView = 'main') {
                 value="${sfxVol}"
               />
               <div class="dd-sound-row">
-                <span class="dd-sound-label">SFX volume:</span>
+                <span class="dd-sound-label">Efekty dźwiękowe:</span>
                 <span class="dd-sound-val" id="val-sfx-vol">${sfxVol}</span>
               </div>
             </div>
@@ -289,26 +289,26 @@ export function openSettingsModal(app, initialView = 'main') {
                 value="${voicesVol}"
               />
               <div class="dd-sound-row">
-                <span class="dd-sound-label">Voices volume:</span>
+                <span class="dd-sound-label">Głos lektora:</span>
                 <span class="dd-sound-val" id="val-voices-vol">${voicesVol}</span>
               </div>
             </div>
           </div>
 
           <button class="btn-dd-block" id="sound-btn-back" style="margin-top: 14px;">
-            BACK
+            POWRÓT
           </button>
         </div>
       `;
     }
 
     // ==========================================
-    // 5. WIDOK: GRA (GAMEPLAY) (Wzór Dicey Dungeons: Relaxed Mode)
+    // 5. WIDOK: GRA (ROZGRYWKA) (Wzór Dicey Dungeons: Relaxed Mode po polsku)
     // ==========================================
     else if (currentView === 'gameplay') {
       contentHtml = `
         <div class="esc-menu-container" style="max-width: 460px; gap: 20px;">
-          <h2 class="esc-menu-title" style="margin-bottom: 8px;">GAMEPLAY</h2>
+          <h2 class="esc-menu-title" style="margin-bottom: 8px;">ROZGRYWKA</h2>
 
           <div style="display: flex; flex-direction: column; align-items: center; width: 100%; gap: 14px;">
             <!-- Checkbox Relaxed mode -->
@@ -319,22 +319,22 @@ export function openSettingsModal(app, initialView = 'main') {
                 ${activeSettingsState.relaxedMode ? 'checked' : ''}
                 style="width: 24px; height: 24px; accent-color: #3b82f6; cursor: pointer;"
               />
-              <span>Relaxed mode</span>
+              <span>Tryb swobodny (Relaxed)</span>
             </label>
 
             <!-- Opis z gry Dicey Dungeons -->
             <div style="color: #ffffff; font-family: 'Fredoka', 'Nunito', sans-serif; font-size: 1.05rem; line-height: 1.55; text-align: center; max-width: 440px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
               <p style="margin: 0 0 14px 0;">
-                In relaxed mode, all enemies have 25% less health.
+                W trybie swobodnym wszyscy przeciwnicy mają o 25% mniej punktów zdrowia.
               </p>
               <p style="margin: 0;">
-                Relaxed mode has no effect on progress or achievements, and can be turned on and off at will.
+                Tryb swobodny nie wpływa na postępy ani osiągnięcia i można go włączać oraz wyłączać w dowolnym momencie.
               </p>
             </div>
           </div>
 
           <button class="btn-dd-block" id="gameplay-btn-back" style="margin-top: 18px;">
-            BACK
+            POWRÓT
           </button>
         </div>
       `;
