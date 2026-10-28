@@ -2591,50 +2591,184 @@ Posłuchaj
       <div class="esc-menu-backdrop" id="esc-backdrop">
         ${w}
       </div>
-    `,s()},s=()=>{var y,w,m,u,k,g,j,P,f,_,T,A,K,U,oe,ie,ee,ye;(y=document.getElementById("esc-btn-continue"))==null||y.addEventListener("click",n),(w=document.getElementById("esc-btn-options"))==null||w.addEventListener("click",()=>{d.playStep(),o="options",t()}),(m=document.getElementById("esc-btn-edit-progress"))==null||m.addEventListener("click",()=>{d.playStep(),o="edit_progress",t()}),(u=document.getElementById("options-btn-display"))==null||u.addEventListener("click",()=>{d.playStep(),o="display",t()}),(k=document.getElementById("options-btn-sound"))==null||k.addEventListener("click",()=>{d.playStep(),o="sound",t()}),(g=document.getElementById("options-btn-gameplay"))==null||g.addEventListener("click",()=>{d.playStep(),o="gameplay",t()}),(j=document.getElementById("options-btn-close"))==null||j.addEventListener("click",n),(P=document.getElementById("disp-btn-fullscreen"))==null||P.addEventListener("click",()=>{d.playStep(),document.fullscreenElement||document.documentElement.requestFullscreen().catch(()=>{}),setTimeout(t,100)}),(f=document.getElementById("disp-btn-windowed"))==null||f.addEventListener("click",()=>{d.playStep(),document.fullscreenElement&&document.exitFullscreen().catch(()=>{}),setTimeout(t,100)}),(_=document.getElementById("chk-disable-effects"))==null||_.addEventListener("change",I=>{J.disableScreenEffects=I.target.checked,De()}),(T=document.getElementById("chk-disable-shaders"))==null||T.addEventListener("change",I=>{J.disableShaders=I.target.checked,De()}),(A=document.getElementById("slider-combat-speed"))==null||A.addEventListener("input",I=>{const Z=Number(I.target.value);J.combatSpeed=Z===1?"normal":Z===2?"fast":"very_fast",De(),t()}),(K=document.getElementById("disp-btn-back"))==null||K.addEventListener("click",()=>{d.playStep(),o="options",t()});const z=document.getElementById("slider-main-vol");z&&z.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-main-vol").textContent=`${Z}`,d.setMasterVolume(Z/100),S.setMasterVolume(Z/100)});const c=document.getElementById("slider-music-vol");c&&c.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-music-vol").textContent=`${Z}`,S.setVolume(Z/100)});const p=document.getElementById("slider-sfx-vol");p&&(p.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-sfx-vol").textContent=`${Z}`,d.setSfxVolume(Z/100)}),p.addEventListener("change",()=>{d.playHitImpact()}));const l=document.getElementById("slider-voices-vol");l&&(l.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-voices-vol").textContent=`${Z}`,d.setVoiceVolume(Z/100)}),l.addEventListener("change",()=>{d.speakPolish("Głośność lektora")})),(U=document.getElementById("sound-btn-back"))==null||U.addEventListener("click",()=>{d.playStep(),o="options",t()}),(oe=document.getElementById("chk-relaxed-mode"))==null||oe.addEventListener("change",I=>{J.relaxedMode=I.target.checked,De()}),(ie=document.getElementById("gameplay-btn-back"))==null||ie.addEventListener("click",()=>{d.playStep(),o="options",t()}),(ee=document.getElementById("btn-confirm-reset"))==null||ee.addEventListener("click",()=>{confirm("Czy na pewno chcesz zresetować wszystkie postępy?")&&(E.resetAllProgress(),d.playStep(),alert("Postępy zostały zresetowane. Dostępny jest tylko Epizod 1."),o="main",t())}),(ye=document.getElementById("edit-progress-btn-back"))==null||ye.addEventListener("click",()=>{d.playStep(),o="main",t()})};t()}function _i(r){var o,i,n;d.playStep();const e=document.getElementById("modal-mount");if(!e)return;e.classList.remove("hidden"),e.innerHTML=`
-    <div class="dicey-modal-backdrop" id="credits-backdrop" style="position: fixed; inset: 0; background: rgba(3,7,18,0.85); backdrop-filter: blur(6px); z-index: 100005; display: flex; align-items: center; justify-content: center; padding: 16px;">
-      <div style="background: #18181b; border: 3px solid #3f3f46; border-radius: 20px; max-width: 580px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column;">
-        <div style="background: linear-gradient(135deg, #1e3a6a, #2563eb); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155;">
-          <h2 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 1.6rem; color: #ffffff; letter-spacing: 1px;">
-            📜 CREDITS • TWÓRCY GRY
-          </h2>
-          <button id="credits-close-x" style="background: transparent; border: none; font-size: 1.4rem; color: #cbd5e1; cursor: pointer;">✕</button>
-        </div>
+    `,s()},s=()=>{var y,w,m,u,k,g,j,P,f,_,T,A,K,U,oe,ie,ee,ye;(y=document.getElementById("esc-btn-continue"))==null||y.addEventListener("click",n),(w=document.getElementById("esc-btn-options"))==null||w.addEventListener("click",()=>{d.playStep(),o="options",t()}),(m=document.getElementById("esc-btn-edit-progress"))==null||m.addEventListener("click",()=>{d.playStep(),o="edit_progress",t()}),(u=document.getElementById("options-btn-display"))==null||u.addEventListener("click",()=>{d.playStep(),o="display",t()}),(k=document.getElementById("options-btn-sound"))==null||k.addEventListener("click",()=>{d.playStep(),o="sound",t()}),(g=document.getElementById("options-btn-gameplay"))==null||g.addEventListener("click",()=>{d.playStep(),o="gameplay",t()}),(j=document.getElementById("options-btn-close"))==null||j.addEventListener("click",n),(P=document.getElementById("disp-btn-fullscreen"))==null||P.addEventListener("click",()=>{d.playStep(),document.fullscreenElement||document.documentElement.requestFullscreen().catch(()=>{}),setTimeout(t,100)}),(f=document.getElementById("disp-btn-windowed"))==null||f.addEventListener("click",()=>{d.playStep(),document.fullscreenElement&&document.exitFullscreen().catch(()=>{}),setTimeout(t,100)}),(_=document.getElementById("chk-disable-effects"))==null||_.addEventListener("change",I=>{J.disableScreenEffects=I.target.checked,De()}),(T=document.getElementById("chk-disable-shaders"))==null||T.addEventListener("change",I=>{J.disableShaders=I.target.checked,De()}),(A=document.getElementById("slider-combat-speed"))==null||A.addEventListener("input",I=>{const Z=Number(I.target.value);J.combatSpeed=Z===1?"normal":Z===2?"fast":"very_fast",De(),t()}),(K=document.getElementById("disp-btn-back"))==null||K.addEventListener("click",()=>{d.playStep(),o="options",t()});const z=document.getElementById("slider-main-vol");z&&z.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-main-vol").textContent=`${Z}`,d.setMasterVolume(Z/100),S.setMasterVolume(Z/100)});const c=document.getElementById("slider-music-vol");c&&c.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-music-vol").textContent=`${Z}`,S.setVolume(Z/100)});const p=document.getElementById("slider-sfx-vol");p&&(p.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-sfx-vol").textContent=`${Z}`,d.setSfxVolume(Z/100)}),p.addEventListener("change",()=>{d.playHitImpact()}));const l=document.getElementById("slider-voices-vol");l&&(l.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-voices-vol").textContent=`${Z}`,d.setVoiceVolume(Z/100)}),l.addEventListener("change",()=>{d.speakPolish("Głośność lektora")})),(U=document.getElementById("sound-btn-back"))==null||U.addEventListener("click",()=>{d.playStep(),o="options",t()}),(oe=document.getElementById("chk-relaxed-mode"))==null||oe.addEventListener("change",I=>{J.relaxedMode=I.target.checked,De()}),(ie=document.getElementById("gameplay-btn-back"))==null||ie.addEventListener("click",()=>{d.playStep(),o="options",t()}),(ee=document.getElementById("btn-confirm-reset"))==null||ee.addEventListener("click",()=>{confirm("Czy na pewno chcesz zresetować wszystkie postępy?")&&(E.resetAllProgress(),d.playStep(),alert("Postępy zostały zresetowane. Dostępny jest tylko Epizod 1."),o="main",t())}),(ye=document.getElementById("edit-progress-btn-back"))==null||ye.addEventListener("click",()=>{d.playStep(),o="main",t()})};t()}function _i(r){d.playStep();const e=document.getElementById("modal-mount");if(!e)return;e.classList.remove("hidden");let a=1;const o=()=>{var t,s;let i="";a===1?i=`
+        <h1 class="credits-main-title">CREATED BY</h1>
 
-        <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px; font-family: 'Nunito', sans-serif; color: #f1f5f9; max-height: 440px; overflow-y: auto;">
-          <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-            <strong style="color: #ffd166; font-size: 1.1rem; display: block; font-family: 'Fredoka', sans-serif;">Nói Đi! (Mów Śmiało!)</strong>
-            <span style="font-size: 0.88rem; color: #94a3b8;">Edukacyjny roguelike języka polskiego dla dzieci i młodzieży pochodzenia wietnamskiego.</span>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
-              <span style="color: #60a5fa; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">🎮 Koncepcja & Mechanika</span>
-              <p style="margin: 4px 0 0; font-weight: 700;">Inspirowana mechanikami gry Dicey Dungeons (Terry Cavanagh & Marlowe Dobbe).</p>
+        <div class="credits-grid-layout">
+          <!-- Kolumna 1 -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <!-- 1. Design: Terry Cavanagh -->
+            <div class="credits-person-card">
+              <img src="./assets/Warrior.png" alt="Warrior" class="credits-dice-sprite" onerror="this.src='/assets/Warrior.png'" />
+              <div>
+                <div class="credits-role-tag">DESIGN</div>
+                <div class="credits-name-tag">Terry Cavanagh</div>
+              </div>
             </div>
 
-            <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
-              <span style="color: #34d399; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">🎵 Muzyka & Ścieżka dźwiękowa</span>
-              <p style="margin: 4px 0 0; font-weight: 700;">Chipzel (oryginalne utwory retro chiptune).</p>
+            <!-- 2. Art and Animation: Marlowe Dobbe -->
+            <div class="credits-person-card">
+              <img src="./assets/Inventor.png" alt="Inventor" class="credits-dice-sprite" onerror="this.src='/assets/Inventor.png'" />
+              <div>
+                <div class="credits-role-tag">ART AND ANIMATION</div>
+                <div class="credits-name-tag">Marlowe Dobbe</div>
+              </div>
+            </div>
+
+            <!-- 3. PR and Marketing: Dana Trebella -->
+            <div class="credits-person-card">
+              <img src="./assets/Witch.png" alt="Witch" class="credits-dice-sprite" onerror="this.src='/assets/Witch.png'" />
+              <div>
+                <div class="credits-role-tag">PR AND MARKETING</div>
+                <div class="credits-name-tag">Dana Trebella</div>
+              </div>
             </div>
           </div>
 
-          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
-            <span style="color: #f472b6; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">📚 Opracowanie Dydaktyczne</span>
-            <p style="margin: 4px 0 0; font-size: 0.9rem;">
-              Program lektur, gramatyki, ortografii, komunikacji szkolnej i słownictwa polsko-wietnamskiego przygotowany zgodnie z podstawą programową CKE klas 4–8.
-            </p>
+          <!-- Kolumna 2 -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <!-- 4. Music and Sound Design: Chipzel -->
+            <div class="credits-person-card">
+              <img src="./assets/Jester.png" alt="Chipzel" class="credits-dice-sprite" style="filter: brightness(0);" onerror="this.src='/assets/Jester.png'" />
+              <div>
+                <div class="credits-role-tag">MUSIC AND SOUND DESIGN</div>
+                <div class="credits-name-tag">Niamh Houston / Chipzel</div>
+              </div>
+            </div>
+
+            <!-- 5. Programming: Justo Delgado Baudí -->
+            <div class="credits-person-card">
+              <img src="./assets/Thief.png" alt="Thief" class="credits-dice-sprite" onerror="this.src='/assets/Thief.png'" />
+              <div>
+                <div class="credits-role-tag">PROGRAMMING</div>
+                <div class="credits-name-tag">Justo Delgado Baudí</div>
+              </div>
+            </div>
+
+            <!-- 6. Writing: Holly Gramazio -->
+            <div class="credits-person-card">
+              <img src="./assets/Robot.png" alt="Robot" class="credits-dice-sprite" onerror="this.src='/assets/Robot.png'" />
+              <div>
+                <div class="credits-role-tag">WRITING</div>
+                <div class="credits-name-tag">Holly Gramazio</div>
+              </div>
+            </div>
           </div>
         </div>
+      `:i=`
+        <h1 class="credits-main-title" style="color: #ffd166;">NÓI ĐI! PROJECT</h1>
 
-        <div style="padding: 14px 24px; border-top: 1px solid #27272a; display: flex; justify-content: flex-end; background: #0f172a;">
-          <button id="credits-ok-btn" style="padding: 9px 26px; border-radius: 10px; border: none; background: #2563eb; color: white; font-family: 'Fredoka', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer;">
-            ZAMKNIJ
-          </button>
+        <div class="credits-grid-layout">
+          <!-- Kolumna 1 -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <div class="credits-person-card">
+              <img src="./assets/Kotek_Pomoc.png" alt="Kotek" class="credits-dice-sprite" onerror="this.src='/assets/Kotek_Pomoc.png'" />
+              <div>
+                <div class="credits-role-tag">EDUKACJA & ROGUELIKE</div>
+                <div class="credits-name-tag">Projekt Nói Đi! (Mów Śmiało!)</div>
+              </div>
+            </div>
+
+            <div class="credits-person-card">
+              <img src="./assets/itemki/zeszyt.png" alt="Zeszyt" class="credits-dice-sprite" />
+              <div>
+                <div class="credits-role-tag">PROGRAM DYDAKTYCZNY</div>
+                <div class="credits-name-tag">Podstawa Programowa CKE Klasy 4–8</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kolumna 2 -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <div class="credits-person-card">
+              <img src="./assets/itemki/kebab.png" alt="Kebab" class="credits-dice-sprite" />
+              <div>
+                <div class="credits-role-tag">KULTURA I SŁOWNICTWO</div>
+                <div class="credits-name-tag">Konsultacje Językowe Polsko-Wietnamskie</div>
+              </div>
+            </div>
+
+            <div class="credits-person-card">
+              <img src="./assets/itemki/sluchawki_gamingowe.png" alt="Słuchawki" class="credits-dice-sprite" />
+              <div>
+                <div class="credits-role-tag">GŁOSY I LEKTORZY</div>
+                <div class="credits-name-tag">Synteza Mowy PL + Odgłosy Bohaterów</div>
+              </div>
+            </div>
+          </div>
         </div>
+      `,e.innerHTML=`
+      <div class="credits-theatrical-screen" id="credits-backdrop">
+        <!-- SVG Tła Sceny Teatralnej z żarówkami w stylu Dicey Dungeons -->
+        <svg class="credits-stage-backdrop-svg" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="stageGlow" cx="50%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#841f26" />
+              <stop offset="45%" stop-color="#5a1217" />
+              <stop offset="85%" stop-color="#3b080c" />
+              <stop offset="100%" stop-color="#240407" />
+            </radialGradient>
+            <filter id="bulbGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Tło i łuki sceny -->
+          <rect width="1280" height="720" fill="url(#stageGlow)" />
+
+          <!-- Koncentryczne łuki kurtyny -->
+          <ellipse cx="640" cy="280" rx="580" ry="360" fill="none" stroke="#480f14" stroke-width="60" />
+          <ellipse cx="640" cy="280" rx="460" ry="290" fill="none" stroke="#63161c" stroke-width="50" />
+          <ellipse cx="640" cy="280" rx="360" ry="230" fill="none" stroke="#781d23" stroke-width="40" />
+
+          <!-- Reflektory sceniczne w narożnikach -->
+          <path d="M 40 -20 L 120 70 L 60 110 L -20 20 Z" fill="#2d0508" opacity="0.8" />
+          <path d="M 1240 -20 L 1160 70 L 1220 110 L 1300 20 Z" fill="#2d0508" opacity="0.8" />
+
+          <!-- Łuk z żarówkami teatralnymi -->
+          <g filter="url(#bulbGlow)">
+            <circle cx="80" cy="540" r="15" fill="#fef3c7" />
+            <circle cx="95" cy="420" r="15" fill="#e2ded2" />
+            <circle cx="125" cy="310" r="15" fill="#fde047" />
+            <circle cx="175" cy="210" r="15" fill="#e2ded2" />
+            <circle cx="255" cy="130" r="15" fill="#fef3c7" />
+            <circle cx="360" cy="70" r="15" fill="#fde047" />
+            <circle cx="485" cy="35" r="15" fill="#e2ded2" />
+            <circle cx="640" cy="22" r="16" fill="#fef3c7" />
+            <circle cx="795" cy="35" r="15" fill="#fde047" />
+            <circle cx="920" cy="70" r="15" fill="#e2ded2" />
+            <circle cx="1025" cy="130" r="15" fill="#fef3c7" />
+            <circle cx="1105" cy="210" r="15" fill="#fde047" />
+            <circle cx="1155" cy="310" r="15" fill="#e2ded2" />
+            <circle cx="1185" cy="420" r="15" fill="#fef3c7" />
+            <circle cx="1200" cy="540" r="15" fill="#fde047" />
+          </g>
+
+          <!-- Deski sceny / podłoga -->
+          <rect y="580" width="1280" height="140" fill="#300609" />
+          <line x1="0" y1="580" x2="1280" y2="580" stroke="#5a1217" stroke-width="4" />
+        </svg>
+
+        <!-- Przycisk TITLE w lewym górnym rogu -->
+        <button class="credits-top-title-btn" id="credits-btn-title">
+          TITLE
+        </button>
+
+        <!-- Warstwa treści z postaciami i autorami -->
+        <div class="credits-content-layer">
+          ${i}
+        </div>
+
+        <!-- Strzałka nawigacji w prawym dolnym rogu -->
+        <button class="credits-arrow-btn" id="credits-arrow-btn" title="Kolejna strona">
+          ${a===1?"➔":"⬅"}
+        </button>
       </div>
-    </div>
-  `;const a=()=>{d.playStep(),e.classList.add("hidden"),e.innerHTML=""};(o=document.getElementById("credits-close-x"))==null||o.addEventListener("click",a),(i=document.getElementById("credits-ok-btn"))==null||i.addEventListener("click",a),(n=document.getElementById("credits-backdrop"))==null||n.addEventListener("click",t=>{t.target.id==="credits-backdrop"&&a()})}function Wa(r){return Wi()?Math.max(1,Math.round(r*.75)):r}class Ai{constructor(e){this.app=e}createCloseHandler(e){return({defeated:a}={})=>{if(a||this.app.player&&this.app.player.hp<=0){this.app.handleGameOver();return}b(()=>{this.app.activeMinigame&&(this.app.activeMinigame.destroy(),this.app.activeMinigame=null),e.classList.add("hidden"),S.resumeBoardMusic(this.app.player),this.app.renderBoard(),this.app.updateHUD()})}}launchMatchingPairs(e="node_3",a=null){const o=this.app.openArena(),i=(a==null?void 0:a.enemyDamage)||2;this.app.activeMinigame=new ji(o,{player:this.app.player,enemyName:"kotek",enemyDamage:i,words:a==null?void 0:a.words,title:a==null?void 0:a.subtitlePl,onPlayerDamaged:(n=i)=>{this.app.player.hp=Math.max(0,this.app.player.hp-n),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:n})=>{this.app.handleFighterVictory(o,e,n,"Brawo!")}}),this.app.activeMinigame.mount()}launchAnagram(e="b2_node_2",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||2,t=a!=null&&a.words&&a.words.length?a.words.length:4,s=Wa(t*i);this.app.activeMinigame=new gi(o,{player:this.app.player,enemyDamage:n,enemyMaxHp:s,enemyHp:s,tanDamage:i,enemyName:(a==null?void 0:a.enemyName)||"Kałamarnica",opponentAvatar:(a==null?void 0:a.icon)||"./assets/Postacie/mala_kalamarnica.png",words:a==null?void 0:a.words,title:a==null?void 0:a.subtitlePl,onPlayerDamaged:(z=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-z),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:z})=>{this.app.handleFighterVictory(o,e,z,"Zadanie z literami zaliczone!")}}),this.app.activeMinigame.mount()}launchOlekQuiz(e="b2_node_3",a="encounter_1",o=null){const i=this.app.openArena();this.app.activeMinigame=new bi(i,{encounterKey:a,node:o,player:this.app.player,onPlayerDamaged:(n=5)=>{this.app.player.hp=Math.max(0,this.app.player.hp-n),this.app.updateHUD()},onClose:this.createCloseHandler(i),onComplete:({score:n})=>{var s;const t=(s=o==null?void 0:o.titlePl)!=null&&s.includes("Nauczycielka")?"Sprawdzian zaliczony!":"Rozmowa zaliczona!";this.app.handleFighterVictory(i,e,n,t)}}),this.app.activeMinigame.mount()}launchSpinWheel(e="b3_node_2",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||2,t=a!=null&&a.scenarios&&a.scenarios.length?a.scenarios.length:3;this.app.activeMinigame=new ue(o,{player:this.app.player,enemyMaxHp:t*i,tanDamage:i,enemyDamage:n,title:a==null?void 0:a.subtitlePl,scenarios:a==null?void 0:a.scenarios,onPlayerDamaged:(s=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-s),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:s})=>{this.app.handleFighterVictory(o,e,s,"Super obrót kołem!")}}),this.app.activeMinigame.mount()}launchSpellWord(e="b3_node_5"){const a=this.app.openArena();this.app.activeMinigame=new hi(a,{player:this.app.player,enemyDamage:5,onPlayerDamaged:(o=5)=>{this.app.player.hp=Math.max(0,this.app.player.hp-o),this.app.updateHUD()},onClose:this.createCloseHandler(a),onComplete:({score:o})=>{this.app.handleFighterVictory(a,e,o,"Znam już Twoje ID, Olek!")}}),this.app.activeMinigame.mount()}launchMatchUp(e="b4_node_2",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||3,s=(a!=null&&a.items&&a.items.length?a.items.length:6)*i;this.app.activeMinigame=new Ye(o,{player:this.app.player,enemyDamage:n,enemyMaxHp:s,enemyHp:s,tanDamage:i,enemyName:(a==null?void 0:a.enemyName)||"Jeżyk",opponentAvatar:(a==null?void 0:a.icon)||"./assets/Postacie/Jez.png",items:a==null?void 0:a.items,title:a==null?void 0:a.subtitlePl,onPlayerDamaged:(z=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-z),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:z})=>{var p,l,y;const c=(p=a==null?void 0:a.titlePl)!=null&&p.includes("Szkieleton")?"Anatomia opanowana!":(l=a==null?void 0:a.titlePl)!=null&&l.includes("Śpiewaczka")?"Rymy dopasowane bezbłędnie!":(y=a==null?void 0:a.titlePl)!=null&&y.includes("Kraken")?"Kraken pokonany!":"Pary dopasowane idealnie!";this.app.handleFighterVictory(o,e,z,c)}}),this.app.activeMinigame.mount()}launchFindMatch(e="b4_node_5",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||2,t=(a==null?void 0:a.enemyMaxHp)||(a!=null&&a.questions&&a.questions.length?Math.min(16,a.questions.length*i):13);this.app.activeMinigame=new Pi(o,{player:this.app.player,enemyDamage:n,enemyMaxHp:t,enemyHp:t,tanDamage:i,enemyName:(a==null?void 0:a.enemyName)||"Przeciwnik",opponentAvatar:(a==null?void 0:a.icon)||"./assets/Postacie/Szczeniak.png",questions:a==null?void 0:a.questions,title:a==null?void 0:a.subtitlePl,onPlayerDamaged:(s=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-s),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:s})=>{var c,p;const z=(c=a==null?void 0:a.titlePl)!=null&&c.includes("Ptak")?"Intruzi zdemaskowani! Hałas ustał!":(p=a==null?void 0:a.titlePl)!=null&&p.includes("Żaba")?"Baloniki przekłute!":"Szybki jak błyskawica!";this.app.handleFighterVictory(o,e,s,z)}}),this.app.activeMinigame.mount()}launchWordSearch(e="b4_node_7",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||1,t=a!=null&&a.words&&a.words.length?a.words.length:6,s=Wa(t*i),z=(a==null?void 0:a.baseTime)||30;this.app.activeMinigame=new fi(o,{player:this.app.player,enemyDamage:n,enemyMaxHp:s,enemyHp:s,tanDamage:i,enemyName:(a==null?void 0:a.enemyName)||"Zając",opponentAvatar:(a==null?void 0:a.icon)||"./assets/Postacie/Zajac.png",words:a==null?void 0:a.words,title:a==null?void 0:a.subtitlePl,baseTime:z,onPlayerDamaged:(c=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-c),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:c})=>{this.app.handleFighterVictory(o,e,c,"Zając dogoniony! Wykreślanka ukończona!")}}),this.app.activeMinigame.mount()}launchBoard6HedgehogMatchUp(e="b6_node_2"){const a=this.app.openArena(),o=M(this.app.player);this.app.activeMinigame=new Ye(a,{player:this.app.player,enemyMaxHp:He.length*o,enemyHp:He.length*o,enemyDamage:2,tanDamage:o,enemyName:"Jeżyk",opponentAvatar:"./assets/Postacie/Jez.png",spriteClass:"sprite-jez",items:He,onPlayerDamaged:(i=2)=>{this.app.player.hp=Math.max(0,this.app.player.hp-i),this.app.updateHUD()},onClose:this.createCloseHandler(a),onComplete:({score:i})=>{this.app.handleFighterVictory(a,e,i,"Jeżyk pokonany! Świetne dopasowanie!")}}),this.app.activeMinigame.mount()}launchThoughtsOpinion(e="b6_node_3"){this.app.closeModal();const a=this.app.openArena();if(!a)return;let o=0;const i=ja,n=()=>{const t=i[o],s=Math.max(0,Math.min(100,this.app.player.hp/this.app.player.maxHp*100)),z=t.image.startsWith("./")?t.image.slice(1):t.image;a.innerHTML=`
+    `;const n=()=>{d.playStep(),e.classList.add("hidden"),e.innerHTML=""};(t=document.getElementById("credits-btn-title"))==null||t.addEventListener("click",n),(s=document.getElementById("credits-arrow-btn"))==null||s.addEventListener("click",()=>{d.playStep(),a=a===1?2:1,o()})};o()}function Wa(r){return Wi()?Math.max(1,Math.round(r*.75)):r}class Ai{constructor(e){this.app=e}createCloseHandler(e){return({defeated:a}={})=>{if(a||this.app.player&&this.app.player.hp<=0){this.app.handleGameOver();return}b(()=>{this.app.activeMinigame&&(this.app.activeMinigame.destroy(),this.app.activeMinigame=null),e.classList.add("hidden"),S.resumeBoardMusic(this.app.player),this.app.renderBoard(),this.app.updateHUD()})}}launchMatchingPairs(e="node_3",a=null){const o=this.app.openArena(),i=(a==null?void 0:a.enemyDamage)||2;this.app.activeMinigame=new ji(o,{player:this.app.player,enemyName:"kotek",enemyDamage:i,words:a==null?void 0:a.words,title:a==null?void 0:a.subtitlePl,onPlayerDamaged:(n=i)=>{this.app.player.hp=Math.max(0,this.app.player.hp-n),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:n})=>{this.app.handleFighterVictory(o,e,n,"Brawo!")}}),this.app.activeMinigame.mount()}launchAnagram(e="b2_node_2",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||2,t=a!=null&&a.words&&a.words.length?a.words.length:4,s=Wa(t*i);this.app.activeMinigame=new gi(o,{player:this.app.player,enemyDamage:n,enemyMaxHp:s,enemyHp:s,tanDamage:i,enemyName:(a==null?void 0:a.enemyName)||"Kałamarnica",opponentAvatar:(a==null?void 0:a.icon)||"./assets/Postacie/mala_kalamarnica.png",words:a==null?void 0:a.words,title:a==null?void 0:a.subtitlePl,onPlayerDamaged:(z=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-z),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:z})=>{this.app.handleFighterVictory(o,e,z,"Zadanie z literami zaliczone!")}}),this.app.activeMinigame.mount()}launchOlekQuiz(e="b2_node_3",a="encounter_1",o=null){const i=this.app.openArena();this.app.activeMinigame=new bi(i,{encounterKey:a,node:o,player:this.app.player,onPlayerDamaged:(n=5)=>{this.app.player.hp=Math.max(0,this.app.player.hp-n),this.app.updateHUD()},onClose:this.createCloseHandler(i),onComplete:({score:n})=>{var s;const t=(s=o==null?void 0:o.titlePl)!=null&&s.includes("Nauczycielka")?"Sprawdzian zaliczony!":"Rozmowa zaliczona!";this.app.handleFighterVictory(i,e,n,t)}}),this.app.activeMinigame.mount()}launchSpinWheel(e="b3_node_2",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||2,t=a!=null&&a.scenarios&&a.scenarios.length?a.scenarios.length:3;this.app.activeMinigame=new ue(o,{player:this.app.player,enemyMaxHp:t*i,tanDamage:i,enemyDamage:n,title:a==null?void 0:a.subtitlePl,scenarios:a==null?void 0:a.scenarios,onPlayerDamaged:(s=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-s),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:s})=>{this.app.handleFighterVictory(o,e,s,"Super obrót kołem!")}}),this.app.activeMinigame.mount()}launchSpellWord(e="b3_node_5"){const a=this.app.openArena();this.app.activeMinigame=new hi(a,{player:this.app.player,enemyDamage:5,onPlayerDamaged:(o=5)=>{this.app.player.hp=Math.max(0,this.app.player.hp-o),this.app.updateHUD()},onClose:this.createCloseHandler(a),onComplete:({score:o})=>{this.app.handleFighterVictory(a,e,o,"Znam już Twoje ID, Olek!")}}),this.app.activeMinigame.mount()}launchMatchUp(e="b4_node_2",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||3,s=(a!=null&&a.items&&a.items.length?a.items.length:6)*i;this.app.activeMinigame=new Ye(o,{player:this.app.player,enemyDamage:n,enemyMaxHp:s,enemyHp:s,tanDamage:i,enemyName:(a==null?void 0:a.enemyName)||"Jeżyk",opponentAvatar:(a==null?void 0:a.icon)||"./assets/Postacie/Jez.png",items:a==null?void 0:a.items,title:a==null?void 0:a.subtitlePl,onPlayerDamaged:(z=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-z),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:z})=>{var p,l,y;const c=(p=a==null?void 0:a.titlePl)!=null&&p.includes("Szkieleton")?"Anatomia opanowana!":(l=a==null?void 0:a.titlePl)!=null&&l.includes("Śpiewaczka")?"Rymy dopasowane bezbłędnie!":(y=a==null?void 0:a.titlePl)!=null&&y.includes("Kraken")?"Kraken pokonany!":"Pary dopasowane idealnie!";this.app.handleFighterVictory(o,e,z,c)}}),this.app.activeMinigame.mount()}launchFindMatch(e="b4_node_5",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||2,t=(a==null?void 0:a.enemyMaxHp)||(a!=null&&a.questions&&a.questions.length?Math.min(16,a.questions.length*i):13);this.app.activeMinigame=new Pi(o,{player:this.app.player,enemyDamage:n,enemyMaxHp:t,enemyHp:t,tanDamage:i,enemyName:(a==null?void 0:a.enemyName)||"Przeciwnik",opponentAvatar:(a==null?void 0:a.icon)||"./assets/Postacie/Szczeniak.png",questions:a==null?void 0:a.questions,title:a==null?void 0:a.subtitlePl,onPlayerDamaged:(s=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-s),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:s})=>{var c,p;const z=(c=a==null?void 0:a.titlePl)!=null&&c.includes("Ptak")?"Intruzi zdemaskowani! Hałas ustał!":(p=a==null?void 0:a.titlePl)!=null&&p.includes("Żaba")?"Baloniki przekłute!":"Szybki jak błyskawica!";this.app.handleFighterVictory(o,e,s,z)}}),this.app.activeMinigame.mount()}launchWordSearch(e="b4_node_7",a=null){const o=this.app.openArena(),i=M(this.app.player),n=(a==null?void 0:a.enemyDamage)||1,t=a!=null&&a.words&&a.words.length?a.words.length:6,s=Wa(t*i),z=(a==null?void 0:a.baseTime)||30;this.app.activeMinigame=new fi(o,{player:this.app.player,enemyDamage:n,enemyMaxHp:s,enemyHp:s,tanDamage:i,enemyName:(a==null?void 0:a.enemyName)||"Zając",opponentAvatar:(a==null?void 0:a.icon)||"./assets/Postacie/Zajac.png",words:a==null?void 0:a.words,title:a==null?void 0:a.subtitlePl,baseTime:z,onPlayerDamaged:(c=n)=>{this.app.player.hp=Math.max(0,this.app.player.hp-c),this.app.updateHUD()},onClose:this.createCloseHandler(o),onComplete:({score:c})=>{this.app.handleFighterVictory(o,e,c,"Zając dogoniony! Wykreślanka ukończona!")}}),this.app.activeMinigame.mount()}launchBoard6HedgehogMatchUp(e="b6_node_2"){const a=this.app.openArena(),o=M(this.app.player);this.app.activeMinigame=new Ye(a,{player:this.app.player,enemyMaxHp:He.length*o,enemyHp:He.length*o,enemyDamage:2,tanDamage:o,enemyName:"Jeżyk",opponentAvatar:"./assets/Postacie/Jez.png",spriteClass:"sprite-jez",items:He,onPlayerDamaged:(i=2)=>{this.app.player.hp=Math.max(0,this.app.player.hp-i),this.app.updateHUD()},onClose:this.createCloseHandler(a),onComplete:({score:i})=>{this.app.handleFighterVictory(a,e,i,"Jeżyk pokonany! Świetne dopasowanie!")}}),this.app.activeMinigame.mount()}launchThoughtsOpinion(e="b6_node_3"){this.app.closeModal();const a=this.app.openArena();if(!a)return;let o=0;const i=ja,n=()=>{const t=i[o],s=Math.max(0,Math.min(100,this.app.player.hp/this.app.player.maxHp*100)),z=t.image.startsWith("./")?t.image.slice(1):t.image;a.innerHTML=`
         <div class="dd-combat-arena thoughts-arena">
 
           <!-- Prawy górny róg: Myśli -->

@@ -522,7 +522,8 @@ export function openSettingsModal(app, initialView = 'main') {
 }
 
 /**
- * Stylowe okno dialogowe CREDITS (Twórcy i Podziękowania) w stylu Dicey Dungeons
+ * Stylowe okno dialogowe CREDITS w teatralnym stylu Dicey Dungeons
+ * Zgodne ze zrzutem ekranu: łuk sceny z żarówkami, postacie kości, przycisk TITLE oraz strzałka
  */
 export function openCreditsModal(app) {
   sound.playStep();
@@ -530,60 +531,212 @@ export function openCreditsModal(app) {
   if (!modalMount) return;
   modalMount.classList.remove('hidden');
 
-  modalMount.innerHTML = `
-    <div class="dicey-modal-backdrop" id="credits-backdrop" style="position: fixed; inset: 0; background: rgba(3,7,18,0.85); backdrop-filter: blur(6px); z-index: 100005; display: flex; align-items: center; justify-content: center; padding: 16px;">
-      <div style="background: #18181b; border: 3px solid #3f3f46; border-radius: 20px; max-width: 580px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column;">
-        <div style="background: linear-gradient(135deg, #1e3a6a, #2563eb); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155;">
-          <h2 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 1.6rem; color: #ffffff; letter-spacing: 1px;">
-            📜 CREDITS • TWÓRCY GRY
-          </h2>
-          <button id="credits-close-x" style="background: transparent; border: none; font-size: 1.4rem; color: #cbd5e1; cursor: pointer;">✕</button>
-        </div>
+  let creditsPage = 1;
 
-        <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px; font-family: 'Nunito', sans-serif; color: #f1f5f9; max-height: 440px; overflow-y: auto;">
-          <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-            <strong style="color: #ffd166; font-size: 1.1rem; display: block; font-family: 'Fredoka', sans-serif;">Nói Đi! (Mów Śmiało!)</strong>
-            <span style="font-size: 0.88rem; color: #94a3b8;">Edukacyjny roguelike języka polskiego dla dzieci i młodzieży pochodzenia wietnamskiego.</span>
-          </div>
+  const renderCredits = () => {
+    let contentHtml = '';
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
-              <span style="color: #60a5fa; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">🎮 Koncepcja & Mechanika</span>
-              <p style="margin: 4px 0 0; font-weight: 700;">Inspirowana mechanikami gry Dicey Dungeons (Terry Cavanagh & Marlowe Dobbe).</p>
+    if (creditsPage === 1) {
+      contentHtml = `
+        <h1 class="credits-main-title">CREATED BY</h1>
+
+        <div class="credits-grid-layout">
+          <!-- Kolumna 1 -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <!-- 1. Design: Terry Cavanagh -->
+            <div class="credits-person-card">
+              <img src="./assets/Warrior.png" alt="Warrior" class="credits-dice-sprite" onerror="this.src='/assets/Warrior.png'" />
+              <div>
+                <div class="credits-role-tag">DESIGN</div>
+                <div class="credits-name-tag">Terry Cavanagh</div>
+              </div>
             </div>
 
-            <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
-              <span style="color: #34d399; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">🎵 Muzyka & Ścieżka dźwiękowa</span>
-              <p style="margin: 4px 0 0; font-weight: 700;">Chipzel (oryginalne utwory retro chiptune).</p>
+            <!-- 2. Art and Animation: Marlowe Dobbe -->
+            <div class="credits-person-card">
+              <img src="./assets/Inventor.png" alt="Inventor" class="credits-dice-sprite" onerror="this.src='/assets/Inventor.png'" />
+              <div>
+                <div class="credits-role-tag">ART AND ANIMATION</div>
+                <div class="credits-name-tag">Marlowe Dobbe</div>
+              </div>
+            </div>
+
+            <!-- 3. PR and Marketing: Dana Trebella -->
+            <div class="credits-person-card">
+              <img src="./assets/Witch.png" alt="Witch" class="credits-dice-sprite" onerror="this.src='/assets/Witch.png'" />
+              <div>
+                <div class="credits-role-tag">PR AND MARKETING</div>
+                <div class="credits-name-tag">Dana Trebella</div>
+              </div>
             </div>
           </div>
 
-          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
-            <span style="color: #f472b6; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">📚 Opracowanie Dydaktyczne</span>
-            <p style="margin: 4px 0 0; font-size: 0.9rem;">
-              Program lektur, gramatyki, ortografii, komunikacji szkolnej i słownictwa polsko-wietnamskiego przygotowany zgodnie z podstawą programową CKE klas 4–8.
-            </p>
+          <!-- Kolumna 2 -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <!-- 4. Music and Sound Design: Chipzel -->
+            <div class="credits-person-card">
+              <img src="./assets/Jester.png" alt="Chipzel" class="credits-dice-sprite" style="filter: brightness(0);" onerror="this.src='/assets/Jester.png'" />
+              <div>
+                <div class="credits-role-tag">MUSIC AND SOUND DESIGN</div>
+                <div class="credits-name-tag">Niamh Houston / Chipzel</div>
+              </div>
+            </div>
+
+            <!-- 5. Programming: Justo Delgado Baudí -->
+            <div class="credits-person-card">
+              <img src="./assets/Thief.png" alt="Thief" class="credits-dice-sprite" onerror="this.src='/assets/Thief.png'" />
+              <div>
+                <div class="credits-role-tag">PROGRAMMING</div>
+                <div class="credits-name-tag">Justo Delgado Baudí</div>
+              </div>
+            </div>
+
+            <!-- 6. Writing: Holly Gramazio -->
+            <div class="credits-person-card">
+              <img src="./assets/Robot.png" alt="Robot" class="credits-dice-sprite" onerror="this.src='/assets/Robot.png'" />
+              <div>
+                <div class="credits-role-tag">WRITING</div>
+                <div class="credits-name-tag">Holly Gramazio</div>
+              </div>
+            </div>
           </div>
         </div>
+      `;
+    } else {
+      contentHtml = `
+        <h1 class="credits-main-title" style="color: #ffd166;">NÓI ĐI! PROJECT</h1>
 
-        <div style="padding: 14px 24px; border-top: 1px solid #27272a; display: flex; justify-content: flex-end; background: #0f172a;">
-          <button id="credits-ok-btn" style="padding: 9px 26px; border-radius: 10px; border: none; background: #2563eb; color: white; font-family: 'Fredoka', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer;">
-            ZAMKNIJ
-          </button>
+        <div class="credits-grid-layout">
+          <!-- Kolumna 1 -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <div class="credits-person-card">
+              <img src="./assets/Kotek_Pomoc.png" alt="Kotek" class="credits-dice-sprite" onerror="this.src='/assets/Kotek_Pomoc.png'" />
+              <div>
+                <div class="credits-role-tag">EDUKACJA & ROGUELIKE</div>
+                <div class="credits-name-tag">Projekt Nói Đi! (Mów Śmiało!)</div>
+              </div>
+            </div>
+
+            <div class="credits-person-card">
+              <img src="./assets/itemki/zeszyt.png" alt="Zeszyt" class="credits-dice-sprite" />
+              <div>
+                <div class="credits-role-tag">PROGRAM DYDAKTYCZNY</div>
+                <div class="credits-name-tag">Podstawa Programowa CKE Klasy 4–8</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kolumna 2 -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            <div class="credits-person-card">
+              <img src="./assets/itemki/kebab.png" alt="Kebab" class="credits-dice-sprite" />
+              <div>
+                <div class="credits-role-tag">KULTURA I SŁOWNICTWO</div>
+                <div class="credits-name-tag">Konsultacje Językowe Polsko-Wietnamskie</div>
+              </div>
+            </div>
+
+            <div class="credits-person-card">
+              <img src="./assets/itemki/sluchawki_gamingowe.png" alt="Słuchawki" class="credits-dice-sprite" />
+              <div>
+                <div class="credits-role-tag">GŁOSY I LEKTORZY</div>
+                <div class="credits-name-tag">Synteza Mowy PL + Odgłosy Bohaterów</div>
+              </div>
+            </div>
+          </div>
         </div>
+      `;
+    }
+
+    modalMount.innerHTML = `
+      <div class="credits-theatrical-screen" id="credits-backdrop">
+        <!-- SVG Tła Sceny Teatralnej z żarówkami w stylu Dicey Dungeons -->
+        <svg class="credits-stage-backdrop-svg" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="stageGlow" cx="50%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#841f26" />
+              <stop offset="45%" stop-color="#5a1217" />
+              <stop offset="85%" stop-color="#3b080c" />
+              <stop offset="100%" stop-color="#240407" />
+            </radialGradient>
+            <filter id="bulbGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Tło i łuki sceny -->
+          <rect width="1280" height="720" fill="url(#stageGlow)" />
+
+          <!-- Koncentryczne łuki kurtyny -->
+          <ellipse cx="640" cy="280" rx="580" ry="360" fill="none" stroke="#480f14" stroke-width="60" />
+          <ellipse cx="640" cy="280" rx="460" ry="290" fill="none" stroke="#63161c" stroke-width="50" />
+          <ellipse cx="640" cy="280" rx="360" ry="230" fill="none" stroke="#781d23" stroke-width="40" />
+
+          <!-- Reflektory sceniczne w narożnikach -->
+          <path d="M 40 -20 L 120 70 L 60 110 L -20 20 Z" fill="#2d0508" opacity="0.8" />
+          <path d="M 1240 -20 L 1160 70 L 1220 110 L 1300 20 Z" fill="#2d0508" opacity="0.8" />
+
+          <!-- Łuk z żarówkami teatralnymi -->
+          <g filter="url(#bulbGlow)">
+            <circle cx="80" cy="540" r="15" fill="#fef3c7" />
+            <circle cx="95" cy="420" r="15" fill="#e2ded2" />
+            <circle cx="125" cy="310" r="15" fill="#fde047" />
+            <circle cx="175" cy="210" r="15" fill="#e2ded2" />
+            <circle cx="255" cy="130" r="15" fill="#fef3c7" />
+            <circle cx="360" cy="70" r="15" fill="#fde047" />
+            <circle cx="485" cy="35" r="15" fill="#e2ded2" />
+            <circle cx="640" cy="22" r="16" fill="#fef3c7" />
+            <circle cx="795" cy="35" r="15" fill="#fde047" />
+            <circle cx="920" cy="70" r="15" fill="#e2ded2" />
+            <circle cx="1025" cy="130" r="15" fill="#fef3c7" />
+            <circle cx="1105" cy="210" r="15" fill="#fde047" />
+            <circle cx="1155" cy="310" r="15" fill="#e2ded2" />
+            <circle cx="1185" cy="420" r="15" fill="#fef3c7" />
+            <circle cx="1200" cy="540" r="15" fill="#fde047" />
+          </g>
+
+          <!-- Deski sceny / podłoga -->
+          <rect y="580" width="1280" height="140" fill="#300609" />
+          <line x1="0" y1="580" x2="1280" y2="580" stroke="#5a1217" stroke-width="4" />
+        </svg>
+
+        <!-- Przycisk TITLE w lewym górnym rogu -->
+        <button class="credits-top-title-btn" id="credits-btn-title">
+          TITLE
+        </button>
+
+        <!-- Warstwa treści z postaciami i autorami -->
+        <div class="credits-content-layer">
+          ${contentHtml}
+        </div>
+
+        <!-- Strzałka nawigacji w prawym dolnym rogu -->
+        <button class="credits-arrow-btn" id="credits-arrow-btn" title="Kolejna strona">
+          ${creditsPage === 1 ? '➔' : '⬅'}
+        </button>
       </div>
-    </div>
-  `;
+    `;
 
-  const closeCredits = () => {
-    sound.playStep();
-    modalMount.classList.add('hidden');
-    modalMount.innerHTML = '';
+    // Obsługa zdarzeń
+    const closeCredits = () => {
+      sound.playStep();
+      modalMount.classList.add('hidden');
+      modalMount.innerHTML = '';
+    };
+
+    document.getElementById('credits-btn-title')?.addEventListener('click', closeCredits);
+
+    document.getElementById('credits-arrow-btn')?.addEventListener('click', () => {
+      sound.playStep();
+      creditsPage = creditsPage === 1 ? 2 : 1;
+      renderCredits();
+    });
   };
 
-  document.getElementById('credits-close-x')?.addEventListener('click', closeCredits);
-  document.getElementById('credits-ok-btn')?.addEventListener('click', closeCredits);
-  document.getElementById('credits-backdrop')?.addEventListener('click', (e) => {
-    if (e.target.id === 'credits-backdrop') closeCredits();
-  });
+  renderCredits();
 }
+
