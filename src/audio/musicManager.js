@@ -71,6 +71,15 @@ class MusicManager {
     return this.volume;
   }
 
+  // Wyciszenie muzyki tła w trybie menu pauzy (Esc) i przywrócenie normalnej głośności po wyjściu
+  setEscDucking(isDucked) {
+    this.isEscDucked = Boolean(isDucked);
+    if (this.muted || !this.currentTrack) return;
+    try {
+      this.currentTrack.volume = this.isEscDucked ? Math.max(0.04, this.volume * 0.25) : this.volume;
+    } catch (e) {}
+  }
+
   // Krótkie ściszenie muzyki tła (ducking) podczas zadawania/otrzymywania ciosu, aby efekty uderzeń były wyraźnie słyszalne
   duck(durationMs = 650) {
     if (this.muted || !this.currentTrack || this.currentTrack.paused) return;

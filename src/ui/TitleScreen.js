@@ -6,7 +6,7 @@ import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
 import { playJaggedCurtainWipe } from './victoryScreen.js';
 import { openCharacterSelectModal } from './CharacterSelectModal.js';
-import { openSettingsModal } from './SettingsModal.js';
+import { openSettingsModal, openCreditsModal } from './SettingsModal.js';
 
 export class TitleScreen {
   constructor(app) {
@@ -47,17 +47,22 @@ export class TitleScreen {
         alt="Noi Di Start"
       />
 
+      <!-- Wskaźnik / przycisk ustawień (Esc) w stylu Dicey Dungeons w lewym górnym rogu -->
+      <button class="title-esc-settings-hint" id="title-esc-btn" title="Naciśnij Esc lub kliknij, aby otworzyć Ustawienia">
+        (Esc) Settings
+      </button>
+
       <div class="title-screen-backdrop">
-        <!-- Prawy dolny obszar w stylu Dicey Dungeons: 2 przyciski -->
+        <!-- Prawy dolny obszar w stylu Dicey Dungeons: ROZPOCZNIJ GRĘ oraz CREDITS -->
         <div class="title-actions-cluster">
           <button class="dd-title-btn btn-title-play" id="title-btn-play">
             <span class="dd-title-btn-icon">▶</span>
             <span class="dd-title-btn-text">ROZPOCZNIJ GRĘ</span>
           </button>
 
-          <button class="dd-title-btn btn-title-editor" id="title-btn-editor">
-            <span class="dd-title-btn-icon">⚙️</span>
-            <span class="dd-title-btn-text">USTAWIENIA</span>
+          <button class="dd-title-btn btn-title-credits" id="title-btn-credits">
+            <span class="dd-title-btn-icon">📜</span>
+            <span class="dd-title-btn-text">CREDITS</span>
           </button>
         </div>
       </div>
@@ -93,12 +98,23 @@ export class TitleScreen {
       });
     }
 
-    const editorBtn = document.getElementById('title-btn-editor');
-    if (editorBtn) {
-      editorBtn.addEventListener('click', (e) => {
+    // Przycisk (Esc) Settings w lewym górnym rogu
+    const escBtn = document.getElementById('title-esc-btn');
+    if (escBtn) {
+      escBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         sound.playStep();
         openSettingsModal(this.app);
+      });
+    }
+
+    // Przycisk CREDITS w prawym dolnym rogu
+    const creditsBtn = document.getElementById('title-btn-credits');
+    if (creditsBtn) {
+      creditsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sound.playStep();
+        openCreditsModal(this.app);
       });
     }
 

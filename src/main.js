@@ -43,6 +43,7 @@ import {
 import { openCharacterSelectModal, selectHero } from './ui/CharacterSelectModal.js';
 import { episodeManager } from './data/episodeManager.js';
 import { TitleScreen } from './ui/TitleScreen.js';
+import { openSettingsModal } from './ui/SettingsModal.js';
 
 class NoiDiGameApp {
   constructor() {
@@ -369,9 +370,15 @@ class NoiDiGameApp {
       if (e.key === 'Escape') {
         const modalMount = document.getElementById('modal-mount');
         if (modalMount && !modalMount.classList.contains('hidden')) {
+          if (modalMount.querySelector('.esc-menu-backdrop')) {
+            return;
+          }
           this.closeModal();
           return;
         }
+
+        // Naciśnięcie Esc otwiera menu pauzy / opcji w stylu Dicey Dungeons
+        openSettingsModal(this);
       }
 
       if (e.key === ' ' || e.key === 'Enter') {

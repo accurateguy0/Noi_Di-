@@ -9898,6 +9898,122 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   cursor: not-allowed;
 }
 
+/* ==========================================================================
+   ESC MENU & SETTINGS (DICEY DUNGEONS STYLE)
+   ========================================================================== */
+.title-esc-settings-hint {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  color: #cbd5e1;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 50;
+  padding: 6px 12px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  transition: all 0.15s ease;
+}
+
+.title-esc-settings-hint:hover {
+  color: #ffffff;
+  background: rgba(37, 99, 235, 0.6);
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.esc-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 7, 16, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 100005;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: ddModalPopIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.esc-menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 90%;
+  max-width: 440px;
+}
+
+.esc-menu-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+}
+
+.btn-dd-block {
+  width: 280px;
+  height: 52px;
+  background: #738290;
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  border: 3px solid #334155;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #283344, 0 10px 20px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.08s ease, filter 0.1s ease, box-shadow 0.08s ease;
+}
+
+.btn-dd-block:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #283344, 0 12px 24px rgba(0, 0, 0, 0.55);
+}
+
+.btn-dd-block:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #283344;
+}
+
+.btn-dd-block.btn-danger-red {
+  background: #b91c1c;
+  border-color: #450a0a;
+  box-shadow: 0 5px 0 #450a0a, 0 10px 20px rgba(0, 0, 0, 0.45);
+}
+
+.btn-dd-block.btn-danger-red:hover {
+  background: #dc2626;
+  box-shadow: 0 7px 0 #450a0a, 0 12px 24px rgba(0, 0, 0, 0.55);
+}
+
+.btn-dd-block.btn-danger-red:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #450a0a;
+}
+
+.btn-dd-block.is-active-dashed {
+  border: 2.5px dashed #ffffff;
+  background: #1e293b;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.4);
+}
+
+
 
 
 

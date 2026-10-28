@@ -1,11 +1,41 @@
-// Modal Ustawień w stylu Dicey Dungeons (Głośność, SFX, Reset postępów)
+// Menu Pauzy i Ustawień (Esc) w stylu Dicey Dungeons
+// 1. Główne menu Esc: KONTYNUUJ, OPCJE, EDYTUJ PROGRES
+// 2. Podmenu OPCJE: WYŚWIETL, DŹWIĘK, GRA, ZAMKNIJ OPCJE
+// 3. Widok WYŚWIETL: PEŁNY EKRAN, W OKNIE, Wyłącz efekty ekranowe, Wyłącz shadery, Animacja walki
+// 4. Wyciszanie muzyki (ducking) podczas aktywnego trybu Esc
 
 import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
 import { episodeManager } from '../data/episodeManager.js';
 
-export function openSettingsModal(app) {
+let activeSettingsState = {
+  view: 'main', // 'main' | 'options' | 'display' | 'sound' | 'gameplay' | 'edit_progress'
+  disableScreenEffects: false,
+  disableShaders: false,
+  combatSpeed: 'very_fast', // 'normal' | 'fast' | 'very_fast'
+  boloHints: true,
+  skipIntro: false
+};
+
+// Wczytaj zapamiętane preferencje wyświetlania
+try {
+  const savedOpts = localStorage.getItem('noidi_game_options');
+  if (savedOpts) {
+    activeSettingsState = { ...activeSettingsState, ...JSON.parse(savedOpts) };
+  }
+} catch (e) {}
+
+function savePreferences() {
+  try {
+    localStorage.setItem('noidi_game_options', JSON.stringify(activeSettingsState));
+  } catch (e) {}
+}
+
+export function openSettingsModal(app, initialView = 'main') {
   sound.playStep();
+
+  // Wyciszenie muzyki tła w trybie Esc (ducking do 25%)
+  musicManager.setEscDucking(true);
 
   let modalMount = document.getElementById('modal-mount');
   if (!modalMount) {
@@ -15,382 +45,503 @@ export function openSettingsModal(app) {
   }
   modalMount.classList.remove('hidden');
 
-  const bgmVol = Math.round(musicManager.getVolume() * 100);
-  const sfxVol = Math.round((sound.getSfxVolume ? sound.getSfxVolume() : 0.9) * 100);
-  const isMuted = sound.isMuted();
+  let currentView = initialView;
+  let keyHandler = null;
 
-  modalMount.innerHTML = `
-    <div
-      class="dicey-modal-backdrop"
-      id="settings-backdrop"
-      style="
-        z-index: 100005;
-        position: fixed;
-        inset: 0;
-        background: rgba(3, 7, 18, 0.78);
-        backdrop-filter: blur(6px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-      "
-    >
-      <div
-        class="dd-modal-window dd-settings-window"
-        style="
-          max-width: 520px;
-          width: 100%;
-          background: #0f172a;
-          border: 2px solid #334155;
-          border-radius: 20px;
-          box-shadow: 0 24px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(37, 99, 235, 0.18);
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          animation: ddModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-        "
-      >
-        <!-- Nagłówek okna -->
-        <div
-          style="
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            padding: 20px 24px 16px;
-            background: linear-gradient(135deg, #1e3a6a 0%, #172554 100%);
-            border-bottom: 2px solid #1e293b;
-          "
-        >
-          <div>
-            <span
-              style="
-                display: inline-block;
-                padding: 3px 10px;
-                background: rgba(59, 130, 246, 0.25);
-                border: 1px solid #3b82f6;
-                border-radius: 999px;
-                font-size: 0.72rem;
-                font-weight: 800;
-                color: #93c5fd;
-                letter-spacing: 1px;
-                text-transform: uppercase;
-                margin-bottom: 6px;
-              "
-            >
-              OPCJE I DŹWIĘK
-            </span>
-            <h2
-              style="
-                margin: 0;
-                font-family: 'Fredoka', 'Nunito', sans-serif;
-                font-size: 1.55rem;
-                font-weight: 800;
-                color: #ffffff;
-                letter-spacing: 0.5px;
-              "
-            >
-              USTAWIENIA GRY
-            </h2>
-            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #cbd5e1;">
-              Dostosuj głośność muzyki i efektów dźwiękowych.
-            </p>
-          </div>
-          <button
-            id="settings-close-btn"
-            title="Zamknij"
-            style="
-              width: 36px;
-              height: 36px;
-              border-radius: 10px;
-              background: rgba(255, 255, 255, 0.08);
-              border: 1px solid rgba(255, 255, 255, 0.18);
-              color: #cbd5e1;
-              font-size: 1.25rem;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-              transition: all 0.15s ease;
-              flex-shrink: 0;
-              margin-left: 12px;
-            "
-            onmouseover="this.style.background='#ef4444'; this.style.borderColor='#ef4444'; this.style.color='#fff';"
-            onmouseout="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(255, 255, 255, 0.18)'; this.style.color='#cbd5e1';"
-          >
-            ✕
+  const closeModal = () => {
+    sound.playStep();
+    if (keyHandler) window.removeEventListener('keydown', keyHandler);
+    // Przywrócenie normalnej głośności po zamknięciu Esc
+    musicManager.setEscDucking(false);
+    modalMount.classList.add('hidden');
+    modalMount.innerHTML = '';
+  };
+
+  keyHandler = (e) => {
+    if (e.key === 'Escape') {
+      if (currentView === 'main') {
+        closeModal();
+      } else if (currentView === 'options') {
+        currentView = 'main';
+        render();
+      } else {
+        currentView = 'options';
+        render();
+      }
+    }
+  };
+  window.addEventListener('keydown', keyHandler);
+
+  const render = () => {
+    const isFullscreen = Boolean(document.fullscreenElement);
+    const bgmVol = Math.round(musicManager.getVolume() * 100);
+    const sfxVol = Math.round((sound.getSfxVolume ? sound.getSfxVolume() : 0.9) * 100);
+    const isMuted = sound.isMuted();
+
+    let contentHtml = '';
+
+    // ==========================================
+    // 1. GŁÓWNE MENU ESC (Obrazek 1)
+    // 3 przyciski: KONTYNUUJ, OPCJE, EDYTUJ PROGRES
+    // ==========================================
+    if (currentView === 'main') {
+      contentHtml = `
+        <div class="esc-menu-container">
+          <button class="btn-dd-block" id="esc-btn-continue" title="Wróć do gry">
+            KONTYNUUJ
+          </button>
+
+          <button class="btn-dd-block" id="esc-btn-options" title="Przejdź do opcji gry">
+            OPCJE
+          </button>
+
+          <button class="btn-dd-block btn-danger-red" id="esc-btn-edit-progress" title="Edytuj i zresetuj postęp">
+            EDYTUJ PROGRES
           </button>
         </div>
+      `;
+    }
 
-        <!-- Zawartość / Opcje -->
-        <div style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px;">
-          <!-- 1. Głośność Muzyki (BGM) -->
-          <div
-            style="
-              background: #1e293b;
-              padding: 14px 18px;
-              border-radius: 14px;
-              border: 1.5px solid #334155;
-              display: flex;
-              flex-direction: column;
-              gap: 10px;
-            "
-          >
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label for="bgm-slider" style="color: #f8fafc; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                <span>🎵</span> Głośność Muzyki (BGM)
-              </label>
-              <span
-                id="bgm-val-label"
-                style="
-                  background: rgba(59, 130, 246, 0.2);
-                  border: 1px solid rgba(59, 130, 246, 0.4);
-                  color: #60a5fa;
-                  font-weight: 800;
-                  font-size: 0.9rem;
-                  padding: 2px 10px;
-                  border-radius: 12px;
-                "
-              >
-                ${bgmVol}%
-              </span>
-            </div>
-            <input
-              type="range"
-              id="bgm-slider"
-              min="0"
-              max="100"
-              value="${bgmVol}"
-              style="width: 100%; height: 8px; border-radius: 6px; accent-color: #3b82f6; cursor: pointer;"
-            />
-          </div>
+    // ==========================================
+    // 2. PODMENU OPCJE (Obrazek 2)
+    // Tytuł: SETTINGS
+    // Przyciski: WYŚWIETL, DŹWIĘK, GRA, ZAMKNIJ OPCJE
+    // ==========================================
+    else if (currentView === 'options') {
+      contentHtml = `
+        <div class="esc-menu-container">
+          <h2 class="esc-menu-title">SETTINGS</h2>
 
-          <!-- 2. Głośność Efektów Dźwiękowych (SFX) -->
-          <div
-            style="
-              background: #1e293b;
-              padding: 14px 18px;
-              border-radius: 14px;
-              border: 1.5px solid #334155;
-              display: flex;
-              flex-direction: column;
-              gap: 10px;
-            "
-          >
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label for="sfx-slider" style="color: #f8fafc; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                <span>🔊</span> Głośność Dźwięków (SFX)
-              </label>
-              <span
-                id="sfx-val-label"
-                style="
-                  background: rgba(16, 185, 129, 0.2);
-                  border: 1px solid rgba(16, 185, 129, 0.4);
-                  color: #34d399;
-                  font-weight: 800;
-                  font-size: 0.9rem;
-                  padding: 2px 10px;
-                  border-radius: 12px;
-                "
-              >
-                ${sfxVol}%
-              </span>
-            </div>
-            <input
-              type="range"
-              id="sfx-slider"
-              min="0"
-              max="100"
-              value="${sfxVol}"
-              style="width: 100%; height: 8px; border-radius: 6px; accent-color: #10b981; cursor: pointer;"
-            />
-          </div>
+          <button class="btn-dd-block" id="options-btn-display">
+            WYŚWIETL
+          </button>
 
-          <!-- 3. Przełącznik Wyciszenia -->
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              background: #1e293b;
-              padding: 14px 18px;
-              border-radius: 14px;
-              border: 1.5px solid #334155;
-              gap: 16px;
-            "
-          >
-            <div>
-              <strong style="color: #f8fafc; display: block; font-size: 0.95rem;">Wyciszenie dźwięków</strong>
-              <span style="color: #94a3b8; font-size: 0.8rem;">Włącz lub całkowicie wycisz dźwięk w grze</span>
-            </div>
+          <button class="btn-dd-block" id="options-btn-sound">
+            DŹWIĘK
+          </button>
+
+          <button class="btn-dd-block" id="options-btn-gameplay">
+            GRA
+          </button>
+
+          <button class="btn-dd-block" id="options-btn-close" style="margin-top: 14px;">
+            ZAMKNIJ OPCJE
+          </button>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 3. WIDOK: WYŚWIETL (Obrazek 3)
+    // Tytuł: DISPLAY
+    // FULLSCREEN / WINDOWED, checkboxy, suwak animacji, BACK
+    // ==========================================
+    else if (currentView === 'display') {
+      contentHtml = `
+        <div class="esc-menu-container" style="max-width: 480px;">
+          <h2 class="esc-menu-title">DISPLAY</h2>
+
+          <!-- Przełącznik Fullscreen / Windowed -->
+          <div style="display: flex; gap: 12px; margin-bottom: 6px;">
             <button
-              id="settings-mute-toggle"
-              style="
-                padding: 9px 18px;
-                border-radius: 10px;
-                border: none;
-                font-family: 'Fredoka', 'Nunito', sans-serif;
-                font-weight: 800;
-                cursor: pointer;
-                background: ${isMuted ? '#ef4444' : '#10b981'};
-                color: white;
-                font-size: 0.88rem;
-                letter-spacing: 0.5px;
-                box-shadow: 0 4px 12px ${isMuted ? 'rgba(239, 68, 68, 0.35)' : 'rgba(16, 185, 129, 0.35)'};
-                white-space: nowrap;
-                transition: transform 0.1s ease, filter 0.15s ease;
-              "
-              onmouseover="this.style.filter='brightness(1.1)';"
-              onmouseout="this.style.filter='brightness(1)';"
+              class="btn-dd-block ${isFullscreen ? 'is-active-dashed' : ''}"
+              id="disp-btn-fullscreen"
+              style="width: 140px; height: 44px; font-size: 1.05rem;"
             >
-              ${isMuted ? '🔇 WYCISZONY' : '🔊 WŁĄCZONY'}
+              PEŁNY EKRAN
+            </button>
+            <button
+              class="btn-dd-block ${!isFullscreen ? 'is-active-dashed' : ''}"
+              id="disp-btn-windowed"
+              style="width: 140px; height: 44px; font-size: 1.05rem;"
+            >
+              W OKNIE
             </button>
           </div>
 
-          <!-- 4. Reset postępów -->
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              background: #1e293b;
-              padding: 14px 18px;
-              border-radius: 14px;
-              border: 1.5px solid #334155;
-              gap: 16px;
-            "
-          >
-            <div>
-              <strong style="color: #f8fafc; display: block; font-size: 0.95rem;">Zresetuj postępy gry</strong>
-              <span style="color: #94a3b8; font-size: 0.8rem;">Rozpocznij od nowa (zostawia tylko Epizod 1)</span>
+          <!-- Skala ekranu X1 -->
+          <div style="background: rgba(255,255,255,0.1); padding: 4px 14px; border-radius: 6px; font-family: 'Fredoka', sans-serif; font-weight: 800; color: #ffffff; font-size: 0.95rem; margin-bottom: 6px;">
+            X1
+          </div>
+
+          <!-- Checkboxy retro -->
+          <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 320px; margin: 4px 0;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #ffffff; font-family: 'Fredoka', sans-serif; font-size: 1.05rem;">
+              <input
+                type="checkbox"
+                id="chk-disable-effects"
+                ${activeSettingsState.disableScreenEffects ? 'checked' : ''}
+                style="width: 20px; height: 20px; accent-color: #3b82f6; cursor: pointer;"
+              />
+              <span>Wyłącz efekty ekranowe</span>
+            </label>
+
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #ffffff; font-family: 'Fredoka', sans-serif; font-size: 1.05rem;">
+              <input
+                type="checkbox"
+                id="chk-disable-shaders"
+                ${activeSettingsState.disableShaders ? 'checked' : ''}
+                style="width: 20px; height: 20px; accent-color: #3b82f6; cursor: pointer;"
+              />
+              <span>Wyłącz shadery</span>
+            </label>
+          </div>
+
+          <!-- Suwak szybkości animacji walki -->
+          <div style="width: 100%; max-width: 320px; margin: 8px 0; text-align: center;">
+            <input
+              type="range"
+              id="slider-combat-speed"
+              min="1"
+              max="3"
+              step="1"
+              value="${activeSettingsState.combatSpeed === 'normal' ? 1 : activeSettingsState.combatSpeed === 'fast' ? 2 : 3}"
+              style="width: 100%; height: 8px; border-radius: 4px; accent-color: #cbd5e1; cursor: pointer;"
+            />
+            <div style="color: #ffffff; font-family: 'Fredoka', sans-serif; font-size: 1rem; margin-top: 6px;">
+              Animacja walki: <b style="color: #ffd166;">${activeSettingsState.combatSpeed === 'normal' ? 'Normalna' : activeSettingsState.combatSpeed === 'fast' ? 'Szybka' : 'Bardzo Szybka'}</b>
             </div>
+          </div>
+
+          <!-- Przycisk BACK -->
+          <button class="btn-dd-block" id="disp-btn-back" style="margin-top: 14px;">
+            BACK
+          </button>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 4. WIDOK: DŹWIĘK (SOUND)
+    // Suwaki BGM, SFX, wyciszenie, BACK
+    // ==========================================
+    else if (currentView === 'sound') {
+      contentHtml = `
+        <div class="esc-menu-container" style="max-width: 440px;">
+          <h2 class="esc-menu-title">SOUND</h2>
+
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 14px; background: rgba(15,23,42,0.6); padding: 18px; border-radius: 14px; border: 2px solid #334155;">
+            <!-- Suwak BGM -->
+            <div>
+              <div style="display: flex; justify-content: space-between; color: white; font-family: 'Fredoka', sans-serif; font-size: 1rem; margin-bottom: 4px;">
+                <span>🎵 Muzyka (BGM)</span>
+                <span id="bgm-label" style="color: #60a5fa; font-weight: 800;">${bgmVol}%</span>
+              </div>
+              <input
+                type="range"
+                id="bgm-range"
+                min="0"
+                max="100"
+                value="${bgmVol}"
+                style="width: 100%; height: 8px; accent-color: #3b82f6; cursor: pointer;"
+              />
+            </div>
+
+            <!-- Suwak SFX -->
+            <div>
+              <div style="display: flex; justify-content: space-between; color: white; font-family: 'Fredoka', sans-serif; font-size: 1rem; margin-bottom: 4px;">
+                <span>🔊 Dźwięki (SFX)</span>
+                <span id="sfx-label" style="color: #34d399; font-weight: 800;">${sfxVol}%</span>
+              </div>
+              <input
+                type="range"
+                id="sfx-range"
+                min="0"
+                max="100"
+                value="${sfxVol}"
+                style="width: 100%; height: 8px; accent-color: #10b981; cursor: pointer;"
+              />
+            </div>
+
+            <!-- Przełącznik wyciszenia -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);">
+              <span style="color: white; font-family: 'Fredoka', sans-serif;">Status dźwięku:</span>
+              <button
+                id="btn-toggle-mute"
+                style="padding: 6px 16px; border-radius: 8px; border: none; font-family: 'Fredoka', sans-serif; font-weight: 800; color: white; background: ${isMuted ? '#ef4444' : '#10b981'}; cursor: pointer;"
+              >
+                ${isMuted ? 'WYCISZONY' : 'WŁĄCZONY'}
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-dd-block" id="sound-btn-back" style="margin-top: 14px;">
+            BACK
+          </button>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 5. WIDOK: GRA (GAMEPLAY)
+    // Opcje podpowiedzi i ułatwień
+    // ==========================================
+    else if (currentView === 'gameplay') {
+      contentHtml = `
+        <div class="esc-menu-container" style="max-width: 440px;">
+          <h2 class="esc-menu-title">GAMEPLAY</h2>
+
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 14px; background: rgba(15,23,42,0.6); padding: 18px; border-radius: 14px; border: 2px solid #334155;">
+            <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: white; font-family: 'Fredoka', sans-serif;">
+              <span>Podpowiedzi Kotka Bolo</span>
+              <input
+                type="checkbox"
+                id="chk-bolo-hints"
+                ${activeSettingsState.boloHints ? 'checked' : ''}
+                style="width: 22px; height: 22px; accent-color: #10b981; cursor: pointer;"
+              />
+            </label>
+
+            <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: white; font-family: 'Fredoka', sans-serif;">
+              <span>Pomiń animacje wprowadzające</span>
+              <input
+                type="checkbox"
+                id="chk-skip-intro"
+                ${activeSettingsState.skipIntro ? 'checked' : ''}
+                style="width: 22px; height: 22px; accent-color: #3b82f6; cursor: pointer;"
+              />
+            </label>
+          </div>
+
+          <button class="btn-dd-block" id="gameplay-btn-back" style="margin-top: 14px;">
+            BACK
+          </button>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 6. WIDOK: EDYTUJ PROGRES (EDIT PROGRESS)
+    // ==========================================
+    else if (currentView === 'edit_progress') {
+      contentHtml = `
+        <div class="esc-menu-container" style="max-width: 440px;">
+          <h2 class="esc-menu-title" style="color: #ef4444;">EDIT PROGRESS</h2>
+
+          <div style="background: rgba(15,23,42,0.7); padding: 18px; border-radius: 14px; border: 2px solid #ef4444; color: #f8fafc; text-align: center; font-family: 'Nunito', sans-serif; font-size: 0.95rem; line-height: 1.5; margin-bottom: 10px;">
+            <p style="margin: 0 0 10px;">
+              Możesz zresetować postępy wszystkich postaci, aby rozpocząć grę od początku od <b>Epizodu 1</b>.
+            </p>
             <button
-              id="settings-reset-episodes-btn"
-              style="
-                padding: 9px 18px;
-                border-radius: 10px;
-                border: none;
-                font-family: 'Fredoka', 'Nunito', sans-serif;
-                font-weight: 800;
-                cursor: pointer;
-                background: #dc2626;
-                color: white;
-                font-size: 0.88rem;
-                letter-spacing: 0.5px;
-                white-space: nowrap;
-                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-                transition: transform 0.1s ease, filter 0.15s ease;
-              "
-              title="Resetuje postępy epizodów (zostawia tylko Epizod 1)"
-              onmouseover="this.style.filter='brightness(1.15)';"
-              onmouseout="this.style.filter='brightness(1)';"
+              class="btn-dd-block btn-danger-red"
+              id="btn-confirm-reset"
+              style="width: 100%; font-size: 1.1rem; height: 48px;"
             >
-              RESETUJ POSTĘP
+              🗑️ ZRESETUJ POSTĘP
             </button>
+          </div>
+
+          <button class="btn-dd-block" id="edit-progress-btn-back">
+            BACK
+          </button>
+        </div>
+      `;
+    }
+
+    modalMount.innerHTML = `
+      <div class="esc-menu-backdrop" id="esc-backdrop">
+        ${contentHtml}
+      </div>
+    `;
+
+    bindEvents();
+  };
+
+  const bindEvents = () => {
+    // 1. Główne menu Esc
+    document.getElementById('esc-btn-continue')?.addEventListener('click', closeModal);
+    document.getElementById('esc-btn-options')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'options';
+      render();
+    });
+    document.getElementById('esc-btn-edit-progress')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'edit_progress';
+      render();
+    });
+
+    // 2. Podmenu Opcje
+    document.getElementById('options-btn-display')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'display';
+      render();
+    });
+    document.getElementById('options-btn-sound')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'sound';
+      render();
+    });
+    document.getElementById('options-btn-gameplay')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'gameplay';
+      render();
+    });
+    document.getElementById('options-btn-close')?.addEventListener('click', closeModal);
+
+    // 3. Widok Display
+    document.getElementById('disp-btn-fullscreen')?.addEventListener('click', () => {
+      sound.playStep();
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+      setTimeout(render, 100);
+    });
+    document.getElementById('disp-btn-windowed')?.addEventListener('click', () => {
+      sound.playStep();
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      setTimeout(render, 100);
+    });
+    document.getElementById('chk-disable-effects')?.addEventListener('change', (e) => {
+      activeSettingsState.disableScreenEffects = e.target.checked;
+      savePreferences();
+    });
+    document.getElementById('chk-disable-shaders')?.addEventListener('change', (e) => {
+      activeSettingsState.disableShaders = e.target.checked;
+      savePreferences();
+    });
+    document.getElementById('slider-combat-speed')?.addEventListener('input', (e) => {
+      const v = Number(e.target.value);
+      activeSettingsState.combatSpeed = v === 1 ? 'normal' : v === 2 ? 'fast' : 'very_fast';
+      savePreferences();
+      render();
+    });
+    document.getElementById('disp-btn-back')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'options';
+      render();
+    });
+
+    // 4. Widok Sound
+    const bgmRange = document.getElementById('bgm-range');
+    if (bgmRange) {
+      bgmRange.addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        document.getElementById('bgm-label').textContent = `${val}%`;
+        musicManager.setVolume(val / 100);
+      });
+    }
+    const sfxRange = document.getElementById('sfx-range');
+    if (sfxRange) {
+      sfxRange.addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        document.getElementById('sfx-label').textContent = `${val}%`;
+        if (sound.setSfxVolume) sound.setSfxVolume(val / 100);
+      });
+      sfxRange.addEventListener('change', () => {
+        sound.playHitImpact();
+      });
+    }
+    document.getElementById('btn-toggle-mute')?.addEventListener('click', () => {
+      sound.toggleMute();
+      render();
+    });
+    document.getElementById('sound-btn-back')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'options';
+      render();
+    });
+
+    // 5. Widok Gameplay
+    document.getElementById('chk-bolo-hints')?.addEventListener('change', (e) => {
+      activeSettingsState.boloHints = e.target.checked;
+      savePreferences();
+    });
+    document.getElementById('chk-skip-intro')?.addEventListener('change', (e) => {
+      activeSettingsState.skipIntro = e.target.checked;
+      savePreferences();
+    });
+    document.getElementById('gameplay-btn-back')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'options';
+      render();
+    });
+
+    // 6. Widok Edit Progress
+    document.getElementById('btn-confirm-reset')?.addEventListener('click', () => {
+      if (confirm('Czy na pewno chcesz zresetować wszystkie postępy?')) {
+        episodeManager.resetAllProgress();
+        sound.playStep();
+        alert('Postępy zostały zresetowane. Dostępny jest tylko Epizod 1.');
+        currentView = 'main';
+        render();
+      }
+    });
+    document.getElementById('edit-progress-btn-back')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'main';
+      render();
+    });
+  };
+
+  render();
+}
+
+/**
+ * Stylowe okno dialogowe CREDITS (Twórcy i Podziękowania) w stylu Dicey Dungeons
+ */
+export function openCreditsModal(app) {
+  sound.playStep();
+  const modalMount = document.getElementById('modal-mount');
+  if (!modalMount) return;
+  modalMount.classList.remove('hidden');
+
+  modalMount.innerHTML = `
+    <div class="dicey-modal-backdrop" id="credits-backdrop" style="position: fixed; inset: 0; background: rgba(3,7,18,0.85); backdrop-filter: blur(6px); z-index: 100005; display: flex; align-items: center; justify-content: center; padding: 16px;">
+      <div style="background: #18181b; border: 3px solid #3f3f46; border-radius: 20px; max-width: 580px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column;">
+        <div style="background: linear-gradient(135deg, #1e3a6a, #2563eb); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155;">
+          <h2 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 1.6rem; color: #ffffff; letter-spacing: 1px;">
+            📜 CREDITS • TWÓRCY GRY
+          </h2>
+          <button id="credits-close-x" style="background: transparent; border: none; font-size: 1.4rem; color: #cbd5e1; cursor: pointer;">✕</button>
+        </div>
+
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px; font-family: 'Nunito', sans-serif; color: #f1f5f9; max-height: 440px; overflow-y: auto;">
+          <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <strong style="color: #ffd166; font-size: 1.1rem; display: block; font-family: 'Fredoka', sans-serif;">Nói Đi! (Mów Śmiało!)</strong>
+            <span style="font-size: 0.88rem; color: #94a3b8;">Edukacyjny roguelike języka polskiego dla dzieci i młodzieży pochodzenia wietnamskiego.</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+              <span style="color: #60a5fa; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">🎮 Koncepcja & Mechanika</span>
+              <p style="margin: 4px 0 0; font-weight: 700;">Inspirowana mechanikami gry Dicey Dungeons (Terry Cavanagh & Marlowe Dobbe).</p>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+              <span style="color: #34d399; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">🎵 Muzyka & Ścieżka dźwiękowa</span>
+              <p style="margin: 4px 0 0; font-weight: 700;">Chipzel (oryginalne utwory retro chiptune).</p>
+            </div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+            <span style="color: #f472b6; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">📚 Opracowanie Dydaktyczne</span>
+            <p style="margin: 4px 0 0; font-size: 0.9rem;">
+              Program lektur, gramatyki, ortografii, komunikacji szkolnej i słownictwa polsko-wietnamskiego przygotowany zgodnie z podstawą programową CKE klas 4–8.
+            </p>
           </div>
         </div>
 
-        <!-- Stopka -->
-        <div
-          style="
-            padding: 14px 24px;
-            display: flex;
-            justify-content: flex-end;
-            border-top: 1.5px solid #1e293b;
-            background: #0b1120;
-          "
-        >
-          <button
-            id="settings-ok-btn"
-            style="
-              padding: 10px 32px;
-              background: linear-gradient(135deg, #2563eb, #1d4ed8);
-              color: white;
-              font-family: 'Fredoka', 'Nunito', sans-serif;
-              font-weight: 800;
-              border: none;
-              border-radius: 12px;
-              cursor: pointer;
-              font-size: 1rem;
-              letter-spacing: 0.5px;
-              box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-              transition: transform 0.1s ease, filter 0.15s ease;
-            "
-            onmouseover="this.style.filter='brightness(1.1)';"
-            onmouseout="this.style.filter='brightness(1)';"
-          >
-            ZATWIERDŹ
+        <div style="padding: 14px 24px; border-top: 1px solid #27272a; display: flex; justify-content: flex-end; background: #0f172a;">
+          <button id="credits-ok-btn" style="padding: 9px 26px; border-radius: 10px; border: none; background: #2563eb; color: white; font-family: 'Fredoka', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer;">
+            ZAMKNIJ
           </button>
         </div>
       </div>
     </div>
   `;
 
-  let onKey = null;
-  const closeModal = () => {
+  const closeCredits = () => {
     sound.playStep();
-    if (onKey) window.removeEventListener('keydown', onKey);
     modalMount.classList.add('hidden');
     modalMount.innerHTML = '';
   };
 
-  onKey = (e) => {
-    if (e.key === 'Escape') closeModal();
-  };
-  window.addEventListener('keydown', onKey);
-
-  document.getElementById('settings-close-btn')?.addEventListener('click', closeModal);
-  document.getElementById('settings-ok-btn')?.addEventListener('click', closeModal);
-
-  document.getElementById('settings-backdrop')?.addEventListener('click', (e) => {
-    if (e.target.id === 'settings-backdrop') {
-      closeModal();
-    }
-  });
-
-  // Slider BGM
-  const bgmSlider = document.getElementById('bgm-slider');
-  const bgmLabel = document.getElementById('bgm-val-label');
-  if (bgmSlider) {
-    bgmSlider.addEventListener('input', (e) => {
-      const val = Number(e.target.value);
-      bgmLabel.textContent = `${val}%`;
-      musicManager.setVolume(val / 100);
-    });
-  }
-
-  // Slider SFX
-  const sfxSlider = document.getElementById('sfx-slider');
-  const sfxLabel = document.getElementById('sfx-val-label');
-  if (sfxSlider) {
-    sfxSlider.addEventListener('input', (e) => {
-      const val = Number(e.target.value);
-      sfxLabel.textContent = `${val}%`;
-      if (sound.setSfxVolume) sound.setSfxVolume(val / 100);
-    });
-    sfxSlider.addEventListener('change', () => {
-      sound.playHitImpact();
-    });
-  }
-
-  // Przełącznik Mute
-  const muteBtn = document.getElementById('settings-mute-toggle');
-  if (muteBtn) {
-    muteBtn.addEventListener('click', () => {
-      const nowMuted = sound.toggleMute();
-      muteBtn.style.background = nowMuted ? '#ef4444' : '#10b981';
-      muteBtn.style.boxShadow = nowMuted
-        ? '0 4px 12px rgba(239, 68, 68, 0.35)'
-        : '0 4px 12px rgba(16, 185, 129, 0.35)';
-      muteBtn.textContent = nowMuted ? '🔇 WYCISZONY' : '🔊 WŁĄCZONY';
-    });
-  }
-
-  // Reset postępów epizodów
-  document.getElementById('settings-reset-episodes-btn')?.addEventListener('click', () => {
-    if (confirm('Czy na pewno chcesz zresetować postępy wszystkich postaci?')) {
-      episodeManager.resetAllProgress();
-      sound.playStep();
-      alert('Zresetowano postępy. Dostępny jest tylko Epizod 1.');
-    }
+  document.getElementById('credits-close-x')?.addEventListener('click', closeCredits);
+  document.getElementById('credits-ok-btn')?.addEventListener('click', closeCredits);
+  document.getElementById('credits-backdrop')?.addEventListener('click', (e) => {
+    if (e.target.id === 'credits-backdrop') closeCredits();
   });
 }
