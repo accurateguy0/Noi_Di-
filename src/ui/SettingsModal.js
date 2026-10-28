@@ -94,9 +94,30 @@ export function openSettingsModal(app, initialView = 'main') {
 
     let contentHtml = '';
 
+    const charScreen = document.getElementById('character-select-screen');
+    const isCharSelectOpen = Boolean(charScreen && !charScreen.classList.contains('hidden'));
+
+    const modalMount = document.getElementById('modal-mount');
+    const isModalMountOpen = Boolean(
+      modalMount &&
+      !modalMount.classList.contains('hidden') &&
+      modalMount.children.length > 0
+    );
+
+    const arenaMount = document.getElementById('arena-mount');
+    const isArenaOpen = Boolean(arenaMount && !arenaMount.classList.contains('hidden'));
+
+    const titleScreenEl = document.getElementById('title-screen-container');
+    const isTitleContainerVisible = Boolean(titleScreenEl && !titleScreenEl.classList.contains('hidden'));
+
+    // Ekran tytułowy to TYLKO sytuacja, gdy jesteśmy bezpośrednio na ekranie startowym
+    // (żaden ekran wyboru postaci, credits/autor, arena ani gra planszowa nie są aktywne)
     const isTitleScreen = Boolean(
-      (app?.titleScreen && app.titleScreen.isVisible) ||
-      (document.getElementById('title-screen-container') && !document.getElementById('title-screen-container').classList.contains('hidden'))
+      isTitleContainerVisible &&
+      !isCharSelectOpen &&
+      !isModalMountOpen &&
+      !isArenaOpen &&
+      !app?.activeMinigame
     );
 
     // ==========================================
