@@ -364,41 +364,37 @@ export function openSettingsModal(app, initialView = 'main') {
     // 6. WIDOK: EDYTUJ PROGRES (PROGRESS EDITOR 1:1 DICEY DUNGEONS)
     // ==========================================
     else if (currentView === 'edit_progress') {
-      let resetButtonsHtml = '';
-      if (resetStep === 0) {
-        resetButtonsHtml = `
-          <button type="button" class="btn-progress-reset-active" id="progress-reset-step-btn" title="Kliknij, aby rozpocząć resetowanie postępów">
-            RESETUJ POSTĘP
-          </button>
-        `;
-      } else if (resetStep === 1) {
-        resetButtonsHtml = `
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">RESETUJ POSTĘP</button>
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">CZY NA PEWNO?</button>
-          <button type="button" class="btn-progress-reset-active" id="progress-reset-step-btn">
-            NAPRAWDĘ?
-          </button>
-        `;
-      } else if (resetStep === 2) {
-        resetButtonsHtml = `
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">RESETUJ POSTĘP</button>
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">CZY NA PEWNO?</button>
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">NAPRAWDĘ?</button>
-          <button type="button" class="btn-progress-reset-active" id="progress-reset-step-btn">
-            POWAŻNIE?
-          </button>
-        `;
-      } else if (resetStep === 3) {
-        resetButtonsHtml = `
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">RESETUJ POSTĘP</button>
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">CZY NA PEWNO?</button>
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">NAPRAWDĘ?</button>
-          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">POWAŻNIE?</button>
-          <button type="button" class="btn-progress-reset-active btn-last-chance" id="progress-reset-step-btn">
-            OSTATNIA SZANSA...
+      const RESET_LABELS = [
+        'RESETUJ POSTĘP',
+        'CZY NA PEWNO?',
+        'NAPRAWDĘ?',
+        'POWAŻNIE?',
+        'OSTATNIA SZANSA...'
+      ];
+
+      // Wcześniejsze kroki potwierdzenia jako nieklikalne ramki przerywane (dashed)
+      let dashedHtml = '';
+      for (let i = 0; i < resetStep; i++) {
+        dashedHtml += `
+          <button type="button" class="btn-progress-reset-dashed" disabled tabindex="-1">
+            ${RESET_LABELS[i]}
           </button>
         `;
       }
+
+      // Aktualnie aktywny przycisk do kliknięcia
+      const activeBtnHtml = `
+        <button
+          type="button"
+          class="btn-progress-reset-active ${resetStep === 4 ? 'btn-last-chance' : ''}"
+          id="progress-reset-step-btn"
+          title="${resetStep === 4 ? 'Kliknij, aby zresetować wszystkie postępy' : 'Kliknij, aby przejść do kolejnego kroku potwierdzenia'}"
+        >
+          ${RESET_LABELS[resetStep]}
+        </button>
+      `;
+
+      const resetButtonsHtml = dashedHtml + activeBtnHtml;
 
       const PROGRESS_HEROES = [
         { id: 'warrior', name: 'Wojownik', avatar: './assets/Warrior.png', episodes: 8 },
@@ -735,25 +731,17 @@ export function openSettingsModal(app, initialView = 'main') {
     });
 
     document.getElementById('progress-reset-step-btn')?.addEventListener('click', () => {
-      if (resetStep < 3) {
+      if (resetStep < 4) {
         resetStep++;
         sound.playStep();
         render();
       } else {
-        // Krok 3: OSTATNIA SZANSA... -> RESETUJEMY!
+        // Krok 4: OSTATNIA SZANSA... -> RESETUJEMY!
         episodeManager.resetAllProgress();
         resetStep = 0;
         sound.playHitImpact(true);
         render();
       }
-    });
-
-    escMount.querySelectorAll('.btn-progress-reset-dashed').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        resetStep = 0;
-        sound.playPop();
-        render();
-      });
     });
 
     document.getElementById('btn-unlock-jester')?.addEventListener('click', () => {
