@@ -370,17 +370,16 @@ class NoiDiGameApp {
   bindKeyboardShortcuts() {
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        const modalMount = document.getElementById('modal-mount');
-        if (modalMount && !modalMount.classList.contains('hidden')) {
-          if (modalMount.querySelector('.esc-menu-backdrop')) {
-            return;
-          }
-          this.closeModal();
+        const escMount = document.getElementById('esc-modal-mount');
+        if (escMount && !escMount.classList.contains('hidden')) {
+          // Jeśli menu Esc jest już otwarte, jego wewnętrzny keyHandler obsłuży cofnięcie lub zamknięcie
           return;
         }
 
-        // Naciśnięcie Esc otwiera menu pauzy / opcji w stylu Dicey Dungeons
+        // Naciśnięcie Esc w dowolnym miejscu (plansza, autor/credits, ekwipunek, menu) otwiera menu Esc ze ściszeniem dźwięku tła
+        e.preventDefault();
         openSettingsModal(this);
+        return;
       }
 
       if (e.key === ' ' || e.key === 'Enter') {

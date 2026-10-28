@@ -42,14 +42,18 @@ export function openSettingsModal(app, initialView = 'main') {
   // Wyciszenie muzyki tła w trybie Esc (ducking do 25%)
   musicManager.setEscDucking(true);
 
-  let modalMount = document.getElementById('modal-mount');
-  if (!modalMount) {
-    modalMount = document.createElement('div');
-    modalMount.id = 'modal-mount';
-    document.getElementById('app').appendChild(modalMount);
+  let escMount = document.getElementById('esc-modal-mount');
+  if (!escMount) {
+    escMount = document.createElement('div');
+    escMount.id = 'esc-modal-mount';
+    escMount.className = 'esc-modal-mount hidden';
+    document.getElementById('app').appendChild(escMount);
   }
-  modalMount.classList.remove('hidden');
-  modalMount.classList.add('modal-mount-esc');
+
+  if (!escMount.classList.contains('hidden')) {
+    return;
+  }
+  escMount.classList.remove('hidden');
 
   let currentView = initialView;
   let resetStep = 0;
@@ -60,9 +64,8 @@ export function openSettingsModal(app, initialView = 'main') {
     if (keyHandler) window.removeEventListener('keydown', keyHandler);
     // Przywrócenie normalnej głośności po zamknięciu Esc
     musicManager.setEscDucking(false);
-    modalMount.classList.remove('modal-mount-esc');
-    modalMount.classList.add('hidden');
-    modalMount.innerHTML = '';
+    escMount.classList.add('hidden');
+    escMount.innerHTML = '';
   };
 
   keyHandler = (e) => {
@@ -506,11 +509,9 @@ export function openSettingsModal(app, initialView = 'main') {
     }
 
     if (currentView === 'edit_progress') {
-      modalMount.classList.remove('modal-mount-esc');
-      modalMount.innerHTML = contentHtml;
+      escMount.innerHTML = contentHtml;
     } else {
-      modalMount.classList.add('modal-mount-esc');
-      modalMount.innerHTML = `
+      escMount.innerHTML = `
         <div class="esc-menu-backdrop" id="esc-backdrop">
           ${contentHtml}
         </div>
@@ -670,7 +671,7 @@ export function openSettingsModal(app, initialView = 'main') {
       }
     });
 
-    modalMount.querySelectorAll('.btn-progress-reset-dashed').forEach((btn) => {
+    escMount.querySelectorAll('.btn-progress-reset-dashed').forEach((btn) => {
       btn.addEventListener('click', () => {
         resetStep = 0;
         sound.playPop();
@@ -687,7 +688,7 @@ export function openSettingsModal(app, initialView = 'main') {
       render();
     });
 
-    modalMount.querySelectorAll('.progress-pip-square').forEach((sq) => {
+    escMount.querySelectorAll('.progress-pip-square').forEach((sq) => {
       sq.addEventListener('click', () => {
         const heroId = sq.dataset.hero;
         const pip = Number(sq.dataset.pip);

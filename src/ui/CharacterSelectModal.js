@@ -10,6 +10,7 @@ import { getBoss } from '../data/bosses.js';
 import { STORY, EPISODE_LEVELS } from '../data/storyData.js';
 import { showEpisodeIntroModal } from './StoryModal.js';
 import { getHeroLevelStats, WITCH_SPELLS } from '../data/characterProgression.js';
+import { openSettingsModal } from './SettingsModal.js';
 
 function buildHeroEpisodes(heroId) {
   return (STORY[heroId] || STORY.warrior).map((ep, idx) => {
@@ -468,6 +469,13 @@ export function openCharacterSelectModal(app) {
       window.removeEventListener('keydown', onKeyHandler);
       return;
     }
+
+    // Jeśli menu Esc jest otwarte na wierzchu, nie przechwytuj klawiszy
+    const escMount = document.getElementById('esc-modal-mount');
+    if (escMount && !escMount.classList.contains('hidden')) {
+      return;
+    }
+
     if (e.key === 'ArrowLeft') {
       currentHeroIndex = (currentHeroIndex - 1 + HEROES.length) % HEROES.length;
       sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
@@ -479,7 +487,9 @@ export function openCharacterSelectModal(app) {
     } else if (e.key === 'Enter') {
       document.getElementById('cs-btn-start')?.click();
     } else if (e.key === 'Escape') {
-      document.getElementById('cs-btn-menu')?.click();
+      // Naciśnięcie Esc otwiera menu pauzy/opcji ze ściszeniem dźwięku bez uciekania do menu głównego
+      e.preventDefault();
+      openSettingsModal(app);
     }
   };
 
