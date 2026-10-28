@@ -9216,25 +9216,67 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   max-height: 100%;
   width: auto;
   object-fit: contain;
-  animation: heroStageSway 4.6s ease-in-out infinite;
+  animation: heroStageSway 4.6s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
   transform-origin: center bottom;
-  will-change: transform, opacity;
+  will-change: transform;
 }
 
 @keyframes heroStageSway {
-  0% {
+  /* 0.0s - 0.76s: Spokojne zamyślenie i podwójne mrugnięcie (stabilna poza z lekkim oddechem) */
+  0%, 16.5% {
     transform: translateX(0) translateY(0) rotate(0deg);
   }
-  25% {
-    transform: translateX(-6px) translateY(-5px) rotate(-1.5deg);
+  8% {
+    transform: translateX(0) translateY(-3px) rotate(0.3deg);
   }
-  50% {
-    transform: translateX(0) translateY(0) rotate(0deg);
+
+  /* 0.76s - 0.85s: Eksplozja radości! Radosny wyskok i przechylenie w bok */
+  18% {
+    transform: translateX(-12px) translateY(-14px) rotate(-3.5deg) scale(1.03);
   }
-  75% {
-    transform: translateX(6px) translateY(-5px) rotate(1.5deg);
+  20% {
+    transform: translateX(-10px) translateY(-7px) rotate(-2.8deg) scale(1.01);
   }
-  100% {
+
+  /* 0.85s - 2.80s: Radosne sprężyste podskakiwanie w rytm uśmiechu */
+  28% {
+    transform: translateX(-11px) translateY(-12px) rotate(-3.2deg);
+  }
+  36% {
+    transform: translateX(-9px) translateY(-5px) rotate(-2.5deg);
+  }
+  44% {
+    transform: translateX(-11px) translateY(-12px) rotate(-3.2deg);
+  }
+  52% {
+    transform: translateX(-9px) translateY(-5px) rotate(-2.5deg);
+  }
+  60% {
+    transform: translateX(-10px) translateY(-9px) rotate(-3.0deg);
+  }
+
+  /* 2.80s: Nagle uśmiech gaśnie! Rozczarowanie i opadnięcie sylwetki */
+  61% {
+    transform: translateX(0) translateY(3px) rotate(0deg) scale(0.98);
+  }
+  64%, 82% {
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+  }
+
+  /* 3.80s - 4.10s: Komiczne drżenie (shiver) i zamyślenie przed resetem */
+  83% {
+    transform: translateX(-3px) translateY(-1px) rotate(-0.5deg);
+  }
+  85% {
+    transform: translateX(3px) translateY(-1px) rotate(0.5deg);
+  }
+  87% {
+    transform: translateX(-2px) translateY(0) rotate(-0.3deg);
+  }
+  89% {
+    transform: translateX(2px) translateY(0) rotate(0.3deg);
+  }
+  91%, 100% {
     transform: translateX(0) translateY(0) rotate(0deg);
   }
 }
