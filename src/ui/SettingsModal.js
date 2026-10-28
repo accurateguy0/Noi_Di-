@@ -538,65 +538,71 @@ export function openCreditsModal(app) {
 
     if (creditsPage === 1) {
       contentHtml = `
-        <h1 class="credits-main-title">CREATED BY</h1>
+        <h1 class="credits-main-title">TWÓRCA GRY</h1>
 
         <div class="credits-grid-layout">
           <!-- Kolumna 1 -->
-          <div style="display: flex; flex-direction: column; gap: 28px;">
-            <!-- 1. Design: Terry Cavanagh -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- 1. Dawid Kowalski: Solo Dev -->
             <div class="credits-person-card">
-              <img src="./assets/Warrior.png" alt="Warrior" class="credits-dice-sprite" onerror="this.src='/assets/Warrior.png'" />
+              <img src="./assets/Warrior.png" alt="Dawid Kowalski" class="credits-dice-sprite" onerror="this.src='/assets/Warrior.png'" />
               <div>
-                <div class="credits-role-tag">DESIGN</div>
-                <div class="credits-name-tag">Terry Cavanagh</div>
+                <div class="credits-role-tag">SOLO DEVELOPER & PROGRAMOWANIE</div>
+                <div class="credits-name-tag">Dawid Kowalski</div>
+                <div class="credits-desc-tag">Student Cyberbezpieczeństwa na SGGW w Warszawie</div>
               </div>
             </div>
 
-            <!-- 2. Art and Animation: Marlowe Dobbe -->
+            <!-- 2. Cel i misja edukacyjna -->
             <div class="credits-person-card">
-              <img src="./assets/Inventor.png" alt="Inventor" class="credits-dice-sprite" onerror="this.src='/assets/Inventor.png'" />
+              <img src="./assets/Kotek_Pomoc.png" alt="Edukacja" class="credits-dice-sprite" onerror="this.src='/assets/Kotek_Pomoc.png'" />
               <div>
-                <div class="credits-role-tag">ART AND ANIMATION</div>
-                <div class="credits-name-tag">Marlowe Dobbe</div>
+                <div class="credits-role-tag">CEL I MISJA PROJEKTU</div>
+                <div class="credits-name-tag">Nauka polskiego dla dzieci wietnamskich</div>
+                <div class="credits-desc-tag">Gra stworzona, aby uczyć języka polskiego w rozrywkowy i angażujący sposób</div>
               </div>
             </div>
 
-            <!-- 3. PR and Marketing: Dana Trebella -->
+            <!-- 3. Projekt Nói Đi! -->
             <div class="credits-person-card">
-              <img src="./assets/Witch.png" alt="Witch" class="credits-dice-sprite" onerror="this.src='/assets/Witch.png'" />
+              <img src="./assets/Robot.png" alt="Robot" class="credits-dice-sprite" onerror="this.src='/assets/Robot.png'" />
               <div>
-                <div class="credits-role-tag">PR AND MARKETING</div>
-                <div class="credits-name-tag">Dana Trebella</div>
+                <div class="credits-role-tag">PROJEKT I LOGIKA GRY</div>
+                <div class="credits-name-tag">Nói Đi! (Mów Śmiało!)</div>
+                <div class="credits-desc-tag">Edukacyjny roguelike łączący kości, karty i interaktywne quizy</div>
               </div>
             </div>
           </div>
 
           <!-- Kolumna 2 -->
-          <div style="display: flex; flex-direction: column; gap: 28px;">
-            <!-- 4. Music and Sound Design: Chipzel -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- 4. Inspiracja artystyczna: Marlowe Dobbe -->
+            <div class="credits-person-card">
+              <img src="./assets/Inventor.png" alt="Marlowe Dobbe" class="credits-dice-sprite" onerror="this.src='/assets/Inventor.png'" />
+              <div>
+                <div class="credits-role-tag">INSPIRACJA GRAFICZNA</div>
+                <div class="credits-name-tag">Marlowe Dobbe</div>
+                <div class="credits-desc-tag">Inspiracja unikalnym, bajkowym stylem wizualnym z Dicey Dungeons</div>
+              </div>
+            </div>
+
+            <!-- 5. Muzyka: Chipzel -->
             <div class="credits-person-card">
               <img src="./assets/Jester.png" alt="Chipzel" class="credits-dice-sprite" style="filter: brightness(0);" onerror="this.src='/assets/Jester.png'" />
               <div>
-                <div class="credits-role-tag">MUSIC AND SOUND DESIGN</div>
-                <div class="credits-name-tag">Niamh Houston / Chipzel</div>
+                <div class="credits-role-tag">INSPIRACJA MUZYCZNA</div>
+                <div class="credits-name-tag">Chipzel (Niamh Houston)</div>
+                <div class="credits-desc-tag">Energetyczna, chiptune'owa ścieżka dźwiękowa napędzająca rozgrywkę</div>
               </div>
             </div>
 
-            <!-- 5. Programming: Justo Delgado Baudí -->
+            <!-- 6. Mechanika kości: Terry Cavanagh -->
             <div class="credits-person-card">
-              <img src="./assets/Thief.png" alt="Thief" class="credits-dice-sprite" onerror="this.src='/assets/Thief.png'" />
+              <img src="./assets/Thief.png" alt="Terry Cavanagh" class="credits-dice-sprite" onerror="this.src='/assets/Thief.png'" />
               <div>
-                <div class="credits-role-tag">PROGRAMMING</div>
-                <div class="credits-name-tag">Justo Delgado Baudí</div>
-              </div>
-            </div>
-
-            <!-- 6. Writing: Holly Gramazio -->
-            <div class="credits-person-card">
-              <img src="./assets/Robot.png" alt="Robot" class="credits-dice-sprite" onerror="this.src='/assets/Robot.png'" />
-              <div>
-                <div class="credits-role-tag">WRITING</div>
-                <div class="credits-name-tag">Holly Gramazio</div>
+                <div class="credits-role-tag">INSPIRACJA MECHANIKĄ</div>
+                <div class="credits-name-tag">Terry Cavanagh</div>
+                <div class="credits-desc-tag">Twórca genialnej koncepcji walki opartej na kościach</div>
               </div>
             </div>
           </div>
@@ -604,43 +610,47 @@ export function openCreditsModal(app) {
       `;
     } else {
       contentHtml = `
-        <h1 class="credits-main-title" style="color: #ffd166;">NÓI ĐI! PROJECT</h1>
+        <h1 class="credits-main-title" style="color: #ffd166;">METODYKA I PODSTAWY</h1>
 
         <div class="credits-grid-layout">
           <!-- Kolumna 1 -->
-          <div style="display: flex; flex-direction: column; gap: 28px;">
-            <div class="credits-person-card">
-              <img src="./assets/Kotek_Pomoc.png" alt="Kotek" class="credits-dice-sprite" onerror="this.src='/assets/Kotek_Pomoc.png'" />
-              <div>
-                <div class="credits-role-tag">EDUKACJA & ROGUELIKE</div>
-                <div class="credits-name-tag">Projekt Nói Đi! (Mów Śmiało!)</div>
-              </div>
-            </div>
-
+          <div style="display: flex; flex-direction: column; gap: 24px;">
             <div class="credits-person-card">
               <img src="./assets/itemki/zeszyt.png" alt="Zeszyt" class="credits-dice-sprite" />
               <div>
                 <div class="credits-role-tag">PROGRAM DYDAKTYCZNY</div>
-                <div class="credits-name-tag">Podstawa Programowa CKE Klasy 4–8</div>
+                <div class="credits-name-tag">Podstawa Języka Polskiego CKE</div>
+                <div class="credits-desc-tag">Moduły A0/A1 – lektury, gramatyka, ortografia i zwroty szkolne</div>
+              </div>
+            </div>
+
+            <div class="credits-person-card">
+              <img src="./assets/itemki/kebab.png" alt="Kebab" class="credits-dice-sprite" />
+              <div>
+                <div class="credits-role-tag">INTEGRACJA KULTUROWA</div>
+                <div class="credits-name-tag">Konsultacje Polsko-Wietnamskie</div>
+                <div class="credits-desc-tag">Wymowa fonetyczna, slang młodzieżowy i naturalny język rówieśniczy</div>
               </div>
             </div>
           </div>
 
           <!-- Kolumna 2 -->
-          <div style="display: flex; flex-direction: column; gap: 28px;">
+          <div style="display: flex; flex-direction: column; gap: 24px;">
             <div class="credits-person-card">
-              <img src="./assets/itemki/kebab.png" alt="Kebab" class="credits-dice-sprite" />
+              <img src="./assets/itemki/sluchawki_gamingowe.png" alt="Słuchawki" class="credits-dice-sprite" />
               <div>
-                <div class="credits-role-tag">KULTURA I SŁOWNICTWO</div>
-                <div class="credits-name-tag">Konsultacje Językowe Polsko-Wietnamskie</div>
+                <div class="credits-role-tag">UDŹWIĘKOWIENIE & SYNTEZA MOWY</div>
+                <div class="credits-name-tag">Lektorzy PL (Web Speech API)</div>
+                <div class="credits-desc-tag">Udźwiękowione dialogi postaci żeńskich i męskich wspierające poprawny akcent</div>
               </div>
             </div>
 
             <div class="credits-person-card">
-              <img src="./assets/itemki/sluchawki_gamingowe.png" alt="Słuchawki" class="credits-dice-sprite" />
+              <img src="./assets/apple.png" alt="SGGW" class="credits-dice-sprite" onerror="this.src='/assets/apple.png'" />
               <div>
-                <div class="credits-role-tag">GŁOSY I LEKTORZY</div>
-                <div class="credits-name-tag">Synteza Mowy PL + Odgłosy Bohaterów</div>
+                <div class="credits-role-tag">ŚRODOWISKO AKADEMICKIE</div>
+                <div class="credits-name-tag">SGGW w Warszawie</div>
+                <div class="credits-desc-tag">Projekt studencki na kierunku Cyberbezpieczeństwo</div>
               </div>
             </div>
           </div>
@@ -704,9 +714,9 @@ export function openCreditsModal(app) {
           <line x1="0" y1="580" x2="1280" y2="580" stroke="#5a1217" stroke-width="4" />
         </svg>
 
-        <!-- Przycisk TITLE w lewym górnym rogu -->
+        <!-- Przycisk POWRÓT w lewym górnym rogu -->
         <button class="credits-top-title-btn" id="credits-btn-title">
-          TITLE
+          POWRÓT
         </button>
 
         <!-- Warstwa treści z postaciami i autorami -->
@@ -715,7 +725,7 @@ export function openCreditsModal(app) {
         </div>
 
         <!-- Strzałka nawigacji w prawym dolnym rogu -->
-        <button class="credits-arrow-btn" id="credits-arrow-btn" title="Kolejna strona">
+        <button class="credits-arrow-btn" id="credits-arrow-btn" title="${creditsPage === 1 ? 'Kolejna strona' : 'Poprzednia strona'}">
           ${creditsPage === 1 ? '➔' : '⬅'}
         </button>
       </div>

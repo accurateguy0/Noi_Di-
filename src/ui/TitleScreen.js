@@ -60,9 +60,9 @@ export class TitleScreen {
             <span class="dd-title-btn-text">ROZPOCZNIJ GRĘ</span>
           </button>
 
-          <button class="dd-title-btn btn-title-credits" id="title-btn-credits">
+          <button class="dd-title-btn btn-title-credits" id="title-btn-credits" title="Informacje o autorze i twórcach">
             <span class="dd-title-btn-icon">📜</span>
-            <span class="dd-title-btn-text">CREDITS</span>
+            <span class="dd-title-btn-text">AUTOR</span>
           </button>
         </div>
       </div>

@@ -2578,107 +2578,117 @@ Posłuchaj
         ${w}
       </div>
     `,s()},s=()=>{var y,w,m,u,k,j,P,W,h,f,_,A,S,U,oe,ie,ee,ye;(y=document.getElementById("esc-btn-continue"))==null||y.addEventListener("click",r),(w=document.getElementById("esc-btn-options"))==null||w.addEventListener("click",()=>{d.playStep(),o="options",t()}),(m=document.getElementById("esc-btn-edit-progress"))==null||m.addEventListener("click",()=>{d.playStep(),o="edit_progress",t()}),(u=document.getElementById("options-btn-display"))==null||u.addEventListener("click",()=>{d.playStep(),o="display",t()}),(k=document.getElementById("options-btn-sound"))==null||k.addEventListener("click",()=>{d.playStep(),o="sound",t()}),(j=document.getElementById("options-btn-gameplay"))==null||j.addEventListener("click",()=>{d.playStep(),o="gameplay",t()}),(P=document.getElementById("options-btn-close"))==null||P.addEventListener("click",r),(W=document.getElementById("disp-btn-fullscreen"))==null||W.addEventListener("click",()=>{d.playStep(),document.fullscreenElement||document.documentElement.requestFullscreen().catch(()=>{}),setTimeout(t,100)}),(h=document.getElementById("disp-btn-windowed"))==null||h.addEventListener("click",()=>{d.playStep(),document.fullscreenElement&&document.exitFullscreen().catch(()=>{}),setTimeout(t,100)}),(f=document.getElementById("chk-disable-effects"))==null||f.addEventListener("change",I=>{J.disableScreenEffects=I.target.checked,De()}),(_=document.getElementById("chk-disable-shaders"))==null||_.addEventListener("change",I=>{J.disableShaders=I.target.checked,De()}),(A=document.getElementById("slider-combat-speed"))==null||A.addEventListener("input",I=>{const Z=Number(I.target.value);J.combatSpeed=Z===1?"normal":Z===2?"fast":"very_fast",De(),t()}),(S=document.getElementById("disp-btn-back"))==null||S.addEventListener("click",()=>{d.playStep(),o="options",t()});const z=document.getElementById("slider-main-vol");z&&z.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-main-vol").textContent=`${Z}`,d.setMasterVolume(Z/100),K.setMasterVolume(Z/100)});const c=document.getElementById("slider-music-vol");c&&c.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-music-vol").textContent=`${Z}`,K.setVolume(Z/100)});const p=document.getElementById("slider-sfx-vol");p&&(p.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-sfx-vol").textContent=`${Z}`,d.setSfxVolume(Z/100)}),p.addEventListener("change",()=>{d.playHitImpact()}));const l=document.getElementById("slider-voices-vol");l&&(l.addEventListener("input",I=>{const Z=Number(I.target.value);document.getElementById("val-voices-vol").textContent=`${Z}`,d.setVoiceVolume(Z/100)}),l.addEventListener("change",()=>{d.speakPolish("Głośność lektora")})),(U=document.getElementById("sound-btn-back"))==null||U.addEventListener("click",()=>{d.playStep(),o="options",t()}),(oe=document.getElementById("chk-relaxed-mode"))==null||oe.addEventListener("change",I=>{J.relaxedMode=I.target.checked,De()}),(ie=document.getElementById("gameplay-btn-back"))==null||ie.addEventListener("click",()=>{d.playStep(),o="options",t()}),(ee=document.getElementById("btn-confirm-reset"))==null||ee.addEventListener("click",()=>{confirm("Czy na pewno chcesz zresetować wszystkie postępy?")&&(E.resetAllProgress(),d.playStep(),alert("Postępy zostały zresetowane. Dostępny jest tylko Epizod 1."),o="main",t())}),(ye=document.getElementById("edit-progress-btn-back"))==null||ye.addEventListener("click",()=>{d.playStep(),o="main",t()})};t()}function ji(n){d.playStep();const e=document.getElementById("modal-mount");if(!e)return;e.classList.remove("hidden");let a=1;const o=()=>{var t,s;let i="";a===1?i=`
-        <h1 class="credits-main-title">CREATED BY</h1>
+        <h1 class="credits-main-title">TWÓRCA GRY</h1>
 
         <div class="credits-grid-layout">
           <!-- Kolumna 1 -->
-          <div style="display: flex; flex-direction: column; gap: 28px;">
-            <!-- 1. Design: Terry Cavanagh -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- 1. Dawid Kowalski: Solo Dev -->
             <div class="credits-person-card">
-              <img src="./assets/Warrior.png" alt="Warrior" class="credits-dice-sprite" onerror="this.src='/assets/Warrior.png'" />
+              <img src="./assets/Warrior.png" alt="Dawid Kowalski" class="credits-dice-sprite" onerror="this.src='/assets/Warrior.png'" />
               <div>
-                <div class="credits-role-tag">DESIGN</div>
-                <div class="credits-name-tag">Terry Cavanagh</div>
+                <div class="credits-role-tag">SOLO DEVELOPER & PROGRAMOWANIE</div>
+                <div class="credits-name-tag">Dawid Kowalski</div>
+                <div class="credits-desc-tag">Student Cyberbezpieczeństwa na SGGW w Warszawie</div>
               </div>
             </div>
 
-            <!-- 2. Art and Animation: Marlowe Dobbe -->
+            <!-- 2. Cel i misja edukacyjna -->
             <div class="credits-person-card">
-              <img src="./assets/Inventor.png" alt="Inventor" class="credits-dice-sprite" onerror="this.src='/assets/Inventor.png'" />
+              <img src="./assets/Kotek_Pomoc.png" alt="Edukacja" class="credits-dice-sprite" onerror="this.src='/assets/Kotek_Pomoc.png'" />
               <div>
-                <div class="credits-role-tag">ART AND ANIMATION</div>
-                <div class="credits-name-tag">Marlowe Dobbe</div>
+                <div class="credits-role-tag">CEL I MISJA PROJEKTU</div>
+                <div class="credits-name-tag">Nauka polskiego dla dzieci wietnamskich</div>
+                <div class="credits-desc-tag">Gra stworzona, aby uczyć języka polskiego w rozrywkowy i angażujący sposób</div>
               </div>
             </div>
 
-            <!-- 3. PR and Marketing: Dana Trebella -->
+            <!-- 3. Projekt Nói Đi! -->
             <div class="credits-person-card">
-              <img src="./assets/Witch.png" alt="Witch" class="credits-dice-sprite" onerror="this.src='/assets/Witch.png'" />
+              <img src="./assets/Robot.png" alt="Robot" class="credits-dice-sprite" onerror="this.src='/assets/Robot.png'" />
               <div>
-                <div class="credits-role-tag">PR AND MARKETING</div>
-                <div class="credits-name-tag">Dana Trebella</div>
+                <div class="credits-role-tag">PROJEKT I LOGIKA GRY</div>
+                <div class="credits-name-tag">Nói Đi! (Mów Śmiało!)</div>
+                <div class="credits-desc-tag">Edukacyjny roguelike łączący kości, karty i interaktywne quizy</div>
               </div>
             </div>
           </div>
 
           <!-- Kolumna 2 -->
-          <div style="display: flex; flex-direction: column; gap: 28px;">
-            <!-- 4. Music and Sound Design: Chipzel -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- 4. Inspiracja artystyczna: Marlowe Dobbe -->
+            <div class="credits-person-card">
+              <img src="./assets/Inventor.png" alt="Marlowe Dobbe" class="credits-dice-sprite" onerror="this.src='/assets/Inventor.png'" />
+              <div>
+                <div class="credits-role-tag">INSPIRACJA GRAFICZNA</div>
+                <div class="credits-name-tag">Marlowe Dobbe</div>
+                <div class="credits-desc-tag">Inspiracja unikalnym, bajkowym stylem wizualnym z Dicey Dungeons</div>
+              </div>
+            </div>
+
+            <!-- 5. Muzyka: Chipzel -->
             <div class="credits-person-card">
               <img src="./assets/Jester.png" alt="Chipzel" class="credits-dice-sprite" style="filter: brightness(0);" onerror="this.src='/assets/Jester.png'" />
               <div>
-                <div class="credits-role-tag">MUSIC AND SOUND DESIGN</div>
-                <div class="credits-name-tag">Niamh Houston / Chipzel</div>
+                <div class="credits-role-tag">INSPIRACJA MUZYCZNA</div>
+                <div class="credits-name-tag">Chipzel (Niamh Houston)</div>
+                <div class="credits-desc-tag">Energetyczna, chiptune'owa ścieżka dźwiękowa napędzająca rozgrywkę</div>
               </div>
             </div>
 
-            <!-- 5. Programming: Justo Delgado Baudí -->
+            <!-- 6. Mechanika kości: Terry Cavanagh -->
             <div class="credits-person-card">
-              <img src="./assets/Thief.png" alt="Thief" class="credits-dice-sprite" onerror="this.src='/assets/Thief.png'" />
+              <img src="./assets/Thief.png" alt="Terry Cavanagh" class="credits-dice-sprite" onerror="this.src='/assets/Thief.png'" />
               <div>
-                <div class="credits-role-tag">PROGRAMMING</div>
-                <div class="credits-name-tag">Justo Delgado Baudí</div>
-              </div>
-            </div>
-
-            <!-- 6. Writing: Holly Gramazio -->
-            <div class="credits-person-card">
-              <img src="./assets/Robot.png" alt="Robot" class="credits-dice-sprite" onerror="this.src='/assets/Robot.png'" />
-              <div>
-                <div class="credits-role-tag">WRITING</div>
-                <div class="credits-name-tag">Holly Gramazio</div>
+                <div class="credits-role-tag">INSPIRACJA MECHANIKĄ</div>
+                <div class="credits-name-tag">Terry Cavanagh</div>
+                <div class="credits-desc-tag">Twórca genialnej koncepcji walki opartej na kościach</div>
               </div>
             </div>
           </div>
         </div>
       `:i=`
-        <h1 class="credits-main-title" style="color: #ffd166;">NÓI ĐI! PROJECT</h1>
+        <h1 class="credits-main-title" style="color: #ffd166;">METODYKA I PODSTAWY</h1>
 
         <div class="credits-grid-layout">
           <!-- Kolumna 1 -->
-          <div style="display: flex; flex-direction: column; gap: 28px;">
-            <div class="credits-person-card">
-              <img src="./assets/Kotek_Pomoc.png" alt="Kotek" class="credits-dice-sprite" onerror="this.src='/assets/Kotek_Pomoc.png'" />
-              <div>
-                <div class="credits-role-tag">EDUKACJA & ROGUELIKE</div>
-                <div class="credits-name-tag">Projekt Nói Đi! (Mów Śmiało!)</div>
-              </div>
-            </div>
-
+          <div style="display: flex; flex-direction: column; gap: 24px;">
             <div class="credits-person-card">
               <img src="./assets/itemki/zeszyt.png" alt="Zeszyt" class="credits-dice-sprite" />
               <div>
                 <div class="credits-role-tag">PROGRAM DYDAKTYCZNY</div>
-                <div class="credits-name-tag">Podstawa Programowa CKE Klasy 4–8</div>
+                <div class="credits-name-tag">Podstawa Języka Polskiego CKE</div>
+                <div class="credits-desc-tag">Moduły A0/A1 – lektury, gramatyka, ortografia i zwroty szkolne</div>
+              </div>
+            </div>
+
+            <div class="credits-person-card">
+              <img src="./assets/itemki/kebab.png" alt="Kebab" class="credits-dice-sprite" />
+              <div>
+                <div class="credits-role-tag">INTEGRACJA KULTUROWA</div>
+                <div class="credits-name-tag">Konsultacje Polsko-Wietnamskie</div>
+                <div class="credits-desc-tag">Wymowa fonetyczna, slang młodzieżowy i naturalny język rówieśniczy</div>
               </div>
             </div>
           </div>
 
           <!-- Kolumna 2 -->
-          <div style="display: flex; flex-direction: column; gap: 28px;">
+          <div style="display: flex; flex-direction: column; gap: 24px;">
             <div class="credits-person-card">
-              <img src="./assets/itemki/kebab.png" alt="Kebab" class="credits-dice-sprite" />
+              <img src="./assets/itemki/sluchawki_gamingowe.png" alt="Słuchawki" class="credits-dice-sprite" />
               <div>
-                <div class="credits-role-tag">KULTURA I SŁOWNICTWO</div>
-                <div class="credits-name-tag">Konsultacje Językowe Polsko-Wietnamskie</div>
+                <div class="credits-role-tag">UDŹWIĘKOWIENIE & SYNTEZA MOWY</div>
+                <div class="credits-name-tag">Lektorzy PL (Web Speech API)</div>
+                <div class="credits-desc-tag">Udźwiękowione dialogi postaci żeńskich i męskich wspierające poprawny akcent</div>
               </div>
             </div>
 
             <div class="credits-person-card">
-              <img src="./assets/itemki/sluchawki_gamingowe.png" alt="Słuchawki" class="credits-dice-sprite" />
+              <img src="./assets/apple.png" alt="SGGW" class="credits-dice-sprite" onerror="this.src='/assets/apple.png'" />
               <div>
-                <div class="credits-role-tag">GŁOSY I LEKTORZY</div>
-                <div class="credits-name-tag">Synteza Mowy PL + Odgłosy Bohaterów</div>
+                <div class="credits-role-tag">ŚRODOWISKO AKADEMICKIE</div>
+                <div class="credits-name-tag">SGGW w Warszawie</div>
+                <div class="credits-desc-tag">Projekt studencki na kierunku Cyberbezpieczeństwo</div>
               </div>
             </div>
           </div>
@@ -2739,9 +2749,9 @@ Posłuchaj
           <line x1="0" y1="580" x2="1280" y2="580" stroke="#5a1217" stroke-width="4" />
         </svg>
 
-        <!-- Przycisk TITLE w lewym górnym rogu -->
+        <!-- Przycisk POWRÓT w lewym górnym rogu -->
         <button class="credits-top-title-btn" id="credits-btn-title">
-          TITLE
+          POWRÓT
         </button>
 
         <!-- Warstwa treści z postaciami i autorami -->
@@ -2750,7 +2760,7 @@ Posłuchaj
         </div>
 
         <!-- Strzałka nawigacji w prawym dolnym rogu -->
-        <button class="credits-arrow-btn" id="credits-arrow-btn" title="Kolejna strona">
+        <button class="credits-arrow-btn" id="credits-arrow-btn" title="${a===1?"Kolejna strona":"Poprzednia strona"}">
           ${a===1?"➔":"⬅"}
         </button>
       </div>
@@ -3172,9 +3182,9 @@ Posłuchaj
             <span class="dd-title-btn-text">ROZPOCZNIJ GRĘ</span>
           </button>
 
-          <button class="dd-title-btn btn-title-credits" id="title-btn-credits">
+          <button class="dd-title-btn btn-title-credits" id="title-btn-credits" title="Informacje o autorze i twórcach">
             <span class="dd-title-btn-icon">📜</span>
-            <span class="dd-title-btn-text">CREDITS</span>
+            <span class="dd-title-btn-text">AUTOR</span>
           </button>
         </div>
       </div>
