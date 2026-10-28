@@ -9930,17 +9930,17 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   position: absolute;
   top: 24px;
   left: 24px;
-  background: #2563eb;
-  border: 2.5px solid #1e3a8a;
-  border-radius: 8px;
+  background: linear-gradient(180deg, #3b84b5 0%, #2e6c96 100%);
+  border: 2px solid #1f4966;
+  border-radius: 6px;
   color: #ffffff;
-  padding: 8px 26px;
+  padding: 8px 28px;
   font-family: 'Fredoka', sans-serif;
   font-weight: 800;
   font-size: 1.15rem;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   cursor: pointer;
-  box-shadow: 0 4px 0 #1e3a8a, 0 8px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 3px 0 #18374d, 0 6px 14px rgba(0, 0, 0, 0.45);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
   z-index: 20;
   transition: transform 0.08s ease, filter 0.1s ease;
@@ -9949,12 +9949,12 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .credits-top-title-btn:hover {
   filter: brightness(1.15);
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #1e3a8a, 0 10px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 5px 0 #18374d, 0 8px 18px rgba(0, 0, 0, 0.55);
 }
 
 .credits-top-title-btn:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #1e3a8a;
+  box-shadow: 0 1px 0 #18374d;
 }
 
 .credits-arrow-btn {

@@ -1037,9 +1037,9 @@ export function openCreditsModal(app) {
           <line x1="0" y1="580" x2="1280" y2="580" stroke="#5a1217" stroke-width="4" />
         </svg>
 
-        <!-- Przycisk POWRÓT w lewym górnym rogu -->
-        <button class="credits-top-title-btn" id="credits-btn-title">
-          POWRÓT
+        <!-- Przycisk TYTUŁ w lewym górnym rogu w stylu ekranu wyboru postaci -->
+        <button class="credits-top-title-btn" id="credits-btn-title" title="Powrót do menu głównego">
+          TYTUŁ
         </button>
 
         <!-- Warstwa treści z postaciami i autorami -->
@@ -1057,8 +1057,14 @@ export function openCreditsModal(app) {
     // Obsługa zdarzeń
     const closeCredits = () => {
       sound.playStep();
-      modalMount.classList.add('hidden');
-      modalMount.innerHTML = '';
+      playJaggedCurtainWipe(() => {
+        modalMount.classList.add('hidden');
+        modalMount.innerHTML = '';
+        if (app.titleScreen && typeof app.titleScreen.show === 'function') {
+          app.titleScreen.show();
+        }
+        musicManager.playTitleMusic();
+      });
     };
 
     document.getElementById('credits-btn-title')?.addEventListener('click', closeCredits);

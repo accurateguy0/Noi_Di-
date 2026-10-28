@@ -93,13 +93,15 @@ export class TitleScreen {
       });
     }
 
-    // Przycisk AUTOR w prawym dolnym rogu
+    // Przycisk AUTOR w prawym dolnym rogu (z ząbkowaną kurtyną)
     const creditsBtn = document.getElementById('title-btn-credits');
     if (creditsBtn) {
       creditsBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         sound.playStep();
-        openCreditsModal(this.app);
+        playJaggedCurtainWipe(() => {
+          openCreditsModal(this.app);
+        });
       });
     }
 
