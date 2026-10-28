@@ -27,33 +27,17 @@ import {
   MODULE_5_2_WORDS
 } from '../data/vocabulary.js';
 
-export const STARTER_ITEMS = {
-  miecz_bojowy: {
-    id: 'miecz_bojowy',
-    name: 'MIECZ BOJOWY',
-    category: 'equipment',
-    color: '#e63946',
-    icon: './assets/itemki/zeszyt.png',
-    statBadge: 'ATAK +2 DMG',
-    bigStat: '+2 DMG',
-    subStatText: 'BROŃ GŁÓWNA',
-    descPl: 'Klasyczna broń bojowa wojownika! Zwiększa siłę ataku o +2 DMG.',
-    descVn: 'Vũ khí chiến đấu của chiến binh! Tăng +2 sát thương.',
-    damageBonus: 2
-  }
-};
-
 /**
  * Inicjalizuje tablice ekwipunku gracza:
- * - equippedItems: dokładnie 2 sloty do użytku
+ * - equippedItems: dokładnie 2 sloty do użytku (początkowo puste, bazowy atak wojownika to 2 DMG)
  * - backpackItems: dokładnie 6 slotów do przechowywania
  */
 export function initPlayerEquipment(player) {
   if (!player.equippedItems || !Array.isArray(player.equippedItems)) {
-    player.equippedItems = [
-      { ...STARTER_ITEMS.miecz_bojowy },
-      null
-    ];
+    player.equippedItems = [null, null];
+  } else {
+    // Oczyszczenie ze starego błędnego obiektu 'miecz_bojowy'
+    player.equippedItems = player.equippedItems.map((item) => (item?.id === 'miecz_bojowy' ? null : item));
   }
 
   if (!player.backpackItems || !Array.isArray(player.backpackItems)) {
@@ -117,6 +101,9 @@ export function initPlayerEquipment(player) {
         };
       }
     }
+  } else {
+    // Oczyszczenie ze starego błędnego obiektu 'miecz_bojowy'
+    player.backpackItems = player.backpackItems.map((item) => (item?.id === 'miecz_bojowy' ? null : item));
   }
 
   // Upewnij się, że długości są równe 2 i 6
@@ -294,26 +281,26 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
 
     modalMount.innerHTML = `
       <div class="dd-inventory-fullscreen-view" style="background-image: url('./assets/tla/biblioteka.png');">
-        <!-- Główny obszar z dwoma panelami: IN BACKPACK po lewej, EQUIPPED po prawej -->
+        <!-- Główny obszar z dwoma panelami: PLECAK po lewej, EKWIPUNEK po prawej -->
         <div class="dd-inv-stage-center">
-          <!-- Lewa strona: IN BACKPACK -->
+          <!-- Lewa strona: PLECAK -->
           <div class="dd-inv-column dd-inv-backpack-col">
-            <h2 class="dd-inv-stage-title">IN BACKPACK</h2>
+            <h2 class="dd-inv-stage-title">PLECAK</h2>
             <div class="dd-inv-stage-grid dd-inv-grid-backpack">
               ${backpackSlotsHtml.join('')}
             </div>
           </div>
 
-          <!-- Prawa strona: EQUIPPED (wzorowana 1:1 na Dicey Dungeons) -->
+          <!-- Prawa strona: EKWIPUNEK (wzorowana 1:1 na Dicey Dungeons) -->
           <div class="dd-inv-column dd-inv-equipped-col">
-            <h2 class="dd-inv-stage-title">EQUIPPED</h2>
+            <h2 class="dd-inv-stage-title">EKWIPUNEK</h2>
             <div class="dd-inv-stage-grid dd-inv-grid-equipped">
               ${equippedSlotsHtml.join('')}
             </div>
           </div>
         </div>
 
-        <!-- Dolny pasek HUD (Identyczny jak na planszy z przyciskiem BACK) -->
+        <!-- Dolny pasek HUD (Identyczny jak na planszy z przyciskiem POWRÓT) -->
         <footer class="dicey-hud-bar dd-inv-bottom-hud-bar">
           <!-- Lewa strona: Awatar + LEVEL + EXP -->
           <div class="hud-hero-cluster">
@@ -338,10 +325,10 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
             </div>
           </div>
 
-          <!-- Środek-Prawo: Przycisk BACK -->
+          <!-- Środek-Prawo: Przycisk POWRÓT -->
           <div class="hud-buttons-cluster">
             <button type="button" class="btn-dd-hud-pill btn-dd-equipment" id="inv-hud-back-btn" title="Wróć na planszę">
-              BACK
+              POWRÓT
             </button>
           </div>
 
@@ -392,12 +379,29 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
         e.dataTransfer.setData('text/plain', JSON.stringify({ loc, idx }));
         e.dataTransfer.effectAllowed = 'move';
         slot.classList.add('is-dragging');
+
+        // Schowaj tooltip przed zrobieniem zrzutu przez przeglądarkę
+        const tt = slot.querySelector('.dd-card-hover-tooltip');
+        if (tt) tt.style.display = 'none';
+
+        // Precyzyjne ustawienie kursora na karcie: obrazkiem przeciągania jest sama karta (.dd-gear-card-face)
+        // a punkt chwytu znajduje się dokładnie pod kursorem użytkownika
+        const cardFace = slot.querySelector('.dd-gear-card-face');
+        if (cardFace && e.dataTransfer.setDragImage) {
+          const rect = cardFace.getBoundingClientRect();
+          const offsetX = Math.max(0, Math.min(cardFace.offsetWidth, e.clientX - rect.left));
+          const offsetY = Math.max(0, Math.min(cardFace.offsetHeight, e.clientY - rect.top));
+          e.dataTransfer.setDragImage(cardFace, offsetX, offsetY);
+        }
+
         sound.playStep();
       });
 
       // 2. Zakończenie przeciągania (wyczyszczenie stylów)
       slot.addEventListener('dragend', () => {
         slot.classList.remove('is-dragging');
+        const tt = slot.querySelector('.dd-card-hover-tooltip');
+        if (tt) tt.style.display = '';
         modalMount.querySelectorAll('.slot-drag-over').forEach((el) => el.classList.remove('slot-drag-over'));
       });
 

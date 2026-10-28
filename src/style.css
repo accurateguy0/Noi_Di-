@@ -5519,8 +5519,11 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   cursor: grabbing !important;
 }
 
-.dd-gear-slot.is-dragging .dd-card-hover-tooltip {
+.dd-gear-slot.is-dragging .dd-card-hover-tooltip,
+.dd-gear-slot:active .dd-card-hover-tooltip {
   display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
 /* Podświetlenie slotu docelowego przy najechaniu z kartą */
