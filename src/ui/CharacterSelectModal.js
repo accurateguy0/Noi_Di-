@@ -38,6 +38,7 @@ export const HEROES = [
     characterClass: 'Warrior',
     avatar: './assets/Warrior.png',
     fallbackAvatar: './assets/Warrior.png',
+    diceIcon: './assets/dice_heads/die_warrior.png',
     tagline: 'Nieugięta siła i odwaga',
     desc: 'Mistrz bezpośrednich starć językowych. Nie boi się trudnych słów ani gramatyki!',
     quote: '„Chcę po prostu super-siły i wielkiej odwagi, ale najpierw powtórzmy słówka ze szkoły!”',
@@ -56,6 +57,7 @@ export const HEROES = [
     characterClass: 'Thief',
     avatar: './assets/Thief.png',
     fallbackAvatar: './assets/Thief.png',
+    diceIcon: './assets/dice_heads/die_thief.png',
     tagline: 'Zwinny złodziej słów',
     desc: 'Zwinny spryciarz potrafiący wykradać literki i końcówki fleksyjne (DMG 2→5, Limit Break 8→13 HP).',
     quote: '„Zwinny i sprytny! Ukradnę brakujące końcówki ze słów i nikt mnie nie dogoni!”',
@@ -74,6 +76,7 @@ export const HEROES = [
     characterClass: 'Robot',
     avatar: './assets/Robot.png',
     fallbackAvatar: './assets/Robot.png',
+    diceIcon: './assets/dice_heads/die_robot.png',
     tagline: 'Logika składni i precyzja analizy',
     desc: 'Mistrz budowy zdania i interpunkcji. Trafienie w limit CPU aktywuje Jackpot!',
     quote: '„Precyzyjna logika i bezbłędna składnia zdania! Prawda zawsze wygrywa z błędem!”',
@@ -92,6 +95,7 @@ export const HEROES = [
     characterClass: 'Inventor',
     avatar: './assets/Inventor.png',
     fallbackAvatar: './assets/Inventor.png',
+    diceIcon: './assets/dice_heads/die_inventor.png',
     tagline: 'Twórczyni form i konstrukcji słów',
     desc: 'Buduje teksty użytkowe i bada słowotwórstwo. Zapewnia +5 sekund w minigrach czasowych!',
     quote: '„Każdy wspaniały tekst wymaga dobrego planu, jasnej konstrukcji i odrobiny pomysłowości!”',
@@ -110,6 +114,7 @@ export const HEROES = [
     characterClass: 'Witch',
     avatar: './assets/Witch.png',
     fallbackAvatar: './assets/Witch.png',
+    diceIcon: './assets/dice_heads/die_witch.png',
     tagline: 'Stylistyka, poezja i kanon lektur',
     desc: 'Odkrywa środki stylistyczne i motywy literackie. Dysponuje księgą 4 zaklęć żywiołów.',
     quote: '„Słowa mają niezwykłą moc! Wystarczy poznać środki stylistyczne i tajemnice ukryte w lekturach!”',
@@ -128,6 +133,7 @@ export const HEROES = [
     characterClass: 'Jester',
     avatar: './assets/Jester.png',
     fallbackAvatar: './assets/Jester.png',
+    diceIcon: './assets/dice_heads/die_jester_unlocked.png',
     tagline: 'Nieprzewidywalny mistrz uników',
     desc: 'Żongluje słowami, faktami i opiniami. Limit Break (8→13 HP) aktywuje unik przez 3 kolejne tury!',
     quote: '„Ha! Gdy naładuję Limit Break, unikam wszystkich ciosów przez kolejne 3 tury!”',
@@ -278,6 +284,25 @@ export function openCharacterSelectModal(app) {
     const selectedPip = heroProgress.selected || 1;
     const selectedEp = hero.episodes.find((ep) => ep.pip === selectedPip) || hero.episodes[0];
 
+    // Budowanie paska ikonek 6 kości bohaterów u góry sceny
+    const heroIconsHtml = HEROES.map((h, idx) => {
+      const isUnlocked = episodeManager.isHeroUnlocked(h.id);
+      const isActive = idx === currentHeroIndex;
+      return `
+        <button
+          type="button"
+          class="cs-hero-pip-btn ${isActive ? 'is-active' : ''} ${!isUnlocked ? 'is-locked-pip' : ''}"
+          data-hero-idx="${idx}"
+          title="${h.name} (${isUnlocked ? 'Odblokowany' : 'Zablokowany'})"
+        >
+          <div class="cs-pip-dice">
+            <img src="${h.diceIcon || h.avatar}" alt="${h.name}" draggable="false" />
+          </div>
+          ${isActive ? '<div class="cs-pip-bracket"></div>' : ''}
+        </button>
+      `;
+    }).join('');
+
     screen.innerHTML = `
       <div class="char-select-stage-wrap">
         <div class="char-select-stage-inner">
@@ -289,9 +314,19 @@ export function openCharacterSelectModal(app) {
             alt="Character Selection Stage"
           />
 
-          <!-- 1. Przycisk MENU (górny lewy róg w ramce tła) -->
+          <!-- 1. Przycisk MENU / TYTUŁ (górny lewy róg w ramce tła) -->
           <button class="cs-top-btn cs-btn-menu" id="cs-btn-menu" title="Powrót do menu głównego">
-            MENU
+            TYTUŁ
+          </button>
+
+          <!-- 2. Rząd 6 kości bohaterów u góry -->
+          <div class="cs-icons-row" id="cs-icons-row">
+            ${heroIconsHtml}
+          </div>
+
+          <!-- 3. Przycisk WYZWANIA (górny prawy róg w ramce tła) -->
+          <button class="cs-top-btn cs-btn-challenges" id="cs-btn-challenges" title="Wybór poziomu / Wyzwania">
+            WYZWANIA
           </button>
 
           <!-- 4. Strzałka w lewo (Left Arrow) -->
@@ -299,58 +334,76 @@ export function openCharacterSelectModal(app) {
             ‹
           </button>
 
-          <!-- 5. Lewa świecąca tablica: Szczegóły bohatera i fabuła wybranego epizodu -->
+          <!-- 5. Lewa świecąca tablica: Szczegóły bohatera LUB ZABLOKOWANY ZAWODNIK -->
           <div class="cs-marquee-board cs-marquee-left ${!isHeroUnlocked ? 'is-locked-board' : ''}">
-            <div class="cs-board-card">
-              <h2 class="cs-board-hero-title">${hero.englishName} ${!isHeroUnlocked ? '🔒' : ''}</h2>
-              <p class="cs-board-quote">„${selectedEp?.intro || hero.quote}”</p>
-              <div class="cs-board-diff">
-                <span class="cs-diff-label">TRUDNOŚĆ:</span>
-                <span class="cs-diff-stars">${hero.difficultyStars}</span>
+            ${isHeroUnlocked ? `
+              <div class="cs-board-card">
+                <h2 class="cs-board-hero-title">${hero.englishName}</h2>
+                <p class="cs-board-quote">„${selectedEp?.intro || hero.quote}”</p>
+                <div class="cs-board-diff">
+                  <span class="cs-diff-label">TRUDNOŚĆ:</span>
+                  <span class="cs-diff-stars">${hero.difficultyStars}</span>
+                </div>
               </div>
-            </div>
+            ` : `
+              <div class="cs-board-card cs-card-locked-left">
+                <div class="cs-locked-contestant-label">
+                  <span class="cs-locked-red-dot">●</span> ZABLOKOWANY ZAWODNIK
+                </div>
+              </div>
+            `}
           </div>
 
           <!-- 6. Centralny podest i postać bohatera (Pedestal Sprite) -->
           <div class="cs-center-hero-wrap">
             <img class="cs-hero-pedestal-sprite ${!isHeroUnlocked ? 'is-locked-hero' : ''}" id="cs-hero-sprite" src="${hero.avatar}" alt="${hero.name}" onerror="this.src='${hero.fallbackAvatar}'" />
-            ${!isHeroUnlocked && prevHero ? `
+            ${!isHeroUnlocked ? `
               <div class="cs-pedestal-lock-banner">
-                🔒 ZABLOKOWANY • Wygraj Epizod 1: ${prevHero.name}
+                <div class="cs-pedestal-lock-title">🔒 Aby odblokować tę postać:</div>
+                <div class="cs-pedestal-lock-sub">${prevHero ? `Wygraj Epizod 1 postacią: ${prevHero.name}` : '???'}</div>
               </div>
             ` : ''}
           </div>
 
-          <!-- 7. Prawa świecąca tablica: Epizody i moduły w stylu Dicey Dungeons -->
+          <!-- 7. Prawa świecąca tablica: Epizody LUB Zablokowane -->
           <div class="cs-marquee-board cs-marquee-right ${!isHeroUnlocked ? 'is-locked-board' : ''}">
-            <div class="cs-board-card">
-              <h2 class="cs-board-episodes-title">EPIZODY ${!isHeroUnlocked ? '🔒' : ''}</h2>
-              <div class="cs-episodes-grid" id="cs-episodes-grid">
-                ${hero.episodes.map((ep) => {
-                  const isUnlocked = isHeroUnlocked && episodeManager.isEpisodeUnlocked(hero.id, ep.pip);
-                  const isCompleted = isHeroUnlocked && episodeManager.isEpisodeCompleted(hero.id, ep.pip);
-                  const isSelected = isHeroUnlocked && ep.pip === selectedPip;
+            ${isHeroUnlocked ? `
+              <div class="cs-board-card">
+                <h2 class="cs-board-episodes-title">EPIZODY</h2>
+                <div class="cs-episodes-grid" id="cs-episodes-grid">
+                  ${hero.episodes.map((ep) => {
+                    const isUnlocked = episodeManager.isEpisodeUnlocked(hero.id, ep.pip);
+                    const isCompleted = episodeManager.isEpisodeCompleted(hero.id, ep.pip);
+                    const isSelected = ep.pip === selectedPip;
 
-                  return `
-                    <div
-                      class="cs-episode-badge ${isUnlocked ? 'is-unlocked' : 'is-locked'} ${isSelected ? 'is-selected' : ''} ${isCompleted ? 'is-completed' : ''}"
-                      data-pip="${ep.pip}"
-                      title="${ep.title} (${ep.sub}) - ${isCompleted ? 'Ukończono!' : isUnlocked ? 'Kliknij, aby wybrać' : 'Zablokowany'}"
-                    >
-                      <div class="cs-episode-text">
-                        <div class="cs-ep-top-line">
-                          <span class="cs-ep-title">${ep.pip}. ${ep.title}</span>
+                    return `
+                      <div
+                        class="cs-episode-badge ${isUnlocked ? 'is-unlocked' : 'is-locked'} ${isSelected ? 'is-selected' : ''} ${isCompleted ? 'is-completed' : ''}"
+                        data-pip="${ep.pip}"
+                        title="${ep.title} (${ep.sub}) - ${isCompleted ? 'Ukończono!' : isUnlocked ? 'Kliknij, aby wybrać' : 'Zablokowany'}"
+                      >
+                        <div class="cs-episode-text">
+                          <div class="cs-ep-top-line">
+                            <span class="cs-ep-title">${ep.pip}. ${ep.title}</span>
+                          </div>
+                          <span class="cs-ep-sub">${ep.sub}</span>
                         </div>
-                        <span class="cs-ep-sub">${ep.sub}</span>
+                        <div class="cs-ep-status-pill">
+                          ${isCompleted ? '👑' : isSelected ? '▶' : isUnlocked ? '' : '🔒'}
+                        </div>
                       </div>
-                      <div class="cs-ep-status-pill">
-                        ${isCompleted ? '👑' : isSelected ? '▶' : isUnlocked ? '' : '🔒'}
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
+                    `;
+                  }).join('')}
+                </div>
               </div>
-            </div>
+            ` : `
+              <div class="cs-board-card cs-card-locked-right">
+                <div class="cs-locked-right-content">
+                  <span class="cs-locked-padlock-icon">🔒</span>
+                  <span class="cs-locked-right-text">Zablokowane</span>
+                </div>
+              </div>
+            `}
           </div>
 
           <!-- 8. Strzałka w prawo (Right Arrow) -->
@@ -381,6 +434,24 @@ export function openCharacterSelectModal(app) {
           app.titleScreen.show();
         }
         musicManager.playTitleMusic();
+      });
+    });
+
+    // 2. Wyzwania
+    document.getElementById('cs-btn-challenges')?.addEventListener('click', () => {
+      sound.playStep();
+      openFloorPickerModal(app);
+    });
+
+    // 3. Kliknięcie w kość bohatera u góry
+    screen.querySelectorAll('.cs-hero-pip-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.getAttribute('data-hero-idx'));
+        if (!isNaN(idx) && idx >= 0 && idx < HEROES.length) {
+          currentHeroIndex = idx;
+          sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
+          renderStage();
+        }
       });
     });
 
