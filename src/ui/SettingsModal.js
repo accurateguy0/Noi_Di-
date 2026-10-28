@@ -152,7 +152,7 @@ export function openSettingsModal(app, initialView = 'main') {
     // ==========================================
     // 2. PODMENU OPCJE
     // Tytuł: OPCJE
-    // Przyciski: WYŚWIETL, DŹWIĘK, GRA, EDYTOR POSTĘPÓW, ZAMKNIJ OPCJE
+    // Przyciski: WYŚWIETL, DŹWIĘK, GRA, ZAMKNIJ OPCJE
     // ==========================================
     else if (currentView === 'options') {
       contentHtml = `
@@ -169,10 +169,6 @@ export function openSettingsModal(app, initialView = 'main') {
 
           <button class="btn-dd-block" id="options-btn-gameplay">
             GRA
-          </button>
-
-          <button class="btn-dd-block" id="options-btn-edit-progress">
-            EDYTOR POSTĘPÓW
           </button>
 
           <button class="btn-dd-block" id="options-btn-close" style="margin-top: 14px;">
@@ -649,11 +645,6 @@ export function openSettingsModal(app, initialView = 'main') {
     document.getElementById('options-btn-gameplay')?.addEventListener('click', () => {
       sound.playStep();
       currentView = 'gameplay';
-      render();
-    });
-    document.getElementById('options-btn-edit-progress')?.addEventListener('click', () => {
-      sound.playStep();
-      currentView = 'edit_progress';
       render();
     });
     document.getElementById('options-btn-close')?.addEventListener('click', closeModal);
