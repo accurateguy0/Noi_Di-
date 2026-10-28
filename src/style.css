@@ -5384,596 +5384,453 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   transform: scale(0.94);
 }
 
-/* ==================== INTERFEJS EKWIPUNKU I PLECAKA (DICEY DUNGEONS STYLE) ==================== */
+/* ==================== INTERFEJS EKWIPUNKU I PLECAKA (1:1 DICEY DUNGEONS) ==================== */
 
-.dd-inv-backdrop {
+.modal-mount-inventory {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  z-index: 9999 !important;
+  display: block !important;
+  overflow: hidden !important;
+}
+
+.dd-inventory-fullscreen-view {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Środkowy obszar ze stołem ekwipunku: IN BACKPACK po lewej, EQUIPPED po prawej */
+.dd-inv-stage-center {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  background: rgba(5, 12, 16, 0.92);
-  backdrop-filter: blur(8px);
-  padding: 12px;
+  gap: 130px;
+  padding: 30px 60px 90px;
   box-sizing: border-box;
+  position: relative;
+  z-index: 5;
 }
 
-.dd-inv-container {
-  width: 96vw;
-  max-width: 1020px;
-  height: 92vh;
-  max-height: 700px;
-  border-radius: 24px;
-  border: 4px solid #1a323d;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), inset 0 0 100px rgba(0, 0, 0, 0.65);
-  position: relative;
+.dd-inv-column {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  background: linear-gradient(180deg, #0e222a 0%, #08171d 100%);
-  background-image: radial-gradient(circle at 50% 30%, rgba(26, 68, 83, 0.4) 0%, transparent 70%),
-                    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 40px);
+  align-items: center;
 }
 
-/* Pochodnie w lochu po bokach */
-.dd-inv-torch {
-  position: absolute;
-  top: 100px;
-  width: 20px;
-  height: 90px;
-  background: #3a2717;
+/* Tytuły "IN BACKPACK" i "EQUIPPED" dokładnie jak w Dicey Dungeons */
+.dd-inv-stage-title {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0 0 16px 0;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.7), 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+/* Prawa kolumna (EQUIPPED) umieszczona nieco niżej zgodnie z perspektywą biblioteki */
+.dd-inv-equipped-col {
+  margin-top: 55px;
+}
+
+/* Siatki kratek na przedmioty */
+.dd-inv-stage-grid {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(35, 42, 75, 0.62);
+  border: 2px dashed rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.4), 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* 6 slotów do przechowywania w plecaku (3 kolumny x 2 wiersze) */
+.dd-inv-grid-backpack {
+  grid-template-columns: repeat(3, 115px);
+  grid-template-rows: repeat(2, 140px);
+}
+
+/* 2 sloty do użytku w wyposażeniu (2 kolumny x 1 wiersz) */
+.dd-inv-grid-equipped {
+  grid-template-columns: repeat(2, 115px);
+  grid-template-rows: repeat(1, 140px);
+}
+
+/* Pojedynczy slot siatki */
+.dd-gear-slot {
+  width: 115px;
+  height: 140px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  position: relative;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Pusty slot (przerywana delikatna obwódka) */
+.dd-gear-slot.slot-empty {
+  border: 1.5px dashed rgba(255, 255, 255, 0.35);
+  background: rgba(18, 22, 45, 0.35);
+}
+
+/* Zajęty slot z kartą ekwipunku w stylu Dicey Dungeons (jak VENUS FLY TRAP w referencji) */
+.dd-gear-slot.slot-occupied {
+  cursor: pointer;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.dd-gear-slot.slot-occupied:hover {
+  transform: translateY(-4px) scale(1.02);
+  filter: brightness(1.08);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+}
+
+.dd-gear-slot.slot-occupied.is-selected {
+  outline: 3px solid #ffd166;
+  outline-offset: 2px;
+}
+
+/* Twarz karty ekwipunku (jednolity kolor, zaokrąglona, ikona, nazwa, statystyka) */
+.dd-gear-card-face {
+  width: 100%;
+  height: 100%;
   border-radius: 5px;
-  z-index: 1;
-  pointer-events: none;
-  border: 2px solid #1a120b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 6px;
+  box-sizing: border-box;
+  color: #ffffff;
 }
 
-.dd-inv-torch.left {
-  left: 10px;
+.dd-gear-card-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
 }
 
-.dd-inv-torch.right {
-  right: 10px;
+.dd-gear-card-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
-.torch-flame {
-  position: absolute;
-  top: -24px;
+.dd-gear-card-title {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.15;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.dd-gear-card-stat {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+/* Pasek informacyjny wybranego przedmiotu (unobtrusive, nad dolnym HUD-em) */
+.dd-inv-floating-info-bar {
+  position: fixed;
+  bottom: 74px;
   left: 50%;
   transform: translateX(-50%);
-  width: 22px;
-  height: 32px;
-  background: radial-gradient(ellipse at 50% 80%, #ffd166 0%, #ff5400 70%, transparent 95%);
-  border-radius: 50% 50% 20% 20%;
-  filter: drop-shadow(0 0 12px rgba(255, 180, 0, 0.85));
-  animation: torchFlicker 1.8s ease-in-out infinite alternate;
-}
-
-@keyframes torchFlicker {
-  0% { transform: translateX(-50%) scale(0.95) rotate(-2deg); opacity: 0.9; }
-  50% { transform: translateX(-50%) scale(1.08) rotate(3deg); opacity: 1; }
-  100% { transform: translateX(-50%) scale(0.98) rotate(-1deg); opacity: 0.92; }
-}
-
-/* Główna siatka wnętrza: Lewo (plecak) i Prawo (inspektor + załączone) */
-.dd-inv-main-grid {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 20px;
-  padding: 16px 24px 10px;
-  overflow: hidden;
-  position: relative;
-  z-index: 5;
-  box-sizing: border-box;
-}
-
-/* Lewa strona: W PLECAKU */
-.dd-inv-backpack-pane {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.dd-inv-section-title {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.32rem;
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  text-align: center;
-  margin: 0 0 12px 0;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
-}
-
-.dd-inv-backpack-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 130px;
-  gap: 12px;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 8px;
-  padding-bottom: 12px;
-  box-sizing: border-box;
-}
-
-/* Stylizowany pasek przewijania plecaka */
-.dd-inv-backpack-grid::-webkit-scrollbar {
-  width: 9px;
-}
-
-.dd-inv-backpack-grid::-webkit-scrollbar-track {
-  background: rgba(10, 24, 30, 0.55);
+  background: rgba(18, 22, 35, 0.92);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.dd-inv-backpack-grid::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #ffd166 0%, #d49a00 100%);
-  border-radius: 999px;
-  box-shadow: 0 0 8px rgba(255, 209, 102, 0.4);
-}
-
-.dd-inv-backpack-grid::-webkit-scrollbar-thumb:hover {
-  background: #ffe082;
-  box-shadow: 0 0 12px rgba(255, 209, 102, 0.7);
-}
-
-.dd-inv-slot-empty {
-  min-height: 96px;
-  border: 2px dashed rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  background: rgba(10, 24, 30, 0.35);
-  box-sizing: border-box;
-}
-
-.dd-inv-slot-card {
-  position: relative;
-  min-height: 96px;
-  border-radius: 12px;
-  border: 2.5px solid var(--slot-accent, #3a86ff);
-  background: #13222a;
+  padding: 6px 20px;
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  box-sizing: border-box;
-}
-
-.dd-inv-slot-card:hover:not(.slot-locked) {
-  transform: translateY(-3px) scale(1.03);
-  z-index: 5;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
-}
-
-.dd-inv-slot-card.is-selected {
-  outline: 3px solid #ffd166;
-  box-shadow: 0 0 16px rgba(255, 209, 102, 0.8);
-  z-index: 6;
-}
-
-.dd-inv-slot-card.slot-locked {
-  border: 2px dashed rgba(255, 255, 255, 0.18);
-  background: rgba(15, 23, 42, 0.5);
-  opacity: 0.65;
-}
-
-.dd-inv-card-inner {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-}
-
-.dd-inv-card-header {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.86rem;
-  font-weight: 900;
+  align-items: center;
+  gap: 14px;
+  z-index: 1001;
   color: #ffffff;
-  text-align: center;
-  padding: 5px 6px;
-  text-transform: uppercase;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+
+.dd-info-tag-name {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #ffd166;
+}
+
+.dd-info-tag-stat {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 800;
+  color: #06d6a0;
+  background: rgba(6, 214, 160, 0.15);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.dd-info-tag-desc {
+  color: #cbd5e1;
+  max-width: 380px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.4px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-.dd-inv-card-header.header-locked {
-  background: #334155;
+.dd-info-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-dd-quick-act {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.btn-act-equip {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.btn-act-unequip {
+  background: #6366f1;
+  color: #ffffff;
+}
+
+.btn-act-eat {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+.btn-dd-quick-act:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.dd-info-placeholder {
   color: #94a3b8;
+  font-size: 0.82rem;
+  font-style: italic;
 }
 
-.dd-inv-card-slot-center {
-  flex: 1;
+/* ==================== DOLNY PASEK HUD EKWIPUNKU (1:1 DICEY DUNGEONS) ==================== */
+.dd-inv-bottom-hud-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 68px;
+  background: #2b1d24;
+  border-top: 1px solid rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  box-sizing: border-box;
+  z-index: 1002;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.dd-hud-left-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dd-hud-avatar-box {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dd-hud-avatar-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.dd-hud-hero-label {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.dd-hud-hp-capsule-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 4px 6px;
+  margin-left: 12px;
+}
+
+.dd-hud-hp-capsule {
+  background: #ff5565;
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  padding: 3px 24px;
+  border-radius: 999px;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.dd-hud-sub-stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 3px;
+}
+
+.dd-sub-coin {
+  color: #ffd166;
+}
+
+.dd-sub-dice {
+  color: #ffffff;
+}
+
+/* Środek: LEVEL + Level up */
+.dd-hud-center-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  background: rgba(0, 0, 0, 0.25);
+}
+
+.dd-hud-level-line {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.dd-hud-xp-line {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+/* Przycisk BACK */
+.dd-hud-back-group {
+  display: flex;
+  align-items: center;
+}
+
+.btn-dicey-hud-back {
+  background: #5d636e;
+  color: #ffffff;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  border: 2px solid #43474f;
+  border-radius: 8px;
+  padding: 9px 44px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  transition: all 0.15s ease;
+}
+
+.btn-dicey-hud-back:hover {
+  background: #6e7683;
+  border-color: #555b65;
+  transform: translateY(-1px);
+}
+
+.btn-dicey-hud-back:active {
+  transform: translateY(1px);
+}
+
+/* Prawa strona: Czaszki + Floor */
+.dd-hud-right-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 2px;
 }
 
-.slot-item-emoji {
-  font-size: 1.65rem;
-  line-height: 1.1;
-}
-
-.slot-item-label {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #ffd166;
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.slot-locked-icon {
-  font-size: 1.55rem;
-  opacity: 0.45;
-}
-
-/* Prawa strona: INSPEKTOR i ZAŁOŻONE */
-.dd-inv-right-pane {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  height: 100%;
-  overflow: hidden;
-}
-
-.dd-inv-inspector-wrap {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.dd-inspector-card {
-  height: 100%;
-  border: 3.5px solid var(--inspect-color, #3a86ff);
-  border-radius: 18px;
-  background: #122129;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6);
-  box-sizing: border-box;
-}
-
-.dd-inspector-header {
-  color: #ffffff;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 900;
-  text-align: center;
-  padding: 8px 12px;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.dd-inspector-body {
-  flex: 1;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow-y: auto;
-  box-sizing: border-box;
-}
-
-.dd-inspector-slot-box {
-  border: 2px dashed var(--inspect-color, #3a86ff);
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 8px 14px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.dd-inspector-emoji {
-  font-size: 1.6rem;
-}
-
-.dd-inspector-big-stat {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.35rem;
-  font-weight: 900;
-  color: #ffd166;
-}
-
-.dd-inspector-sub {
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: #94a3b8;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.dd-inspector-desc-box {
-  margin: 8px 0;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.88rem;
-  line-height: 1.4;
-  color: #e2e8f0;
-}
-
-.dd-inspector-desc-pl {
-  margin: 0 0 4px 0;
-  color: #ffffff;
-}
-
-.dd-inspector-desc-vn {
-  margin: 0;
-  color: #38bdf8;
-  font-size: 0.82rem;
-}
-
-.dd-inspector-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 4px;
-}
-
-.btn-dd-inv-action {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.98rem;
-  font-weight: 900;
-  padding: 7px 20px;
-  border-radius: 999px;
-  border: 2.5px solid;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: transform 0.12s ease, filter 0.12s ease;
-}
-
-.btn-dd-inv-action:hover {
-  transform: scale(1.04);
-  filter: brightness(1.15);
-}
-
-.btn-inv-eat {
-  background: linear-gradient(180deg, #f77f00 0%, #d62828 100%);
-  color: #ffffff;
-  border-color: #fcbf49;
-}
-
-.btn-inv-speak {
-  background: linear-gradient(180deg, #06d6a0 0%, #059b73 100%);
-  color: #042f2e;
-  border-color: #a7f3d0;
-}
-
-/* Sekcja: EQUIPPED (ZAŁOŻONE) */
-.dd-inv-equipped-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.dd-inv-sub-title {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.12rem;
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  margin: 0 0 6px 0;
-}
-
-.dd-inv-equipped-rack {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  min-height: 110px;
-}
-
-.dd-equipped-slot {
-  border-radius: 12px;
-  padding: 6px 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.14s ease, box-shadow 0.14s ease;
-  box-sizing: border-box;
-}
-
-.dd-equipped-slot.slot-empty {
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  background: rgba(10, 24, 30, 0.4);
-  opacity: 0.55;
-}
-
-.dd-equipped-slot.slot-active {
-  border: 2.5px solid var(--eq-c, #3a86ff);
-  background: #13222a;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-.dd-equipped-slot.slot-active:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.7), 0 0 10px var(--eq-c);
-}
-
-.eq-tag {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #94a3b8;
-  text-transform: uppercase;
-}
-
-.eq-icon {
-  font-size: 1.2rem;
-  margin: 2px 0;
-}
-
-.eq-name {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.74rem;
-  font-weight: 900;
-  color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.eq-stat {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: #ffd166;
-}
-
-/* Dolna belka nawigacji w stylu Dicey Dungeons */
-.dd-inv-bottom-bar {
-  background: rgba(8, 18, 24, 0.96);
-  border-top: 3.5px solid #162a33;
-  padding: 10px 24px;
+.dd-hud-skulls-strip {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  z-index: 10;
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.5);
-  box-sizing: border-box;
+  gap: 4px;
+  font-size: 1.1rem;
 }
 
-.dd-inv-hero-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.dd-hud-skull-icon {
+  opacity: 0.35;
+  filter: grayscale(1);
 }
 
-.dd-inv-hero-img-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid #ffd166;
-  background: rgba(0, 0, 0, 0.4);
+.dd-hud-skull-icon.is-reached {
+  opacity: 1;
+  filter: none;
 }
 
-.dd-inv-hero-img-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.dd-hero-name {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 900;
-  color: #ffd166;
-}
-
-.dd-hero-sub {
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.76rem;
-  color: #94a3b8;
-}
-
-.dd-inv-stats-cluster {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.dd-inv-hp-pill {
-  background: linear-gradient(180deg, #ff4d6d 0%, #c9184a 100%);
-  color: #ffffff;
-  padding: 5px 14px;
-  border-radius: 999px;
-  border: 2px solid #ff758f;
+.dd-hud-floor-label {
   font-family: 'Fredoka', sans-serif;
   font-size: 0.95rem;
-  font-weight: 900;
-  box-shadow: 0 2px 8px rgba(201, 24, 74, 0.4);
-}
-
-.dd-inv-coin-pill {
-  background: rgba(255, 209, 102, 0.18);
-  color: #ffd166;
-  border: 2px solid #ffd166;
-  padding: 5px 14px;
-  border-radius: 999px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 900;
-}
-
-.dd-inv-dice-pill {
-  background: rgba(255, 255, 255, 0.1);
+  font-weight: 700;
   color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  padding: 5px 14px;
-  border-radius: 999px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 800;
 }
 
-.dd-inv-lvl-pill {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.92rem;
-  color: #94a3b8;
-}
-
-.dd-inv-lvl-pill b {
-  color: #ffd166;
-}
-
-.btn-dd-inv-back {
-  background: linear-gradient(180deg, #64748b 0%, #334155 100%);
-  color: #ffffff;
-  border: 3px solid #94a3b8;
-  border-radius: 999px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 900;
-  padding: 8px 30px;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
-  transition: transform 0.14s ease, filter 0.14s ease;
-}
-
-.btn-dd-inv-back:hover {
-  filter: brightness(1.2);
-  transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-  .dd-inv-main-grid {
-    grid-template-columns: 1fr;
-    overflow-y: auto;
+@media (max-width: 900px) {
+  .dd-inv-stage-center {
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px 20px 80px;
   }
-  .dd-inv-backpack-grid {
-    min-height: 220px;
+  .dd-inv-equipped-col {
+    margin-top: 0;
   }
 }
-
 /* ==================== PLANSZA 6: ASSET MYŚLI - QUIZ OPINII I WALKA LAJK/HEJT ==================== */
 
 .dd-thoughts-backdrop {

@@ -168,38 +168,18 @@ export function addItemToPlayerInventory(player, catalogItem) {
 }
 
 export function openInventoryModal(app, initialSelectedId = null, filterCategory = null) {
-  musicManager.playBookMusic();
+  // NIE ZMIENIAJ MUZYKI podczas wejścia w ekwipunek: muzyka z planszy gra dalej w tle!
   sound.playStep();
 
   initPlayerEquipment(app.player);
 
   const modalMount = document.getElementById('modal-mount');
   modalMount.classList.remove('hidden');
+  modalMount.classList.add('modal-mount-inventory');
 
-  const allWords = [
-    ...SLANG_WORDS.slice(0, 5),
-    ...BOARD_3_WORDS,
-    ...BOARD_4_WORDS,
-    ...BOARD_5_WORDS,
-    ...BOARD_6_WORDS,
-    ...CITY_1_WORDS,
-    ...CITY_2_WORDS,
-    ...CITY_3_WORDS,
-    ...MODULE_3_1_WORDS,
-    ...MODULE_3_2_WORDS,
-    ...MODULE_3_3_WORDS,
-    ...MODULE_4_1_WORDS,
-    ...MODULE_4_2_WORDS,
-    ...MODULE_4_3_WORDS,
-    ...MODULE_5_1_WORDS,
-    ...MODULE_5_2_WORDS
-  ];
-
-  let selectedLocation = 'equipped'; // 'equipped' | 'backpack' | 'dictionary'
+  let selectedLocation = 'equipped'; // 'equipped' | 'backpack'
   let selectedIndex = 0;
-  let showDictionaryView = false;
 
-  // Domyślny wybór pierwszego przedmiotu
   if (app.player.equippedItems[0]) {
     selectedLocation = 'equipped';
     selectedIndex = 0;
@@ -211,9 +191,6 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
   const renderInventory = () => {
     initPlayerEquipment(app.player);
 
-    const unlockedSlangsCount = allWords.filter((w) => app.unlockedWordIds.has(w.id)).length;
-
-    // Pobierz aktualnie wybrany przedmiot
     let selectedItem = null;
     if (selectedLocation === 'equipped') {
       selectedItem = app.player.equippedItems[selectedIndex] || null;
@@ -221,24 +198,7 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
       selectedItem = app.player.backpackItems[selectedIndex] || null;
     }
 
-    // Jeśli nic nie wybrano, wybierz pierwszy dostępny przedmiot
-    if (!selectedItem) {
-      const eqItem = app.player.equippedItems.find((it) => it !== null);
-      if (eqItem) {
-        selectedLocation = 'equipped';
-        selectedIndex = app.player.equippedItems.indexOf(eqItem);
-        selectedItem = eqItem;
-      } else {
-        const bpItem = app.player.backpackItems.find((it) => it !== null);
-        if (bpItem) {
-          selectedLocation = 'backpack';
-          selectedIndex = app.player.backpackItems.indexOf(bpItem);
-          selectedItem = bpItem;
-        }
-      }
-    }
-
-    // Generowanie 6 slotów do plecaka (IN BACKPACK)
+    // Generowanie dokładnie 6 slotów do plecaka (IN BACKPACK) w siatce 3 kolumny x 2 wiersze
     const backpackSlotsHtml = [];
     for (let i = 0; i < 6; i++) {
       const item = app.player.backpackItems[i];
@@ -247,39 +207,33 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
       if (item) {
         backpackSlotsHtml.push(`
           <div
-            class="dd-inv-slot-card ${isSelected ? 'is-selected' : ''}"
-            style="--slot-accent: ${item.color || '#3b82f6'};"
+            class="dd-gear-slot slot-occupied ${isSelected ? 'is-selected' : ''}"
+            style="--card-theme-color: ${item.color || '#38b000'};"
             data-location="backpack"
             data-index="${i}"
+            title="${item.name}"
           >
-            <div class="dd-inv-card-inner">
-              <div class="dd-inv-card-header" style="background: ${item.color || '#3b82f6'};">
-                ${item.name}
+            <div class="dd-gear-card-face" style="background: ${item.color || '#38b000'};">
+              <div class="dd-gear-card-icon">
+                ${item.icon ? `<img src="${item.icon}" alt="${item.name}" />` : '🎒'}
               </div>
-              <div class="dd-inv-card-slot-center">
-                ${item.icon ? `<img src="${item.icon}" alt="${item.name}" style="width:36px;height:36px;object-fit:contain;" />` : `<span class="slot-item-emoji">🎒</span>`}
-                <span class="slot-item-label">${item.bigStat || item.statBadge}</span>
-              </div>
+              <div class="dd-gear-card-title">${item.name}</div>
+              <div class="dd-gear-card-stat">${item.bigStat || item.statBadge}</div>
             </div>
           </div>
         `);
       } else {
         backpackSlotsHtml.push(`
           <div
-            class="dd-inv-slot-empty ${isSelected ? 'is-selected' : ''}"
+            class="dd-gear-slot slot-empty ${isSelected ? 'is-selected' : ''}"
             data-location="backpack"
             data-index="${i}"
-            style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px;"
-          >
-            <span style="font-family: 'Fredoka', sans-serif; font-size: 0.76rem; color: #64748b; font-weight: 700; text-transform: uppercase;">
-              [WOLNY SLOT ${i + 1}]
-            </span>
-          </div>
+          ></div>
         `);
       }
     }
 
-    // Generowanie 2 slotów do użytku (EQUIPPED)
+    // Generowanie dokładnie 2 slotów do użytku (EQUIPPED)
     const equippedSlotsHtml = [];
     for (let i = 0; i < 2; i++) {
       const item = app.player.equippedItems[i];
@@ -288,301 +242,260 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
       if (item) {
         equippedSlotsHtml.push(`
           <div
-            class="dd-equipped-slot slot-active ${isSelected ? 'is-selected' : ''}"
-            style="--eq-c: ${item.color || '#10b981'}; min-height: 110px;"
+            class="dd-gear-slot slot-occupied ${isSelected ? 'is-selected' : ''}"
+            style="--card-theme-color: ${item.color || '#38b000'};"
             data-location="equipped"
             data-index="${i}"
+            title="${item.name}"
           >
-            <div class="eq-tag" style="color: #6ee7b7; font-weight: 800;">SLOT ${i + 1} • W UŻYCIU</div>
-            <div class="eq-icon">
-              ${item.icon ? `<img src="${item.icon}" alt="${item.name}" style="width:40px;height:40px;object-fit:contain;" />` : '⚔️'}
+            <div class="dd-gear-card-face" style="background: ${item.color || '#38b000'};">
+              <div class="dd-gear-card-icon">
+                ${item.icon ? `<img src="${item.icon}" alt="${item.name}" />` : '⚔️'}
+              </div>
+              <div class="dd-gear-card-title">${item.name}</div>
+              <div class="dd-gear-card-stat">${item.bigStat || item.statBadge}</div>
             </div>
-            <div class="eq-name">${item.name}</div>
-            <div class="eq-stat" style="color: #ffd166; font-weight: 800;">${item.statBadge}</div>
           </div>
         `);
       } else {
         equippedSlotsHtml.push(`
           <div
-            class="dd-equipped-slot slot-empty ${isSelected ? 'is-selected' : ''}"
+            class="dd-gear-slot slot-empty ${isSelected ? 'is-selected' : ''}"
             data-location="equipped"
             data-index="${i}"
-            style="min-height: 110px;"
-          >
-            <div class="eq-tag">SLOT DO UŻYTKU ${i + 1}</div>
-            <div class="eq-icon" style="opacity: 0.35;">—</div>
-            <div class="eq-name" style="color: #94a3b8;">[WOLNY SLOT]</div>
-          </div>
+          ></div>
         `);
       }
     }
 
+    const curFloor = app.currentFloor === 0 ? 1 : app.currentFloor;
+    const heroName = (app.player.characterClass || app.player.heroName || 'WARRIOR').toUpperCase();
+    const heroAvatar = app.player.avatar || './assets/Warrior.png';
+    const xpToNext = Math.max(1, (app.player.xpToNext || 2) - (app.player.xp || 0));
+
     modalMount.innerHTML = `
-      <div class="dicey-modal-backdrop dd-inv-backdrop">
-        <div class="dd-inv-container" style="max-width: 980px;">
-          <!-- Tło lochu: pochodnie w stylu Dicey Dungeons -->
-          <div class="dd-inv-torch left" aria-hidden="true"><div class="torch-flame"></div></div>
-          <div class="dd-inv-torch right" aria-hidden="true"><div class="torch-flame"></div></div>
-
-          <!-- Główna zawartość: Lewo (PLECAK 6 slotów) i Prawo (EQUIPPED 2 sloty + INSPEKTOR) -->
-          <div class="dd-inv-main-grid" style="grid-template-columns: 1.1fr 0.9fr; gap: 24px;">
-            <!-- Lewa strona: W PLECAKU (6 slotów na przechowanie) -->
-            <div class="dd-inv-backpack-pane">
-              <div class="dd-inv-section-title" style="display: flex; justify-content: space-between; align-items: center;">
-                <span>IN BACKPACK • W PLECAKU</span>
-                <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 700; background: rgba(0,0,0,0.4); padding: 2px 10px; border-radius: 999px;">
-                  ${app.player.backpackItems.filter(Boolean).length} / 6
-                </span>
-              </div>
-              <div class="dd-inv-backpack-grid" style="grid-template-columns: repeat(3, 1fr); grid-auto-rows: 125px; gap: 12px;">
-                ${backpackSlotsHtml.join('')}
-              </div>
-
-              <!-- Przycisk do talii słownika u dołu lewej kolumny -->
-              <div style="margin-top: 14px; display: flex; justify-content: center;">
-                <button
-                  id="inv-open-words-btn"
-                  style="
-                    padding: 8px 18px;
-                    border-radius: 12px;
-                    background: rgba(6, 214, 160, 0.15);
-                    border: 1.5px solid #06d6a0;
-                    color: #06d6a0;
-                    font-family: 'Fredoka', sans-serif;
-                    font-weight: 800;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    font-size: 0.9rem;
-                    transition: all 0.15s ease;
-                  "
-                  onmouseover="this.style.background='#06d6a0'; this.style.color='#0f172a';"
-                  onmouseout="this.style.background='rgba(6, 214, 160, 0.15)'; this.style.color='#06d6a0';"
-                >
-                  <span>📖</span> TALIA SŁOWNIKA (${unlockedSlangsCount}/${allWords.length})
-                </button>
-              </div>
-            </div>
-
-            <!-- Prawa strona: EQUIPPED (2 sloty do użytku) oraz INSPEKTOR -->
-            <div class="dd-inv-right-pane" style="display: flex; flex-direction: column; gap: 16px;">
-              <!-- Sekcja: EQUIPPED (2 sloty do użytku) -->
-              <div class="dd-inv-equipped-section">
-                <div class="dd-inv-sub-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <span>EQUIPPED • DO UŻYTKU (2 SLOTY)</span>
-                  <span style="font-size: 0.8rem; color: #34d399; font-weight: 800;">
-                    ${app.player.equippedItems.filter(Boolean).length} / 2 AKTYWNE
-                  </span>
-                </div>
-                <div class="dd-inv-equipped-rack" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                  ${equippedSlotsHtml.join('')}
-                </div>
-              </div>
-
-              <!-- Podgląd wybranego przedmiotu (Card Inspector) -->
-              <div class="dd-inv-inspector-wrap" style="flex: 1; min-height: 0;">
-                ${selectedItem ? `
-                  <div class="dd-inspector-card" style="--inspect-color: ${selectedItem.color || '#3a86ff'}; height: 100%;">
-                    <div class="dd-inspector-header" style="background: ${selectedItem.color || '#3a86ff'}; display: flex; justify-content: space-between; align-items: center;">
-                      <span>${selectedItem.name}</span>
-                      <span style="font-size: 0.75rem; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 999px;">
-                        ${selectedLocation === 'equipped' ? 'W UŻYCIU' : 'W PLECAKU'}
-                      </span>
-                    </div>
-                    <div class="dd-inspector-body">
-                      <div class="dd-inspector-slot-box">
-                        ${selectedItem.icon ? `<img src="${selectedItem.icon}" alt="${selectedItem.name}" style="width:48px;height:48px;object-fit:contain;margin-bottom:4px;" />` : ''}
-                        <span class="dd-inspector-big-stat">${selectedItem.bigStat || selectedItem.statBadge}</span>
-                        <div class="dd-inspector-sub">${selectedItem.subStatText || 'PRZEDMIOT'}</div>
-                      </div>
-
-                      <div class="dd-inspector-desc-box">
-                        <p class="dd-inspector-desc-pl">${selectedItem.descPl ? selectedItem.descPl.replace(/\n/g, '<br/>') : 'Przedmiot w ekwipunku bohatera.'}</p>
-                        ${selectedItem.descVn ? `<p class="dd-inspector-desc-vn">${selectedItem.descVn.replace(/\n/g, '<br/>')}</p>` : ''}
-                      </div>
-
-                      <div class="dd-inspector-actions" style="display: flex; gap: 10px; justify-content: center; margin-top: 8px;">
-                        ${selectedLocation === 'backpack' ? `
-                          <button class="btn-dd-inv-action" id="inv-equip-btn" style="background: #10b981; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 800; cursor: pointer;">
-                            ⭐ ZAŁÓŻ DO UŻYTKU
-                          </button>
-                        ` : `
-                          <button class="btn-dd-inv-action" id="inv-unequip-btn" style="background: #6366f1; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 800; cursor: pointer;">
-                            🎒 SCHOWAJ DO PLECAKA
-                          </button>
-                        `}
-
-                        ${selectedItem.actionType === 'eat' ? `
-                          <button class="btn-dd-inv-action btn-inv-eat" id="inv-eat-item-btn" style="background: #f59e0b; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 800; cursor: pointer;">
-                            🍖 ZJEDZ (+${selectedItem.healAmount || 10} HP)
-                          </button>
-                        ` : ''}
-                      </div>
-                    </div>
-                  </div>
-                ` : `
-                  <div class="dd-inspector-card" style="height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; color: #64748b; padding: 20px;">
-                    <div>
-                      <div style="font-size: 2.5rem; margin-bottom: 8px;">🎒</div>
-                      <h3 style="margin: 0; color: #94a3b8; font-family: 'Fredoka', sans-serif;">Pusty slot</h3>
-                      <p style="font-size: 0.85rem; margin-top: 4px;">Wybierz przedmiot z plecaka lub wyposażenia, aby zobaczyć szczegóły i założyć.</p>
-                    </div>
-                  </div>
-                `}
-              </div>
+      <div class="dd-inventory-fullscreen-view" style="background-image: url('./assets/tla/biblioteka.png');">
+        <!-- Główny obszar z dwoma panelami: IN BACKPACK po lewej, EQUIPPED po prawej -->
+        <div class="dd-inv-stage-center">
+          <!-- Lewa strona: IN BACKPACK -->
+          <div class="dd-inv-column dd-inv-backpack-col">
+            <h2 class="dd-inv-stage-title">IN BACKPACK</h2>
+            <div class="dd-inv-stage-grid dd-inv-grid-backpack">
+              ${backpackSlotsHtml.join('')}
             </div>
           </div>
 
-          <!-- Dolna belka nawigacji w stylu Dicey Dungeons -->
-          <div class="dd-inv-bottom-bar">
-            <div class="dd-inv-hero-info">
-              <div class="dd-inv-hero-img-wrap">
-                <img src="${app.player.avatar || './assets/Warrior.png'}" alt="${app.player.heroName || 'Bohater'}" onerror="this.src='./assets/Warrior.png'" />
-              </div>
-              <div class="dd-inv-hero-details">
-                <span class="dd-hero-name">${(app.player.heroName || app.player.characterClass || 'Bohater').toUpperCase()}</span>
-                <span class="dd-hero-sub">Klasa: ${app.player.characterClass || 'Bohater'} • Poziom A0</span>
-              </div>
+          <!-- Prawa strona: EQUIPPED (wzorowana 1:1 na Dicey Dungeons) -->
+          <div class="dd-inv-column dd-inv-equipped-col">
+            <h2 class="dd-inv-stage-title">EQUIPPED</h2>
+            <div class="dd-inv-stage-grid dd-inv-grid-equipped">
+              ${equippedSlotsHtml.join('')}
             </div>
-
-            <div class="dd-inv-stats-cluster">
-              <div class="dd-inv-hp-pill">
-                HP: <b>${app.player.hp} / ${app.player.maxHp}</b>
-              </div>
-              <div class="dd-inv-coin-pill">
-                Monety: <b>${app.player.coins}</b>
-              </div>
-              <div class="dd-inv-dice-pill">
-                Kości: <b>x${app.player.diceCount}</b>
-              </div>
-              <div class="dd-inv-lvl-pill">
-                POZIOM <b>${app.player.level}</b> (${Math.max(0, app.player.xpToNext - app.player.xp)} EXP)
-              </div>
-            </div>
-
-            <button class="btn-dd-inv-back" id="inv-back-btn">
-              POWRÓT (BACK)
-            </button>
           </div>
         </div>
+
+        <!-- Pasek informacyjny wybranego przedmiotu (unobtrusive, tuż nad dolnym HUD-em) -->
+        <div class="dd-inv-floating-info-bar ${selectedItem ? 'is-visible' : ''}">
+          ${selectedItem ? `
+            <div class="dd-info-tag-name">${selectedItem.name}</div>
+            <div class="dd-info-tag-stat">${selectedItem.bigStat || selectedItem.statBadge}</div>
+            <div class="dd-info-tag-desc">${selectedItem.descPl || ''}</div>
+            <div class="dd-info-actions">
+              ${selectedLocation === 'backpack' ? `
+                <button type="button" class="btn-dd-quick-act btn-act-equip" id="inv-quick-equip-btn">
+                  ⭐ ZAŁÓŻ
+                </button>
+              ` : `
+                <button type="button" class="btn-dd-quick-act btn-act-unequip" id="inv-quick-unequip-btn">
+                  🎒 SCHOWAJ
+                </button>
+              `}
+              ${selectedItem.actionType === 'eat' ? `
+                <button type="button" class="btn-dd-quick-act btn-act-eat" id="inv-quick-eat-btn">
+                  🍖 ZJEDZ (+${selectedItem.healAmount || 10} HP)
+                </button>
+              ` : ''}
+            </div>
+          ` : `
+            <div class="dd-info-placeholder">Kliknij przedmiot, aby go założyć lub schować do plecaka</div>
+          `}
+        </div>
+
+        <!-- Pełnowymiarowy dolny pasek HUD (1:1 Dicey Dungeons na całej szerokości ekranu) -->
+        <footer class="dd-inv-bottom-hud-bar">
+          <!-- Lewa strona: Awatar + Nazwa + HP + Monety + Kości -->
+          <div class="dd-hud-left-group">
+            <div class="dd-hud-avatar-box">
+              <img src="${heroAvatar}" alt="${heroName}" onerror="this.src='./assets/Warrior.png'" />
+            </div>
+            <div class="dd-hud-hero-label">${heroName}</div>
+            <div class="dd-hud-hp-capsule-wrap">
+              <div class="dd-hud-hp-capsule">${app.player.hp}/${app.player.maxHp}</div>
+              <div class="dd-hud-sub-stats">
+                <span class="dd-sub-coin">🪙 ${app.player.coins || 0}</span>
+                <span class="dd-sub-dice">🎲 x${app.player.diceCount || 2}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Środek: LEVEL + EXP -->
+          <div class="dd-hud-center-group">
+            <div class="dd-hud-level-line">LEVEL ${app.player.level || 1}</div>
+            <div class="dd-hud-xp-line">Level up in ★ ${xpToNext}</div>
+          </div>
+
+          <!-- Przycisk BACK (szary zaokrąglony prostokąt w pasku HUD jak w Dicey Dungeons) -->
+          <div class="dd-hud-back-group">
+            <button type="button" class="btn-dicey-hud-back" id="inv-hud-back-btn">
+              BACK
+            </button>
+          </div>
+
+          <!-- Prawa strona: Czaszki + Piętro -->
+          <div class="dd-hud-right-group">
+            <div class="dd-hud-skulls-strip">
+              <span class="dd-hud-skull-icon ${curFloor >= 1 ? 'is-reached' : ''}">💀</span>
+              <span class="dd-hud-skull-icon ${curFloor >= 2 ? 'is-reached' : ''}">💀</span>
+              <span class="dd-hud-skull-icon ${curFloor >= 3 ? 'is-reached' : ''}">💀</span>
+              <span class="dd-hud-skull-icon ${curFloor >= 4 ? 'is-reached' : ''}">💀</span>
+              <span class="dd-hud-skull-icon ${curFloor >= 5 ? 'is-reached' : ''}">💀</span>
+            </div>
+            <div class="dd-hud-floor-label">Floor ${curFloor}</div>
+          </div>
+        </footer>
       </div>
     `;
 
-    // Obsługa zamknięcia okna
+    // Zamknięcie ekwipunku i powrót na planszę (bez zmiany/restartu muzyki)
     const handleClose = () => {
       sound.playStep();
-      playJaggedCurtainWipe(() => {
-        app.closeModal();
-        musicManager.resumeBoardMusic();
-        app.renderBoard();
-        app.updateHUD();
-      });
+      modalMount.classList.remove('modal-mount-inventory');
+      app.closeModal();
+      app.renderBoard();
+      app.updateHUD();
     };
 
-    const backBtn = modalMount.querySelector('#inv-back-btn');
+    const backBtn = modalMount.querySelector('#inv-hud-back-btn');
     if (backBtn) backBtn.addEventListener('click', handleClose);
 
-    // Kliknięcie w slot w plecaku lub wyposażeniu
+    // Bezpośrednie kliknięcie w kartę lub slot:
+    // - Kliknięcie w przedmiot w plecaku: natychmiastowe wyposażenie (lub zamiana ze slotem 0 gdy pełne)
+    // - Kliknięcie w wyposażony przedmiot: natychmiastowe schowanie z powrotem do plecaka
     modalMount.querySelectorAll('[data-location]').forEach((el) => {
       el.addEventListener('click', () => {
-        sound.playStep();
-        selectedLocation = el.dataset.location;
-        selectedIndex = Number(el.dataset.index);
+        const loc = el.dataset.location;
+        const idx = Number(el.dataset.index);
+
+        selectedLocation = loc;
+        selectedIndex = idx;
+
+        const clickedItem = loc === 'equipped'
+          ? app.player.equippedItems[idx]
+          : app.player.backpackItems[idx];
+
+        if (clickedItem) {
+          if (loc === 'backpack') {
+            const freeEq = app.player.equippedItems.findIndex((s) => s === null);
+            if (freeEq !== -1) {
+              sound.playSuccess();
+              app.player.equippedItems[freeEq] = clickedItem;
+              app.player.backpackItems[idx] = null;
+              selectedLocation = 'equipped';
+              selectedIndex = freeEq;
+            } else {
+              sound.playSuccess();
+              const old = app.player.equippedItems[0];
+              app.player.equippedItems[0] = clickedItem;
+              app.player.backpackItems[idx] = old;
+              selectedLocation = 'equipped';
+              selectedIndex = 0;
+            }
+          } else {
+            const freeBp = app.player.backpackItems.findIndex((s) => s === null);
+            if (freeBp !== -1) {
+              sound.playStep();
+              app.player.backpackItems[freeBp] = clickedItem;
+              app.player.equippedItems[idx] = null;
+              selectedLocation = 'backpack';
+              selectedIndex = freeBp;
+            } else {
+              sound.playMiss();
+            }
+          }
+        } else {
+          sound.playStep();
+        }
+
+        app.updateHUD();
         renderInventory();
       });
     });
 
-    // Akcja: ZAŁÓŻ DO UŻYTKU (EQUIP)
-    const equipBtn = modalMount.querySelector('#inv-equip-btn');
-    if (equipBtn && selectedLocation === 'backpack') {
-      equipBtn.addEventListener('click', () => {
-        const itemToEquip = app.player.backpackItems[selectedIndex];
-        if (!itemToEquip) return;
-
+    // Obsługa przycisków szybkiej akcji w dolnym pasku info
+    const quickEquip = modalMount.querySelector('#inv-quick-equip-btn');
+    if (quickEquip) {
+      quickEquip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const it = app.player.backpackItems[selectedIndex];
+        if (!it) return;
         sound.playSuccess();
-
-        // Szukaj wolnego slotu w equipped (z 2 dostępnych)
-        const freeEqIdx = app.player.equippedItems.findIndex((s) => s === null);
-        if (freeEqIdx !== -1) {
-          app.player.equippedItems[freeEqIdx] = itemToEquip;
+        const freeEq = app.player.equippedItems.findIndex((s) => s === null);
+        if (freeEq !== -1) {
+          app.player.equippedItems[freeEq] = it;
           app.player.backpackItems[selectedIndex] = null;
           selectedLocation = 'equipped';
-          selectedIndex = freeEqIdx;
+          selectedIndex = freeEq;
         } else {
-          // Jeśli oba sloty są zajęte, zamień ze slotem 0
-          const oldEquipped = app.player.equippedItems[0];
-          app.player.equippedItems[0] = itemToEquip;
-          app.player.backpackItems[selectedIndex] = oldEquipped;
+          const old = app.player.equippedItems[0];
+          app.player.equippedItems[0] = it;
+          app.player.backpackItems[selectedIndex] = old;
           selectedLocation = 'equipped';
           selectedIndex = 0;
         }
-
-        app.showTemporaryPlayerBubble(`Założono: ${itemToEquip.name}!`, 1400);
         app.updateHUD();
         renderInventory();
       });
     }
 
-    // Akcja: SCHOWAJ DO PLECAKA (UNEQUIP)
-    const unequipBtn = modalMount.querySelector('#inv-unequip-btn');
-    if (unequipBtn && selectedLocation === 'equipped') {
-      unequipBtn.addEventListener('click', () => {
-        const itemToUnequip = app.player.equippedItems[selectedIndex];
-        if (!itemToUnequip) return;
-
-        // Szukaj wolnego slotu w plecaku (z 6 dostępnych)
-        const freeBpIdx = app.player.backpackItems.findIndex((s) => s === null);
-        if (freeBpIdx !== -1) {
+    const quickUnequip = modalMount.querySelector('#inv-quick-unequip-btn');
+    if (quickUnequip) {
+      quickUnequip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const it = app.player.equippedItems[selectedIndex];
+        if (!it) return;
+        const freeBp = app.player.backpackItems.findIndex((s) => s === null);
+        if (freeBp !== -1) {
           sound.playStep();
-          app.player.backpackItems[freeBpIdx] = itemToUnequip;
+          app.player.backpackItems[freeBp] = it;
           app.player.equippedItems[selectedIndex] = null;
           selectedLocation = 'backpack';
-          selectedIndex = freeBpIdx;
-          app.showTemporaryPlayerBubble(`Schowano do plecaka: ${itemToUnequip.name}!`, 1400);
+          selectedIndex = freeBp;
         } else {
           sound.playMiss();
-          app.showTemporaryPlayerBubble('Plecak jest pełny (6 slotów)!', 1500);
         }
-
         app.updateHUD();
         renderInventory();
       });
     }
 
-    // Akcja: ZJEDZ / UŻYJ PRZEDMIOTU JEDNORAZOWEGO
-    const eatBtn = modalMount.querySelector('#inv-eat-item-btn');
-    if (eatBtn && selectedItem) {
-      eatBtn.addEventListener('click', () => {
-        sound.playSuccess();
+    const quickEat = modalMount.querySelector('#inv-quick-eat-btn');
+    if (quickEat && selectedItem) {
+      quickEat.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sound.playHeal();
         const healAmt = selectedItem.healAmount || 10;
         app.player.hp = Math.min(app.player.maxHp, app.player.hp + healAmt);
 
         if (selectedLocation === 'backpack') {
           app.player.backpackItems[selectedIndex] = null;
-        } else if (selectedLocation === 'equipped') {
+        } else {
           app.player.equippedItems[selectedIndex] = null;
         }
-
         if (selectedItem.id === 'kebab' && app.player.kebabs > 0) {
           app.player.kebabs--;
         }
-
-        sound.playHeal();
-        app.showTemporaryPlayerBubble(`Zjedzono ${selectedItem.name}! +${healAmt} HP`, 1500);
         app.updateHUD();
         renderInventory();
-      });
-    }
-
-    // Akcja: Otwarcie talii słownika
-    const openWordsBtn = modalMount.querySelector('#inv-open-words-btn');
-    if (openWordsBtn) {
-      openWordsBtn.addEventListener('click', () => {
-        sound.playStep();
-        openDictionaryModal(app, allWords, () => {
-          renderInventory();
-        });
       });
     }
   };
