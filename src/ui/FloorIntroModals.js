@@ -174,6 +174,7 @@ export function openFloorNewCardsModal(app, floorNumber, floorTitle, words, bubb
 
 export function openChestModal(app, node) {
   if (node.completed) return;
+  sound.playOpenChest();
   musicManager.playChestMusic();
   playJaggedCurtainWipe(() => {
     sound.playStep();

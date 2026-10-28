@@ -425,6 +425,7 @@ class NoiDiGameApp {
   }
 
   closeArena() {
+    sound.stopLowHealth();
     const arenaMount = document.getElementById('arena-mount');
     if (arenaMount) {
       arenaMount.classList.add('hidden');
@@ -438,6 +439,7 @@ class NoiDiGameApp {
 
   // Obsługa przegranej (skończenie życia gracza -> powrót do menu tytułowego)
   handleGameOver() {
+    sound.stopLowHealth();
     playJaggedCurtainWipe(() => {
       if (this.activeMinigame) {
         try {

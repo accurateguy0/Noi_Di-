@@ -2,6 +2,7 @@
 
 import { getPlayerDamage } from '../data/vocabulary.js';
 import { musicManager } from '../audio/musicManager.js';
+import { sound } from '../audio/sound.js';
 
 export const MAX_PLAYER_LEVEL = 6;
 
@@ -47,8 +48,9 @@ export class HUDManager {
     if (dmgEl) dmgEl.textContent = totalDmg;
     if (hintsEl) hintsEl.textContent = player.hints ?? 5;
 
-    // Sprawdzanie poziomu zdrowia gracza (<= 1/6 HP) -> soundtrack "Chipzel - 08 Prepare To Dice"
+    // Sprawdzanie poziomu zdrowia gracza (<= 1/6 HP) -> soundtrack "Chipzel - 08 Prepare To Dice" oraz pętla dźwięku ostrzegawczego lowhealth.ogg
     musicManager.checkLowHealthMusic(player);
+    sound.checkLowHealth(player);
 
     if (sneakerPill) {
       sneakerPill.classList.toggle('hidden', !player.boughtSneakers);

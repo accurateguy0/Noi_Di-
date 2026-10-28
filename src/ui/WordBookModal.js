@@ -568,6 +568,7 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
           app.player.kebabs--;
         }
 
+        sound.playHeal();
         app.showTemporaryPlayerBubble(`Zjedzono ${selectedItem.name}! +${healAmt} HP`, 1500);
         app.updateHUD();
         renderInventory();

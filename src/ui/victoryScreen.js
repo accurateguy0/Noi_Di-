@@ -59,6 +59,7 @@ export function showDiceyVictoryScreen(container, {
   onOk
 }) {
   musicManager.playVictoryMusic();
+  sound.stopLowHealth();
   sound.playFanfare();
   if (leveledUp) {
     setTimeout(() => sound.playLevelUp(), 350);
@@ -161,6 +162,7 @@ export function showDiceyVictoryScreen(container, {
   const expFillEl = overlay.querySelector('#dd-exp-bar-fill');
   if (expFillEl && xpGain > 0 && startBarPct !== targetPct) {
     setTimeout(() => {
+      sound.playGainXP();
       expFillEl.style.width = `${targetPct}%`;
     }, 1880);
   }
@@ -292,6 +294,8 @@ export function playHeroDefeatAnimation(container, player, onClose) {
   }
   if (arenaEl.dataset.defeatTriggered === '1') return;
   arenaEl.dataset.defeatTriggered = '1';
+
+  sound.playPlayerDefeat();
 
   const characterName = player?.characterClass || player?.heroName || player?.name || 'Warrior';
 

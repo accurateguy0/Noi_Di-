@@ -7,6 +7,7 @@ import { ALL_ITEMS_CATALOG } from '../data/shopItems.js';
 import { addItemToPlayerInventory } from './WordBookModal.js';
 
 export function openShopModal(app, node) {
+  sound.playEnterShop();
   if (node) {
     node.completed = true;
     node.boughtItemIds = node.boughtItemIds || new Set();

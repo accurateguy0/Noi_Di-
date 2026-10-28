@@ -12,6 +12,8 @@ class SoundManager {
     this.loadingPromises = new Map();
     this.preloaded = false;
     this.playerClass = 'Warrior';
+    this.lowHealthAudio = null;
+    this.lowHealthPlaying = false;
 
     this.initUserGesture();
   }
@@ -36,6 +38,10 @@ class SoundManager {
 
   setMuted(muted) {
     this.muted = Boolean(muted);
+    if (this.muted) {
+      this.stopLowHealth();
+      this.stopSpinWheel();
+    }
     musicManager.setMuted(this.muted);
   }
 
@@ -50,6 +56,7 @@ class SoundManager {
 
   setSfxVolume(vol) {
     this.sfxVolume = Math.max(0, Math.min(1, Number(vol) || 0));
+    this.updateLowHealthVolume();
   }
 
   getSfxVolume() {
@@ -58,6 +65,7 @@ class SoundManager {
 
   setMasterVolume(vol) {
     this.masterVolume = Math.max(0, Math.min(1, Number(vol) || 0));
+    this.updateLowHealthVolume();
   }
 
   getMasterVolume() {
@@ -172,6 +180,10 @@ class SoundManager {
       'krec_kolem.ogg',
       'heal.ogg',
       'gainxp.ogg',
+      'entershop.ogg',
+      'defeatplayer.ogg',
+      'lowhealth.ogg',
+      'openchest.ogg',
       'inspektor_biletow_dzwiek.ogg',
       'mala_kalamarnica_dzwiek.ogg',
       'Dzwonek_Szkolny.mp3',
@@ -421,6 +433,160 @@ class SoundManager {
 
   playDefeatEnemy() {
     this.playFile('pokonanyprzeciwnik.ogg', 0.9);
+  }
+
+  playEnterShop() {
+    return this.playFile('entershop.ogg', 1.25);
+  }
+
+  playOpenChest() {
+    return this.playFile('openchest.ogg', 1.25);
+  }
+
+  playGainXP() {
+    return this.playFile('gainxp.ogg', 1.15);
+  }
+
+  playPlayerDefeat() {
+    this.stopLowHealth();
+    return this.playFile('defeatplayer.ogg', 1.35);
+  }
+
+  startLowHealthLoop() {
+    if (this.muted || this.lowHealthPlaying) return;
+    this.init();
+    this.lowHealthPlaying = true;
+
+    const effectiveVol = this.sfxVolume * (this.masterVolume ?? 1.0) * 0.95;
+
+    // 1. Z bufora Web Audio API
+    const buffer = this.audioBuffers.get('lowhealth.ogg') || this.audioBuffers.get('lowhealth.ogg'.toLowerCase());
+    if (buffer && this.ctx && this.ctx.state === 'running') {
+      try {
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        const gainNode = this.ctx.createGain();
+        gainNode.gain.setValueAtTime(effectiveVol, this.ctx.currentTime);
+        source.connect(gainNode);
+        gainNode.connect(this.ctx.destination);
+        source.start(0);
+        this.lowHealthAudio = {
+          source,
+          gainNode,
+          stop: () => {
+            try {
+              gainNode.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
+              setTimeout(() => {
+                try {
+                  source.stop();
+                  source.disconnect();
+                  gainNode.disconnect();
+                } catch (e) {}
+              }, 200);
+            } catch (e) {
+              try { source.stop(); } catch (e) {}
+            }
+          }
+        };
+        return;
+      } catch (e) {}
+    }
+
+    // 2. Jeśli bufor wczytuje się w locie
+    this.loadBuffer('lowhealth.ogg').then((buf) => {
+      if (buf && this.ctx && !this.muted && this.lowHealthPlaying && !this.lowHealthAudio) {
+        try {
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+          const source = this.ctx.createBufferSource();
+          source.buffer = buf;
+          source.loop = true;
+          const gainNode = this.ctx.createGain();
+          const curVol = this.sfxVolume * (this.masterVolume ?? 1.0) * 0.95;
+          gainNode.gain.setValueAtTime(curVol, this.ctx.currentTime);
+          source.connect(gainNode);
+          gainNode.connect(this.ctx.destination);
+          source.start(0);
+          this.lowHealthAudio = {
+            source,
+            gainNode,
+            stop: () => {
+              try {
+                gainNode.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
+                setTimeout(() => {
+                  try {
+                    source.stop();
+                    source.disconnect();
+                    gainNode.disconnect();
+                  } catch (e) {}
+                }, 200);
+              } catch (e) {
+                try { source.stop(); } catch (e) {}
+              }
+            }
+          };
+        } catch (e) {}
+      }
+    });
+
+    // 3. Fallback HTML5 Audio z pętlą
+    try {
+      const audio = new Audio('./assets/music/lowhealth.ogg');
+      audio.loop = true;
+      audio.volume = Math.max(0, Math.min(1.0, effectiveVol));
+      audio.play().catch(() => {});
+      this.lowHealthAudio = {
+        audio,
+        stop: () => {
+          try {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.src = '';
+          } catch (e) {}
+        }
+      };
+    } catch (e) {}
+  }
+
+  stopLowHealth() {
+    if (this.lowHealthAudio) {
+      try {
+        this.lowHealthAudio.stop();
+      } catch (e) {}
+      this.lowHealthAudio = null;
+    }
+    this.lowHealthPlaying = false;
+  }
+
+  updateLowHealthVolume() {
+    if (!this.lowHealthAudio) return;
+    const effectiveVol = this.sfxVolume * (this.masterVolume ?? 1.0) * 0.95;
+    if (this.lowHealthAudio.gainNode && this.ctx) {
+      try {
+        this.lowHealthAudio.gainNode.gain.setValueAtTime(effectiveVol, this.ctx.currentTime);
+      } catch (e) {}
+    } else if (this.lowHealthAudio.audio) {
+      try {
+        this.lowHealthAudio.audio.volume = Math.max(0, Math.min(1.0, effectiveVol));
+      } catch (e) {}
+    }
+  }
+
+  checkLowHealth(player) {
+    if (!player || player.hp <= 0) {
+      this.stopLowHealth();
+      return;
+    }
+    const isLow = player.hp <= Math.ceil(player.maxHp / 6);
+    if (isLow && !this.muted) {
+      if (!this.lowHealthPlaying) {
+        this.startLowHealthLoop();
+      }
+    } else {
+      if (this.lowHealthPlaying) {
+        this.stopLowHealth();
+      }
+    }
   }
 
   playLevelUp() {
@@ -929,6 +1095,7 @@ class SoundManager {
   }
 
   playHeal() {
+    this.playFile('heal.ogg', 1.15);
     this.playTone(440, 'sine', 0.1, 0.16, 587);
     setTimeout(() => this.playTone(587, 'sine', 0.18, 0.18, 880), 100);
   }
