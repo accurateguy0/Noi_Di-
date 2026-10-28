@@ -47,11 +47,6 @@ export class TitleScreen {
         alt="Noi Di Start"
       />
 
-      <!-- Wskaźnik / przycisk ustawień (Esc) w stylu Dicey Dungeons w lewym górnym rogu -->
-      <button class="title-esc-settings-hint" id="title-esc-btn" title="Naciśnij Esc lub kliknij, aby otworzyć Ustawienia">
-        (Esc) Settings
-      </button>
-
       <div class="title-screen-backdrop">
         <!-- Prawy dolny obszar w stylu Dicey Dungeons: ROZPOCZNIJ GRĘ oraz CREDITS -->
         <div class="title-actions-cluster">
@@ -98,17 +93,7 @@ export class TitleScreen {
       });
     }
 
-    // Przycisk (Esc) Settings w lewym górnym rogu
-    const escBtn = document.getElementById('title-esc-btn');
-    if (escBtn) {
-      escBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sound.playStep();
-        openSettingsModal(this.app);
-      });
-    }
-
-    // Przycisk CREDITS w prawym dolnym rogu
+    // Przycisk AUTOR w prawym dolnym rogu
     const creditsBtn = document.getElementById('title-btn-credits');
     if (creditsBtn) {
       creditsBtn.addEventListener('click', (e) => {
