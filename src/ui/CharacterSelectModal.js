@@ -30,6 +30,21 @@ function buildHeroEpisodes(heroId) {
   });
 }
 
+export const HERO_ANIMATIONS = {
+  inventor: {
+    loopDuration: 4600,
+    keyframes: [
+      { time: 0, frame: './assets/heroes/inventor/inventor_quiet.png' },
+      { time: 400, frame: './assets/heroes/inventor/inventor_blink.png' },
+      { time: 520, frame: './assets/heroes/inventor/inventor_quiet.png' },
+      { time: 640, frame: './assets/heroes/inventor/inventor_blink.png' },
+      { time: 760, frame: './assets/heroes/inventor/inventor_smile.png' },
+      { time: 2800, frame: './assets/heroes/inventor/inventor_sad.png' },
+      { time: 3800, frame: './assets/heroes/inventor/inventor_quiet.png' }
+    ]
+  }
+};
+
 export const HEROES = [
   {
     id: 'warrior',
@@ -277,6 +292,51 @@ export function openCharacterSelectModal(app) {
 
   let spriteTimer = null;
   let popTimer = null;
+  let activeAnimTimers = [];
+  let animLoopInterval = null;
+
+  const stopHeroAnimation = () => {
+    activeAnimTimers.forEach((t) => clearTimeout(t));
+    activeAnimTimers = [];
+    if (animLoopInterval) {
+      clearTimeout(animLoopInterval);
+      animLoopInterval = null;
+    }
+  };
+
+  const startHeroAnimation = (heroId, isUnlocked) => {
+    stopHeroAnimation();
+    const sprite = document.getElementById('cs-hero-sprite');
+    if (!sprite || !isUnlocked) return;
+
+    const anim = HERO_ANIMATIONS[heroId];
+    if (!anim || !anim.keyframes || anim.keyframes.length === 0) return;
+
+    // Wstepne podgrzanie klatek w pamieci podrecznej (zero mrugniecia przy pierwszym ladowaniu)
+    if (!anim._preloaded) {
+      anim.keyframes.forEach((kf) => {
+        const img = new Image();
+        img.src = kf.frame;
+      });
+      anim._preloaded = true;
+    }
+
+    const playCycle = () => {
+      stopHeroAnimation();
+      anim.keyframes.forEach((kf) => {
+        const timer = setTimeout(() => {
+          const currentHero = HEROES[currentHeroIndex];
+          if (currentHero && currentHero.id === heroId && sprite && !sprite.classList.contains('hero-shrinking')) {
+            sprite.src = kf.frame;
+          }
+        }, kf.time);
+        activeAnimTimers.push(timer);
+      });
+      animLoopInterval = setTimeout(playCycle, anim.loopDuration);
+    };
+
+    playCycle();
+  };
 
   const getHeroData = (idx) => {
     const hero = HEROES[idx];
@@ -431,6 +491,7 @@ export function openCharacterSelectModal(app) {
     document.getElementById('cs-btn-start')?.addEventListener('click', () => {
       const selected = HEROES[currentHeroIndex];
       if (!episodeManager.isHeroUnlocked(selected.id)) return;
+      stopHeroAnimation();
 
       const selectedPip = episodeManager.getSelectedEpisode(selected.id);
       const chosenEpisode = selected.episodes.find((ep) => ep.pip === selectedPip) || selected.episodes[0];
@@ -520,6 +581,7 @@ export function openCharacterSelectModal(app) {
     if (sprite) {
       if (spriteTimer) clearTimeout(spriteTimer);
       if (popTimer) clearTimeout(popTimer);
+      stopHeroAnimation();
 
       sprite.classList.remove('hero-popping');
       sprite.classList.add('hero-shrinking');
@@ -537,6 +599,7 @@ export function openCharacterSelectModal(app) {
         popTimer = setTimeout(() => {
           popTimer = null;
           sprite.classList.remove('hero-popping');
+          startHeroAnimation(data.hero.id, data.isHeroUnlocked);
         }, 220);
       }, 120);
     }
@@ -632,6 +695,7 @@ export function openCharacterSelectModal(app) {
 
     // Wiązanie zdarzeń
     document.getElementById('cs-btn-menu')?.addEventListener('click', () => {
+      stopHeroAnimation();
       sound.playStep();
       playJaggedCurtainWipe(() => {
         screen.classList.add('hidden');
@@ -643,6 +707,7 @@ export function openCharacterSelectModal(app) {
     });
 
     document.getElementById('cs-btn-challenges')?.addEventListener('click', () => {
+      stopHeroAnimation();
       sound.playStep();
       openFloorPickerModal(app);
     });
@@ -669,11 +734,13 @@ export function openCharacterSelectModal(app) {
 
     requestAnimationFrame(() => {
       updateSliderPosition(currentHeroIndex, true);
+      startHeroAnimation(data.hero.id, data.isHeroUnlocked);
     });
   };
 
   const onKeyHandler = (e) => {
     if (screen.classList.contains('hidden')) {
+      stopHeroAnimation();
       window.removeEventListener('keydown', onKeyHandler);
       return;
     }

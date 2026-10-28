@@ -9216,18 +9216,26 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   max-height: 100%;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.55));
-  animation: heroStageBob 2.8s ease-in-out infinite;
+  animation: heroStageSway 4.6s ease-in-out infinite;
   transform-origin: center bottom;
   will-change: transform, opacity;
 }
 
-@keyframes heroStageBob {
-  0%, 100% {
-    transform: translateY(0);
+@keyframes heroStageSway {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-6px) translateY(-5px) rotate(-1.5deg);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateX(6px) translateY(-5px) rotate(1.5deg);
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
   }
 }
 
