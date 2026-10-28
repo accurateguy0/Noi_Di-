@@ -7,6 +7,7 @@
 import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
 import { episodeManager } from '../data/episodeManager.js';
+import { playJaggedCurtainWipe } from './victoryScreen.js';
 
 let activeSettingsState = {
   view: 'main', // 'main' | 'options' | 'display' | 'sound' | 'gameplay' | 'edit_progress'
@@ -93,9 +94,15 @@ export function openSettingsModal(app, initialView = 'main') {
 
     let contentHtml = '';
 
+    const isTitleScreen = Boolean(
+      (app?.titleScreen && app.titleScreen.isVisible) ||
+      (document.getElementById('title-screen-container') && !document.getElementById('title-screen-container').classList.contains('hidden'))
+    );
+
     // ==========================================
-    // 1. GŁÓWNE MENU ESC (Obrazek 1)
-    // 3 przyciski: KONTYNUUJ, OPCJE, EDYTUJ PROGRES
+    // 1. GŁÓWNE MENU ESC
+    // Poza ekranem tytułowym: KONTYNUUJ, OPCJE, WRÓĆ DO TYTUŁU
+    // Na ekranie tytułowym: KONTYNUUJ, OPCJE, EDYTOR POSTĘPÓW
     // ==========================================
     if (currentView === 'main') {
       contentHtml = `
@@ -108,17 +115,23 @@ export function openSettingsModal(app, initialView = 'main') {
             OPCJE
           </button>
 
-          <button class="btn-dd-block btn-danger-red" id="esc-btn-edit-progress" title="Edytuj i zresetuj postęp">
-            EDYTUJ PROGRES
-          </button>
+          ${isTitleScreen ? `
+            <button class="btn-dd-block btn-danger-red" id="esc-btn-edit-progress" title="Edytuj postępy">
+              EDYTOR POSTĘPÓW
+            </button>
+          ` : `
+            <button class="btn-dd-block btn-danger-red" id="esc-btn-back-to-title" title="Wróć do ekranu tytułowego">
+              WRÓĆ DO TYTUŁU
+            </button>
+          `}
         </div>
       `;
     }
 
     // ==========================================
-    // 2. PODMENU OPCJE (Obrazek 2)
+    // 2. PODMENU OPCJE
     // Tytuł: OPCJE
-    // Przyciski: WYŚWIETL, DŹWIĘK, GRA, ZAMKNIJ OPCJE
+    // Przyciski: WYŚWIETL, DŹWIĘK, GRA, EDYTOR POSTĘPÓW, ZAMKNIJ OPCJE
     // ==========================================
     else if (currentView === 'options') {
       contentHtml = `
@@ -135,6 +148,10 @@ export function openSettingsModal(app, initialView = 'main') {
 
           <button class="btn-dd-block" id="options-btn-gameplay">
             GRA
+          </button>
+
+          <button class="btn-dd-block" id="options-btn-edit-progress">
+            EDYTOR POSTĘPÓW
           </button>
 
           <button class="btn-dd-block" id="options-btn-close" style="margin-top: 14px;">
@@ -522,6 +539,13 @@ export function openSettingsModal(app, initialView = 'main') {
   };
 
   const bindEvents = () => {
+    // Dźwięk najechania myszką na przyciski menu Esc
+    escMount.querySelectorAll('.btn-dd-block, .btn-secondary-rect, .btn-small-control').forEach((btn) => {
+      btn.addEventListener('mouseenter', () => {
+        sound.playStep();
+      });
+    });
+
     // 1. Główne menu Esc
     document.getElementById('esc-btn-continue')?.addEventListener('click', closeModal);
     document.getElementById('esc-btn-options')?.addEventListener('click', () => {
@@ -533,6 +557,54 @@ export function openSettingsModal(app, initialView = 'main') {
       sound.playStep();
       currentView = 'edit_progress';
       render();
+    });
+    document.getElementById('esc-btn-back-to-title')?.addEventListener('click', () => {
+      sound.playStep();
+      closeModal();
+      playJaggedCurtainWipe(() => {
+        if (typeof app?.closeArena === 'function') {
+          app.closeArena();
+        } else {
+          const arenaMount = document.getElementById('arena-mount');
+          if (arenaMount) {
+            arenaMount.classList.add('hidden');
+            arenaMount.innerHTML = '';
+          }
+        }
+
+        if (typeof app?.closeModal === 'function') {
+          app.closeModal();
+        } else {
+          const modalMount = document.getElementById('modal-mount');
+          if (modalMount) {
+            modalMount.classList.add('hidden');
+            modalMount.classList.remove('modal-mount-shop', 'modal-mount-inventory', 'modal-mount-esc');
+            modalMount.innerHTML = '';
+          }
+        }
+
+        if (app?.activeMinigame) {
+          try {
+            if (typeof app.activeMinigame.destroy === 'function') {
+              app.activeMinigame.destroy();
+            }
+          } catch (e) {}
+          app.activeMinigame = null;
+        }
+
+        const charScreen = document.getElementById('character-select-screen');
+        if (charScreen) charScreen.classList.add('hidden');
+
+        if (typeof app?.resetBoard === 'function') {
+          app.resetBoard(true);
+        }
+
+        if (app?.titleScreen) {
+          app.titleScreen.show();
+        } else {
+          musicManager.playTitleMusic();
+        }
+      });
     });
 
     // 2. Podmenu Opcje
@@ -549,6 +621,11 @@ export function openSettingsModal(app, initialView = 'main') {
     document.getElementById('options-btn-gameplay')?.addEventListener('click', () => {
       sound.playStep();
       currentView = 'gameplay';
+      render();
+    });
+    document.getElementById('options-btn-edit-progress')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'edit_progress';
       render();
     });
     document.getElementById('options-btn-close')?.addEventListener('click', closeModal);
