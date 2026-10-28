@@ -284,21 +284,34 @@ export function openCharacterSelectModal(app) {
     const selectedPip = heroProgress.selected || 1;
     const selectedEp = hero.episodes.find((ep) => ep.pip === selectedPip) || hero.episodes[0];
 
-    // Budowanie paska ikonek 6 kości bohaterów u góry sceny
+    // Budowanie paska ikonek 6 bohaterów u góry sceny (dokładnie jak w Dicey Dungeons)
     const heroIconsHtml = HEROES.map((h, idx) => {
       const isUnlocked = episodeManager.isHeroUnlocked(h.id);
       const isActive = idx === currentHeroIndex;
+      // 6. postać (Błazen / Zablokowany) gdy zablokowana pokazuje czarną kostkę die_locked.png
+      let iconSrc = h.diceIcon || h.avatar;
+      if (h.id === 'jester' && !isUnlocked) {
+        iconSrc = './assets/dice_heads/die_locked.png';
+      }
+
       return `
         <button
           type="button"
-          class="cs-hero-pip-btn ${isActive ? 'is-active' : ''} ${!isUnlocked ? 'is-locked-pip' : ''}"
+          class="cs-hero-pip-btn ${isActive ? 'is-active' : ''}"
           data-hero-idx="${idx}"
           title="${h.name} (${isUnlocked ? 'Odblokowany' : 'Zablokowany'})"
         >
           <div class="cs-pip-dice">
-            <img src="${h.diceIcon || h.avatar}" alt="${h.name}" draggable="false" />
+            <img src="${iconSrc}" alt="${h.name}" draggable="false" />
           </div>
-          ${isActive ? '<div class="cs-pip-bracket"></div>' : ''}
+          ${isActive ? `
+            <svg class="cs-pip-bracket-svg" viewBox="0 0 44 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 2 9.5 V 3.5 C 2 2.67 2.67 2 3.5 2 H 10" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M 34 2 H 40.5 C 41.33 2 42 2.67 42 3.5 V 9.5" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M 2 32.5 V 38.5 C 2 39.33 2.67 40 3.5 40 H 10" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M 34 40 H 40.5 C 41.33 40 42 39.33 42 38.5 V 32.5" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          ` : ''}
         </button>
       `;
     }).join('');

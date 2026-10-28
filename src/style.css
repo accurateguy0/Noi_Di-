@@ -8881,22 +8881,13 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   transform: translateY(-4px) scale(1.18);
 }
 
-.cs-pip-bracket {
+.cs-pip-bracket-svg {
   position: absolute;
-  inset: -5px;
+  inset: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
   pointer-events: none;
-  background:
-    linear-gradient(to right, #ffffff 6px, transparent 6px) top left,
-    linear-gradient(to bottom, #ffffff 6px, transparent 6px) top left,
-    linear-gradient(to left, #ffffff 6px, transparent 6px) top right,
-    linear-gradient(to bottom, #ffffff 6px, transparent 6px) top right,
-    linear-gradient(to right, #ffffff 6px, transparent 6px) bottom left,
-    linear-gradient(to top, #ffffff 6px, transparent 6px) bottom left,
-    linear-gradient(to left, #ffffff 6px, transparent 6px) bottom right,
-    linear-gradient(to top, #ffffff 6px, transparent 6px) bottom right;
-  background-size: 7px 7px;
-  background-repeat: no-repeat;
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.95));
+  filter: drop-shadow(0 0 3px rgba(255, 247, 237, 0.7));
 }
 
 /* Strzałki przewijania bohaterów */
@@ -9573,10 +9564,6 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 }
 
 /* ==================== ZABLOKOWANE POSTACIE NA EKRANIE WYBORU BOHATERA ==================== */
-.cs-hero-pip-btn.is-locked-pip img {
-  filter: brightness(0);
-}
-
 .cs-hero-pedestal-sprite.is-locked-hero {
   filter: brightness(0);
 }
