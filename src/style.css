@@ -10214,6 +10214,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   border-color: rgba(255, 255, 255, 0.6);
 }
 
+.progress-hero-unlock-wrap,
 .progress-jester-unlock-wrap {
   flex: 1;
   display: flex;
@@ -10221,6 +10222,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   justify-content: center;
 }
 
+.btn-progress-unlock-hero,
 .btn-progress-unlock-jester {
   background: #64748b;
   border: 2px solid #475569;
@@ -10236,6 +10238,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   transition: transform 0.12s ease, background 0.12s ease;
 }
 
+.btn-progress-unlock-hero:hover,
 .btn-progress-unlock-jester:hover {
   background: #3b82f6;
   border-color: #2563eb;

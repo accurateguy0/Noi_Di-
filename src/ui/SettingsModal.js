@@ -6,7 +6,7 @@
 
 import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
-import { episodeManager } from '../data/episodeManager.js';
+import { episodeManager, HERO_ORDER } from '../data/episodeManager.js';
 import { playJaggedCurtainWipe } from './victoryScreen.js';
 
 let activeSettingsState = {
@@ -405,52 +405,63 @@ export function openSettingsModal(app, initialView = 'main') {
         { id: 'jester', name: 'Błazen', avatar: './assets/Jester.png', episodes: 8 }
       ];
 
-      const rowsHtml = PROGRESS_HEROES.map((hero) => {
-        const data = episodeManager.getHeroProgress(hero.id);
-        const isHeroUnlocked = episodeManager.isHeroUnlocked(hero.id);
+      const rowsList = [];
+      let foundFirstLocked = false;
 
-        // Specjalny wiersz dla Błazna jeśli jest jeszcze zablokowany (zgodnie ze zrzutem 1 z Dicey Dungeons)
-        if (hero.id === 'jester' && !isHeroUnlocked) {
-          return `
-            <div class="progress-editor-row is-jester-locked">
-              <div class="progress-hero-icon-box" title="Błazen (Zablokowany)">
-                <img src="${hero.avatar}" alt="Błazen" class="progress-hero-avatar is-locked-silhouette" onerror="this.src='./assets/Warrior.png'" />
+      for (const hero of PROGRESS_HEROES) {
+        const isHeroUnlocked = episodeManager.isHeroUnlocked(hero.id);
+        const data = episodeManager.getHeroProgress(hero.id);
+
+        if (isHeroUnlocked) {
+          // Bohater jest odblokowany: pokazujemy pipsy/kwadraty epizodów
+          const visibleEpisodesCount = Math.min(hero.episodes, Math.max(1, data.unlocked || 1));
+          const pipsHtml = Array.from({ length: visibleEpisodesCount }, (_, i) => {
+            const pip = i + 1;
+            const isCompleted = Array.isArray(data.completed) && data.completed.includes(pip);
+            return `
+              <div
+                class="progress-pip-square ${isCompleted ? 'is-unlocked' : 'is-locked'}"
+                data-hero="${hero.id}"
+                data-pip="${pip}"
+                title="${hero.name} — Epizod ${pip}: ${isCompleted ? 'Ukończony (kliknij, aby cofnąć)' : 'Dostępny (kliknij, aby zaliczyć i odblokować kolejny)'}"
+              >
+                ${pip}
               </div>
-              <div class="progress-jester-unlock-wrap">
-                <button type="button" class="btn-progress-unlock-jester" id="btn-unlock-jester" title="Odblokuj postać Błazna">
+            `;
+          }).join('');
+
+          rowsList.push(`
+            <div class="progress-editor-row">
+              <div class="progress-hero-icon-box" title="${hero.name}">
+                <img src="${hero.avatar}" alt="${hero.name}" class="progress-hero-avatar" onerror="this.src='./assets/Warrior.png'" />
+              </div>
+              <div class="progress-pips-strip">
+                ${pipsHtml}
+              </div>
+            </div>
+          `);
+        } else if (!foundFirstLocked) {
+          // Pierwszy zablokowany bohater w kolejce:
+          // Pokazujemy ciemną sylwetkę oraz przycisk ODBLOKUJ (jak w Dicey Dungeons)
+          foundFirstLocked = true;
+          rowsList.push(`
+            <div class="progress-editor-row is-hero-locked">
+              <div class="progress-hero-icon-box" title="${hero.name} (Zablokowany)">
+                <img src="${hero.avatar}" alt="${hero.name}" class="progress-hero-avatar is-locked-silhouette" onerror="this.src='./assets/Warrior.png'" />
+              </div>
+              <div class="progress-hero-unlock-wrap">
+                <button type="button" class="btn-progress-unlock-hero" data-hero="${hero.id}" title="Odblokuj postać: ${hero.name}">
                   ODBLOKUJ
                 </button>
               </div>
             </div>
-          `;
+          `);
+          // Wzorując się na Dicey Dungeons: kolejni zablokowani bohaterowie są ukryci do momentu odblokowania poprzednika!
+          break;
         }
+      }
 
-        const pipsHtml = Array.from({ length: hero.episodes }, (_, i) => {
-          const pip = i + 1;
-          const isPipUnlocked = isHeroUnlocked && pip <= data.unlocked;
-          return `
-            <div
-              class="progress-pip-square ${isPipUnlocked ? 'is-unlocked' : 'is-locked'}"
-              data-hero="${hero.id}"
-              data-pip="${pip}"
-              title="${hero.name} — Poziom / Epizod ${pip}: ${isPipUnlocked ? 'Odblokowany (kliknij, aby zablokować)' : 'Zaszarowany (kliknij, aby odblokować)'}"
-            >
-              ${pip}
-            </div>
-          `;
-        }).join('');
-
-        return `
-          <div class="progress-editor-row ${!isHeroUnlocked ? 'is-hero-locked' : ''}">
-            <div class="progress-hero-icon-box" title="${hero.name}">
-              <img src="${hero.avatar}" alt="${hero.name}" class="progress-hero-avatar ${!isHeroUnlocked ? 'is-locked-silhouette' : ''}" onerror="this.src='./assets/Warrior.png'" />
-            </div>
-            <div class="progress-pips-strip">
-              ${pipsHtml}
-            </div>
-          </div>
-        `;
-      }).join('');
+      const rowsHtml = rowsList.join('');
 
       contentHtml = `
         <div class="credits-theatrical-screen progress-editor-screen" id="progress-editor-screen">
@@ -744,39 +755,60 @@ export function openSettingsModal(app, initialView = 'main') {
       }
     });
 
-    document.getElementById('btn-unlock-jester')?.addEventListener('click', () => {
-      const data = episodeManager.getHeroProgress('jester');
-      data.heroUnlocked = true;
-      data.unlocked = Math.max(1, data.unlocked || 1);
-      episodeManager.save();
-      sound.playLevelUp();
-      render();
+    // Obsługa przycisków ODBLOKUJ dla kolejnego bohatera w edytorze postępów
+    escMount.querySelectorAll('.btn-progress-unlock-hero').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const heroId = btn.dataset.hero;
+        if (!heroId) return;
+        const data = episodeManager.getHeroProgress(heroId);
+        data.heroUnlocked = true;
+        data.unlocked = Math.max(1, data.unlocked || 1);
+        data.completed = data.completed || [];
+        episodeManager.save();
+        sound.playLevelUp();
+        render();
+      });
     });
 
+    // Obsługa klikania w kwadraty epizodów
     escMount.querySelectorAll('.progress-pip-square').forEach((sq) => {
       sq.addEventListener('click', () => {
         const heroId = sq.dataset.hero;
         const pip = Number(sq.dataset.pip);
+        if (!heroId || !pip) return;
         const data = episodeManager.getHeroProgress(heroId);
-        const isHeroUnlocked = episodeManager.isHeroUnlocked(heroId);
-        const isPipUnlocked = isHeroUnlocked && pip <= data.unlocked;
+        const isCompleted = Array.isArray(data.completed) && data.completed.includes(pip);
 
-        if (!isPipUnlocked) {
-          // Odblokuj poziom
-          data.heroUnlocked = true;
-          data.unlocked = Math.max(data.unlocked || 0, pip);
+        if (!isCompleted) {
+          // Ukończ ten epizod i wszystkie wcześniejsze
+          if (!Array.isArray(data.completed)) data.completed = [];
+          for (let p = 1; p <= pip; p++) {
+            if (!data.completed.includes(p)) {
+              data.completed.push(p);
+            }
+          }
+          // Odblokuj kolejny epizod (jeśli pip < 8)
+          if (pip < 8) {
+            data.unlocked = Math.max(data.unlocked || 1, pip + 1);
+          } else {
+            data.unlocked = 8;
+          }
+          // Jeśli ukończono epizod 1, odblokuj następnego bohatera w kolejności
+          if (pip >= 1) {
+            const idx = HERO_ORDER.indexOf(heroId);
+            if (idx >= 0 && idx < HERO_ORDER.length - 1) {
+              const nextHeroId = HERO_ORDER[idx + 1];
+              const nextData = episodeManager.getHeroProgress(nextHeroId);
+              nextData.heroUnlocked = true;
+              nextData.unlocked = Math.max(1, nextData.unlocked || 1);
+            }
+          }
           episodeManager.save();
           sound.playSuccess();
         } else {
-          // Zablokuj poziom z powrotem
-          if (heroId === 'warrior' && pip <= 1) {
-            sound.playMiss();
-            return;
-          }
-          data.unlocked = pip - 1;
-          if (data.unlocked <= 0 && heroId !== 'warrior') {
-            data.heroUnlocked = false;
-          }
+          // Cofnij ukończenie tego epizodu (i wszystkich wyższych)
+          data.completed = data.completed.filter((p) => p < pip);
+          data.unlocked = pip;
           episodeManager.save();
           sound.playStep();
         }
