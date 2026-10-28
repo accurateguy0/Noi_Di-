@@ -1057,7 +1057,7 @@ class NoiDiGameApp {
   closeModal() {
     const modalMount = document.getElementById('modal-mount');
     if (modalMount) {
-      modalMount.classList.remove('modal-mount-shop');
+      modalMount.classList.remove('modal-mount-shop', 'modal-mount-inventory', 'modal-mount-esc');
       modalMount.classList.add('hidden');
       modalMount.innerHTML = '';
     }

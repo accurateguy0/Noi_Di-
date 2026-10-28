@@ -9783,11 +9783,19 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   transform: translateY(-1px);
 }
 
+.modal-mount.modal-mount-esc {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 0 !important;
+}
+
 .esc-menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(4, 7, 16, 0.75);
-  backdrop-filter: blur(6px);
+  background: rgba(8, 12, 22, 0.45);
+  backdrop-filter: blur(3.5px);
+  -webkit-backdrop-filter: blur(3.5px);
   z-index: 100005;
   display: flex;
   flex-direction: column;

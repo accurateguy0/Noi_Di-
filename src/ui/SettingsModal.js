@@ -49,6 +49,7 @@ export function openSettingsModal(app, initialView = 'main') {
     document.getElementById('app').appendChild(modalMount);
   }
   modalMount.classList.remove('hidden');
+  modalMount.classList.add('modal-mount-esc');
 
   let currentView = initialView;
   let keyHandler = null;
@@ -58,6 +59,7 @@ export function openSettingsModal(app, initialView = 'main') {
     if (keyHandler) window.removeEventListener('keydown', keyHandler);
     // Przywrócenie normalnej głośności po zamknięciu Esc
     musicManager.setEscDucking(false);
+    modalMount.classList.remove('modal-mount-esc');
     modalMount.classList.add('hidden');
     modalMount.innerHTML = '';
   };
