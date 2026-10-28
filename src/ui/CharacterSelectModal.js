@@ -5,7 +5,6 @@
 import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
 import { playJaggedCurtainWipe } from './victoryScreen.js';
-import { openFloorPickerModal } from './FloorPickerModal.js';
 import { episodeManager } from '../data/episodeManager.js';
 import { getBoss } from '../data/bosses.js';
 import { STORY, EPISODE_LEVELS } from '../data/storyData.js';
@@ -294,11 +293,6 @@ export function openCharacterSelectModal(app) {
             MENU
           </button>
 
-          <!-- 2. Przycisk WYZWANIA (górny prawy róg w ramce tła) -->
-          <button class="cs-top-btn cs-btn-challenges" id="cs-btn-challenges" title="Przejdź do wyzwań i bossów">
-            WYZWANIA
-          </button>
-
           <!-- 4. Strzałka w lewo (Left Arrow) -->
           <button class="cs-arrow-btn cs-arrow-left" id="cs-arrow-left" title="Poprzedni bohater (←)">
             ‹
@@ -387,12 +381,6 @@ export function openCharacterSelectModal(app) {
         }
         musicManager.playTitleMusic();
       });
-    });
-
-    // 2. Wyzwania
-    document.getElementById('cs-btn-challenges')?.addEventListener('click', () => {
-      sound.playStep();
-      openFloorPickerModal(app);
     });
 
     // 4. Kliknięcie w epizod na prawej tablicy

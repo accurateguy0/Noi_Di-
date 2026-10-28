@@ -1,8 +1,7 @@
-// Modal Ustawień / Edytor w stylu Dicey Dungeons (Głośność, SFX, Lektor, Plansze testowe)
+// Modal Ustawień w stylu Dicey Dungeons (Głośność, SFX, Reset postępów)
 
 import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
-import { openFloorPickerModal } from './FloorPickerModal.js';
 import { episodeManager } from '../data/episodeManager.js';
 
 export function openSettingsModal(app) {
@@ -26,9 +25,9 @@ export function openSettingsModal(app) {
       <div class="dd-modal-window dd-settings-window" style="max-width: 580px; width: 92%; position: relative; z-index: 100006;">
         <div class="dd-modal-header" style="background: linear-gradient(135deg, #1e3a5f, #2563eb);">
           <div class="dd-modal-title-cluster">
-            <span class="dd-modal-badge">OPCJE I KONFIGURACJA</span>
-            <h2 class="dd-modal-title">EDYTOR I USTAWIENIA</h2>
-            <p class="dd-modal-sub">Dostosuj głośność muzyki, efektów oraz przetestuj plansze i wyzwania.</p>
+            <span class="dd-modal-badge">OPCJE I DŹWIĘK</span>
+            <h2 class="dd-modal-title">USTAWIENIA GRY</h2>
+            <p class="dd-modal-sub">Dostosuj głośność muzyki i efektów dźwiękowych.</p>
           </div>
           <button class="dd-modal-close-btn" id="settings-close-btn" title="Zamknij">✕</button>
         </div>
@@ -92,48 +91,19 @@ export function openSettingsModal(app) {
             </button>
           </div>
 
-          <!-- 4. Wybór plansz i test bossów -->
+          <!-- 4. Reset postępów -->
           <div class="settings-row" style="display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 12px 16px; border-radius: 12px; border: 1.5px solid #334155;">
             <div>
-              <strong style="color: #f8fafc; display: block; font-size: 0.95rem;">Wybór planszy & Bossów</strong>
-              <span style="color: #94a3b8; font-size: 0.8rem;">Swobodny wybór poziomu (Szatnia, Klasa, Smok)</span>
+              <strong style="color: #f8fafc; display: block; font-size: 0.95rem;">Zresetuj postępy gry</strong>
+              <span style="color: #94a3b8; font-size: 0.8rem;">Rozpocznij przygodę od początku (zostawia tylko Epizod 1)</span>
             </div>
-            <button
-              id="settings-floors-btn"
-              style="
-                padding: 8px 16px;
-                border-radius: 8px;
-                border: none;
-                font-weight: 800;
-                cursor: pointer;
-                background: #6366f1;
-                color: white;
-              "
-            >
-              OTWÓRZ
-            </button>
-          </div>
-
-          <!-- 5. Progresja Epizodów (Dicey Dungeons) -->
-          <div class="settings-row" style="display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 12px 16px; border-radius: 12px; border: 1.5px solid #334155;">
             <div>
-              <strong style="color: #f8fafc; display: block; font-size: 0.95rem;">Progresja Epizodów (1–6)</strong>
-              <span style="color: #94a3b8; font-size: 0.8rem;">Odblokowywanie kolejnych poziomów i koron 👑</span>
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button
-                id="settings-unlock-all-episodes-btn"
-                style="padding: 8px 12px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; background: #10b981; color: white; font-size: 0.82rem;"
-                title="Odblokowuje wszystkie 6 epizodów dla każdej postaci"
-              >
-                ODBLOKUJ WSZYSTKIE
-              </button>
               <button
                 id="settings-reset-episodes-btn"
-                style="padding: 8px 12px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; background: #ef4444; color: white; font-size: 0.82rem;"
+                style="padding: 8px 16px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; background: #ef4444; color: white; font-size: 0.82rem;"
                 title="Resetuje postępy epizodów (zostawia tylko Epizod 1)"
               >
-                RESET
+                RESETUJ POSTĘPY
               </button>
             </div>
           </div>
@@ -217,23 +187,12 @@ export function openSettingsModal(app) {
     });
   }
 
-  // Przycisk wyboru plansz
-  document.getElementById('settings-floors-btn')?.addEventListener('click', () => {
-    closeModal();
-    openFloorPickerModal(app);
-  });
-
-  // Odblokowanie wszystkich epizodów (dla testów)
-  document.getElementById('settings-unlock-all-episodes-btn')?.addEventListener('click', () => {
-    episodeManager.unlockAllEpisodes();
-    sound.playFanfare();
-    alert('Wszystkie 6 epizodów dla każdej postaci zostały odblokowane!');
-  });
-
   // Reset postępów epizodów
   document.getElementById('settings-reset-episodes-btn')?.addEventListener('click', () => {
-    episodeManager.resetAllProgress();
-    sound.playStep();
-    alert('Zresetowano postępy epizodów. Dostępny jest tylko Epizod 1.');
+    if (confirm('Czy na pewno chcesz zresetować postępy wszystkich postaci?')) {
+      episodeManager.resetAllProgress();
+      sound.playStep();
+      alert('Zresetowano postępy. Dostępny jest tylko Epizod 1.');
+    }
   });
 }

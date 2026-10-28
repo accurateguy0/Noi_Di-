@@ -213,7 +213,7 @@ class NoiDiGameApp {
           </div>
 
           <!-- Prawa strona: Drabina / Piętra z czaszkami i kapturem bossa -->
-          <div class="hud-floor-cluster" id="hud-floor-picker-btn" style="cursor: pointer;" title="Wybierz planszę">
+          <div class="hud-floor-cluster" id="hud-floor-display" title="Aktualne piętro">
             <div class="hud-floor-top-row">
               <span class="hud-floor-stair-icon">🪜</span>
               <div class="hud-floor-skulls" id="hud-floor-skulls">
@@ -238,12 +238,6 @@ class NoiDiGameApp {
     });
     document.getElementById('hud-inventory-btn')?.addEventListener('click', () => {
       this.openInventoryModal(null, 'equipment');
-    });
-    document.getElementById('hud-floor-picker-btn')?.addEventListener('click', () => {
-      this.openFloorPickerModal();
-    });
-    document.getElementById('skip-opponent-btn')?.addEventListener('click', () => {
-      this.skipOpponentForTest();
     });
   }
 
@@ -275,9 +269,6 @@ class NoiDiGameApp {
               <button type="button" class="btn-drc-action" id="rules-btn-select-hero">
                 👥 CHANGE HERO
               </button>
-              <button type="button" class="btn-drc-action" id="rules-btn-select-floor">
-                🗺️ CHOOSE FLOOR
-              </button>
               <button type="button" class="btn-drc-action" id="rules-btn-mute">
                 🔊 ${isMuted ? 'UNMUTE SOUND' : 'MUTE SOUND'}
               </button>
@@ -296,10 +287,6 @@ class NoiDiGameApp {
     modalMount.querySelector('#rules-btn-select-hero')?.addEventListener('click', () => {
       this.closeModal();
       openCharacterSelectModal(this);
-    });
-    modalMount.querySelector('#rules-btn-select-floor')?.addEventListener('click', () => {
-      this.closeModal();
-      this.openFloorPickerModal();
     });
     modalMount.querySelector('#rules-btn-mute')?.addEventListener('click', () => {
       const nowMuted = sound.toggleMute();
@@ -404,10 +391,6 @@ class NoiDiGameApp {
         if (currentNode && this.activeMinigame === null) {
           this.interactWithNode(currentNode);
         }
-      }
-
-      if (e.key === 'F8') {
-        this.skipOpponentForTest();
       }
     });
   }

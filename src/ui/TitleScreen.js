@@ -57,7 +57,7 @@ export class TitleScreen {
 
           <button class="dd-title-btn btn-title-editor" id="title-btn-editor">
             <span class="dd-title-btn-icon">⚙️</span>
-            <span class="dd-title-btn-text">EDYTOR</span>
+            <span class="dd-title-btn-text">USTAWIENIA</span>
           </button>
         </div>
       </div>
