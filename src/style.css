@@ -9216,68 +9216,59 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   max-height: 100%;
   width: auto;
   object-fit: contain;
-  animation: heroStageSway 4.6s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+  animation: heroStageIdle 4.6s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
   transform-origin: center bottom;
   will-change: transform;
 }
 
-@keyframes heroStageSway {
-  /* 0.0s - 0.76s: Spokojne zamyślenie i podwójne mrugnięcie (stabilna poza z lekkim oddechem) */
+@keyframes heroStageIdle {
+  /* 0.0s - 0.76s: Spokojne zamyślenie i podwójne mrugnięcie (stabilna pionowa sylwetka bez chwiania) */
   0%, 16.5% {
-    transform: translateX(0) translateY(0) rotate(0deg);
+    transform: translateY(0);
   }
   8% {
-    transform: translateX(0) translateY(-3px) rotate(0.3deg);
+    transform: translateY(-2px);
   }
 
-  /* 0.76s - 0.85s: Eksplozja radości! Radosny wyskok i przechylenie w bok */
+  /* 0.76s - 0.85s: Radosny wyskok w momencie uśmiechu (w pionie, bez kołysania na boki) */
   18% {
-    transform: translateX(-12px) translateY(-14px) rotate(-3.5deg) scale(1.03);
+    transform: translateY(-12px);
   }
   20% {
-    transform: translateX(-10px) translateY(-7px) rotate(-2.8deg) scale(1.01);
+    transform: translateY(-6px);
   }
 
-  /* 0.85s - 2.80s: Radosne sprężyste podskakiwanie w rytm uśmiechu */
+  /* 0.85s - 2.80s: Sprężyste radosne podskakiwanie w rytm uśmiechu */
   28% {
-    transform: translateX(-11px) translateY(-12px) rotate(-3.2deg);
+    transform: translateY(-11px);
   }
   36% {
-    transform: translateX(-9px) translateY(-5px) rotate(-2.5deg);
+    transform: translateY(-5px);
   }
   44% {
-    transform: translateX(-11px) translateY(-12px) rotate(-3.2deg);
+    transform: translateY(-11px);
   }
   52% {
-    transform: translateX(-9px) translateY(-5px) rotate(-2.5deg);
+    transform: translateY(-5px);
   }
   60% {
-    transform: translateX(-10px) translateY(-9px) rotate(-3.0deg);
+    transform: translateY(-9px);
   }
 
-  /* 2.80s: Nagle uśmiech gaśnie! Rozczarowanie i opadnięcie sylwetki */
+  /* 2.80s: Nagłe opadnięcie sylwetki w momencie rozczarowania */
   61% {
-    transform: translateX(0) translateY(3px) rotate(0deg) scale(0.98);
+    transform: translateY(2px);
   }
   64%, 82% {
-    transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    transform: translateY(0);
   }
 
-  /* 3.80s - 4.10s: Komiczne drżenie (shiver) i zamyślenie przed resetem */
-  83% {
-    transform: translateX(-3px) translateY(-1px) rotate(-0.5deg);
-  }
+  /* 3.80s - 4.10s: Subtelny oddech przed ponownym cyklem */
   85% {
-    transform: translateX(3px) translateY(-1px) rotate(0.5deg);
-  }
-  87% {
-    transform: translateX(-2px) translateY(0) rotate(-0.3deg);
-  }
-  89% {
-    transform: translateX(2px) translateY(0) rotate(0.3deg);
+    transform: translateY(-2px);
   }
   91%, 100% {
-    transform: translateX(0) translateY(0) rotate(0deg);
+    transform: translateY(0);
   }
 }
 
