@@ -58,6 +58,15 @@ import {
   CWANIAK_M5_DIALOG_STEPS
 } from '../data/vocabulary.js';
 
+import { isRelaxedMode } from '../ui/SettingsModal.js';
+
+function getAdjustedEnemyHp(hp) {
+  if (isRelaxedMode()) {
+    return Math.max(1, Math.round(hp * 0.75));
+  }
+  return hp;
+}
+
 export class MinigameLauncher {
   constructor(app) {
     this.app = app;
@@ -109,7 +118,7 @@ export class MinigameLauncher {
     const tanDmg = getPlayerDamage(this.app.player);
     const enemyDmg = node?.enemyDamage || 2;
     const wordCount = (node?.words && node.words.length) ? node.words.length : 4;
-    const enemyHp = wordCount * tanDmg;
+    const enemyHp = getAdjustedEnemyHp(wordCount * tanDmg);
 
     this.app.activeMinigame = new AnagramGame(arenaMount, {
       player: this.app.player,
@@ -263,7 +272,7 @@ export class MinigameLauncher {
     const tanDmg = getPlayerDamage(this.app.player);
     const enemyDmg = node?.enemyDamage || 1;
     const wordCount = (node?.words && node.words.length) ? node.words.length : 6;
-    const enemyHp = wordCount * tanDmg;
+    const enemyHp = getAdjustedEnemyHp(wordCount * tanDmg);
     const baseTime = node?.baseTime || 30;
 
     this.app.activeMinigame = new WordSearchGame(arenaMount, {

@@ -13,9 +13,14 @@ let activeSettingsState = {
   disableScreenEffects: false,
   disableShaders: false,
   combatSpeed: 'very_fast', // 'normal' | 'fast' | 'very_fast'
+  relaxedMode: false,
   boloHints: true,
   skipIntro: false
 };
+
+export function isRelaxedMode() {
+  return Boolean(activeSettingsState.relaxedMode);
+}
 
 // Wczytaj zapamiętane preferencje wyświetlania
 try {
@@ -294,37 +299,37 @@ export function openSettingsModal(app, initialView = 'main') {
     }
 
     // ==========================================
-    // 5. WIDOK: GRA (GAMEPLAY)
-    // Opcje podpowiedzi i ułatwień
+    // 5. WIDOK: GRA (GAMEPLAY) (Wzór Dicey Dungeons: Relaxed Mode)
     // ==========================================
     else if (currentView === 'gameplay') {
       contentHtml = `
-        <div class="esc-menu-container" style="max-width: 440px;">
-          <h2 class="esc-menu-title">GAMEPLAY</h2>
+        <div class="esc-menu-container" style="max-width: 460px; gap: 20px;">
+          <h2 class="esc-menu-title" style="margin-bottom: 8px;">GAMEPLAY</h2>
 
-          <div style="width: 100%; display: flex; flex-direction: column; gap: 14px; background: rgba(15,23,42,0.6); padding: 18px; border-radius: 14px; border: 2px solid #334155;">
-            <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: white; font-family: 'Fredoka', sans-serif;">
-              <span>Podpowiedzi Kotka Bolo</span>
+          <div style="display: flex; flex-direction: column; align-items: center; width: 100%; gap: 14px;">
+            <!-- Checkbox Relaxed mode -->
+            <label style="display: flex; align-items: center; gap: 14px; cursor: pointer; color: #ffffff; font-family: 'Fredoka', sans-serif; font-size: 1.45rem; font-weight: 800; letter-spacing: 0.5px;">
               <input
                 type="checkbox"
-                id="chk-bolo-hints"
-                ${activeSettingsState.boloHints ? 'checked' : ''}
-                style="width: 22px; height: 22px; accent-color: #10b981; cursor: pointer;"
+                id="chk-relaxed-mode"
+                ${activeSettingsState.relaxedMode ? 'checked' : ''}
+                style="width: 24px; height: 24px; accent-color: #3b82f6; cursor: pointer;"
               />
+              <span>Relaxed mode</span>
             </label>
 
-            <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: white; font-family: 'Fredoka', sans-serif;">
-              <span>Pomiń animacje wprowadzające</span>
-              <input
-                type="checkbox"
-                id="chk-skip-intro"
-                ${activeSettingsState.skipIntro ? 'checked' : ''}
-                style="width: 22px; height: 22px; accent-color: #3b82f6; cursor: pointer;"
-              />
-            </label>
+            <!-- Opis z gry Dicey Dungeons -->
+            <div style="color: #ffffff; font-family: 'Fredoka', 'Nunito', sans-serif; font-size: 1.05rem; line-height: 1.55; text-align: center; max-width: 440px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+              <p style="margin: 0 0 14px 0;">
+                In relaxed mode, all enemies have 25% less health.
+              </p>
+              <p style="margin: 0;">
+                Relaxed mode has no effect on progress or achievements, and can be turned on and off at will.
+              </p>
+            </div>
           </div>
 
-          <button class="btn-dd-block" id="gameplay-btn-back" style="margin-top: 14px;">
+          <button class="btn-dd-block" id="gameplay-btn-back" style="margin-top: 18px;">
             BACK
           </button>
         </div>
@@ -485,13 +490,9 @@ export function openSettingsModal(app, initialView = 'main') {
       render();
     });
 
-    // 5. Widok Gameplay
-    document.getElementById('chk-bolo-hints')?.addEventListener('change', (e) => {
-      activeSettingsState.boloHints = e.target.checked;
-      savePreferences();
-    });
-    document.getElementById('chk-skip-intro')?.addEventListener('change', (e) => {
-      activeSettingsState.skipIntro = e.target.checked;
+    // 5. Widok Gameplay (Relaxed mode)
+    document.getElementById('chk-relaxed-mode')?.addEventListener('change', (e) => {
+      activeSettingsState.relaxedMode = e.target.checked;
       savePreferences();
     });
     document.getElementById('gameplay-btn-back')?.addEventListener('click', () => {
