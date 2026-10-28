@@ -275,243 +275,145 @@ export function openCharacterSelectModal(app) {
   let currentHeroIndex = HEROES.findIndex((h) => h.id === activeHeroId);
   if (currentHeroIndex < 0) currentHeroIndex = 0;
 
-  let isSwitchingHero = false;
+  let spriteTimer = null;
+  let popTimer = null;
 
-  const switchToHero = (newIndex) => {
-    if (isSwitchingHero) return;
-    if (newIndex === currentHeroIndex) return;
-    if (newIndex < 0 || newIndex >= HEROES.length) return;
-
-    isSwitchingHero = true;
-    sound.playWhoosh();
-
-    const currentSprite = document.getElementById('cs-hero-sprite');
-    if (currentSprite) {
-      currentSprite.classList.remove('hero-popping');
-      currentSprite.classList.add('hero-shrinking');
-    }
-
-    setTimeout(() => {
-      currentHeroIndex = newIndex;
-      sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
-      renderStage(true);
-    }, 160);
-  };
-
-  const renderStage = (isNewHero = false) => {
-    const hero = HEROES[currentHeroIndex];
+  const getHeroData = (idx) => {
+    const hero = HEROES[idx];
     const isHeroUnlocked = episodeManager.isHeroUnlocked(hero.id);
     const prevHeroId = episodeManager.getPreviousHeroId(hero.id);
     const prevHero = HEROES.find((h) => h.id === prevHeroId);
     const heroProgress = episodeManager.getHeroProgress(hero.id);
     const selectedPip = heroProgress.selected || 1;
     const selectedEp = hero.episodes.find((ep) => ep.pip === selectedPip) || hero.episodes[0];
-
-    // Budowanie paska ikonek 6 bohaterów u góry sceny (nasze postacie z avatarów)
-    const heroIconsHtml = HEROES.map((h, idx) => {
-      const isUnlocked = episodeManager.isHeroUnlocked(h.id);
-      const isActive = idx === currentHeroIndex;
-
-      return `
-        <button
-          type="button"
-          class="cs-hero-pip-btn ${isActive ? 'is-active' : ''} ${!isUnlocked ? 'is-locked-pip' : ''}"
-          data-hero-idx="${idx}"
-          title="${h.name} (${isUnlocked ? 'Odblokowany' : 'Zablokowany'})"
-        >
-          <div class="cs-pip-dice">
-            <img src="${h.avatar}" alt="${h.name}" draggable="false" />
-          </div>
-          ${isActive ? `
-            <svg class="cs-pip-bracket-svg" viewBox="0 0 44 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M 2 9.5 V 3.5 C 2 2.67 2.67 2 3.5 2 H 10" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M 34 2 H 40.5 C 41.33 2 42 2.67 42 3.5 V 9.5" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M 2 32.5 V 38.5 C 2 39.33 2.67 40 3.5 40 H 10" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M 34 40 H 40.5 C 41.33 40 42 39.33 42 38.5 V 32.5" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
-          ` : ''}
-        </button>
-      `;
-    }).join('');
-
-    screen.innerHTML = `
-      <div class="char-select-stage-wrap">
-        <div class="char-select-stage-inner">
-          <!-- Bezpośredni element IMG tła sceny z fallbackiem -->
-          <img
-            class="cs-stage-bg-img"
-            src="./assets/tla/character_selection_background.png"
-            onerror="if(!this.src.includes('public/')) { this.src='./public/assets/tla/character_selection_background.png'; } else { this.src='/assets/tla/character_selection_background.png'; }"
-            alt="Character Selection Stage"
-          />
-
-          <!-- 1. Przycisk MENU / TYTUŁ (górny lewy róg w ramce tła) -->
-          <button class="cs-top-btn cs-btn-menu" id="cs-btn-menu" title="Powrót do menu głównego">
-            TYTUŁ
-          </button>
-
-          <!-- 2. Rząd 6 kości bohaterów u góry -->
-          <div class="cs-icons-row" id="cs-icons-row">
-            ${heroIconsHtml}
-          </div>
-
-          <!-- 3. Przycisk WYZWANIA (górny prawy róg w ramce tła) -->
-          <button class="cs-top-btn cs-btn-challenges" id="cs-btn-challenges" title="Wybór poziomu / Wyzwania">
-            WYZWANIA
-          </button>
-
-          <!-- 4. Strzałka w lewo (Left Arrow) -->
-          <button class="cs-arrow-btn cs-arrow-left" id="cs-arrow-left" title="Poprzedni bohater (←)">
-            ‹
-          </button>
-
-          <!-- 5. Lewa świecąca tablica: Szczegóły bohatera LUB ZABLOKOWANY ZAWODNIK -->
-          <div class="cs-marquee-board cs-marquee-left ${!isHeroUnlocked ? 'is-locked-board' : ''}">
-            ${isHeroUnlocked ? `
-              <div class="cs-board-card">
-                <h2 class="cs-board-hero-title">${hero.englishName}</h2>
-                <p class="cs-board-quote">„${selectedEp?.intro || hero.quote}”</p>
-                <div class="cs-board-diff">
-                  <span class="cs-diff-label">TRUDNOŚĆ:</span>
-                  <span class="cs-diff-stars">${hero.difficultyStars}</span>
-                </div>
-              </div>
-            ` : `
-              <div class="cs-board-card cs-card-locked-left">
-                <div class="cs-locked-contestant-label">
-                  ZABLOKOWANY ZAWODNIK
-                </div>
-              </div>
-            `}
-          </div>
-
-          <!-- 6. Centralny podest i postać bohatera (Pedestal Sprite) -->
-          <div class="cs-center-hero-wrap">
-            <img class="cs-hero-pedestal-sprite ${!isHeroUnlocked ? 'is-locked-hero' : ''} ${isNewHero ? 'hero-popping' : ''}" id="cs-hero-sprite" src="${hero.avatar}" alt="${hero.name}" onerror="this.src='${hero.fallbackAvatar}'" />
-          </div>
-
-          <!-- 7. Prawa świecąca tablica: Epizody LUB Zablokowane -->
-          <div class="cs-marquee-board cs-marquee-right ${!isHeroUnlocked ? 'is-locked-board' : ''}">
-            ${isHeroUnlocked ? `
-              <div class="cs-board-card">
-                <h2 class="cs-board-episodes-title">EPIZODY</h2>
-                <div class="cs-episodes-grid" id="cs-episodes-grid">
-                  ${hero.episodes.map((ep) => {
-                    const isUnlocked = episodeManager.isEpisodeUnlocked(hero.id, ep.pip);
-                    if (isUnlocked) {
-                      const isCompleted = episodeManager.isEpisodeCompleted(hero.id, ep.pip);
-                      const isSelected = ep.pip === selectedPip;
-
-                      return `
-                        <div
-                          class="cs-episode-badge is-unlocked ${isSelected ? 'is-selected' : ''} ${isCompleted ? 'is-completed' : ''}"
-                          data-pip="${ep.pip}"
-                          title="${ep.title} - ${isCompleted ? 'Ukończono!' : 'Kliknij, aby wybrać'}"
-                        >
-                          <div class="cs-episode-text">
-                            <div class="cs-ep-top-line">
-                              <span class="cs-ep-title">${ep.pip}. ${ep.title}</span>
-                            </div>
-                          </div>
-                          <div class="cs-ep-status-pill">
-                            ${isCompleted ? '👑' : isSelected ? '▶' : ''}
-                          </div>
-                        </div>
-                      `;
-                    } else {
-                      return `
-                        <div
-                          class="cs-locked-episode-box"
-                          data-pip="${ep.pip}"
-                          title="Epizod ${ep.pip} jest zablokowany. Wygraj wcześniejszy epizod, aby odblokować!"
-                        >
-                          <svg class="cs-locked-box-svg" viewBox="0 0 34 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M 8 16 V 9 C 8 4 12 1 17 1 C 22 1 26 4 26 9 V 16" stroke="#FDE6CE" stroke-width="4.5" stroke-linecap="round"/>
-                            <rect x="2" y="14" width="30" height="23" rx="6" fill="#FDE6CE"/>
-                            <line x1="2" y1="25" x2="32" y2="25" stroke="#E6A163" stroke-width="1.2"/>
-                            <circle cx="17" cy="25" r="5" stroke="#E6A163" stroke-width="1.5" fill="#FDE6CE"/>
-                            <circle cx="17" cy="23.5" r="2" fill="#E6A163"/>
-                            <path d="M 16 23.5 L 15.5 28 H 18.5 L 18 23.5 Z" fill="#E6A163"/>
-                          </svg>
-                        </div>
-                      `;
-                    }
-                  }).join('')}
-                </div>
-              </div>
-            ` : `
-              <div class="cs-board-card cs-card-locked-right">
-                <div class="cs-locked-right-content">
-                  <span class="cs-locked-padlock-icon">🔒</span>
-                  <span class="cs-locked-right-text">Zablokowane</span>
-                </div>
-              </div>
-            `}
-          </div>
-
-          <!-- 8. Strzałka w prawo (Right Arrow) -->
-          <button class="cs-arrow-btn cs-arrow-right" id="cs-arrow-right" title="Następny bohater (→)">
-            ›
-          </button>
-
-          <!-- 9. Dolny czerwony przycisk START (odblokowany) LUB baner odblokowania (zablokowany) -->
-          ${isHeroUnlocked ? `
-            <button class="cs-start-play-btn" id="cs-btn-start" title="Wybierz ${hero.name} i rozpocznij grę!">
-              START
-            </button>
-          ` : `
-            <div class="cs-pedestal-lock-banner">
-              <div class="cs-pedestal-lock-title">🔒 Aby odblokować tę postać:</div>
-              <div class="cs-pedestal-lock-sub">${prevHero ? `Wygraj Epizod 1 postacią: ${prevHero.name}` : '???'}</div>
-            </div>
-          `}
-        </div>
-      </div>
-    `;
-
-    bindStageEvents(isNewHero);
+    return { hero, isHeroUnlocked, prevHero, heroProgress, selectedPip, selectedEp };
   };
 
-  const bindStageEvents = (isNewHero = false) => {
-    if (isNewHero) {
-      const sprite = document.getElementById('cs-hero-sprite');
-      setTimeout(() => {
-        if (sprite) sprite.classList.remove('hero-popping');
-        isSwitchingHero = false;
-      }, 230);
+  const renderLeftBoardHtml = ({ hero, isHeroUnlocked, selectedEp }) => {
+    if (isHeroUnlocked) {
+      return `
+        <div class="cs-board-card">
+          <h2 class="cs-board-hero-title">${hero.englishName}</h2>
+          <p class="cs-board-quote">„${selectedEp?.intro || hero.quote}”</p>
+          <div class="cs-board-diff">
+            <span class="cs-diff-label">TRUDNOŚĆ:</span>
+            <span class="cs-diff-stars">${hero.difficultyStars}</span>
+          </div>
+        </div>
+      `;
     } else {
-      isSwitchingHero = false;
+      return `
+        <div class="cs-board-card cs-card-locked-left">
+          <div class="cs-locked-contestant-label">
+            ZABLOKOWANY ZAWODNIK
+          </div>
+        </div>
+      `;
     }
+  };
 
-    // 1. Menu
-    document.getElementById('cs-btn-menu')?.addEventListener('click', () => {
-      sound.playStep();
-      playJaggedCurtainWipe(() => {
-        screen.classList.add('hidden');
-        if (app.titleScreen) {
-          app.titleScreen.show();
-        }
-        musicManager.playTitleMusic();
-      });
+  const renderRightBoardHtml = ({ hero, isHeroUnlocked, selectedPip }) => {
+    if (isHeroUnlocked) {
+      return `
+        <div class="cs-board-card">
+          <h2 class="cs-board-episodes-title">EPIZODY</h2>
+          <div class="cs-episodes-grid" id="cs-episodes-grid">
+            ${hero.episodes.map((ep) => {
+              const isUnlocked = episodeManager.isEpisodeUnlocked(hero.id, ep.pip);
+              if (isUnlocked) {
+                const isCompleted = episodeManager.isEpisodeCompleted(hero.id, ep.pip);
+                const isSelected = ep.pip === selectedPip;
+
+                return `
+                  <div
+                    class="cs-episode-badge is-unlocked ${isSelected ? 'is-selected' : ''} ${isCompleted ? 'is-completed' : ''}"
+                    data-pip="${ep.pip}"
+                    title="${ep.title} - ${isCompleted ? 'Ukończono!' : 'Kliknij, aby wybrać'}"
+                  >
+                    <div class="cs-episode-text">
+                      <div class="cs-ep-top-line">
+                        <span class="cs-ep-title">${ep.pip}. ${ep.title}</span>
+                      </div>
+                    </div>
+                    <div class="cs-ep-status-pill">
+                      ${isCompleted ? '👑' : isSelected ? '▶' : ''}
+                    </div>
+                  </div>
+                `;
+              } else {
+                return `
+                  <div
+                    class="cs-locked-episode-box"
+                    data-pip="${ep.pip}"
+                    title="Epizod ${ep.pip} jest zablokowany. Wygraj wcześniejszy epizod, aby odblokować!"
+                  >
+                    <svg class="cs-locked-box-svg" viewBox="0 0 34 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M 8 16 V 9 C 8 4 12 1 17 1 C 22 1 26 4 26 9 V 16" stroke="#FDE6CE" stroke-width="4.5" stroke-linecap="round"/>
+                      <rect x="2" y="14" width="30" height="23" rx="6" fill="#FDE6CE"/>
+                      <line x1="2" y1="25" x2="32" y2="25" stroke="#E6A163" stroke-width="1.2"/>
+                      <circle cx="17" cy="25" r="5" stroke="#E6A163" stroke-width="1.5" fill="#FDE6CE"/>
+                      <circle cx="17" cy="23.5" r="2" fill="#E6A163"/>
+                      <path d="M 16 23.5 L 15.5 28 H 18.5 L 18 23.5 Z" fill="#E6A163"/>
+                    </svg>
+                  </div>
+                `;
+              }
+            }).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      return `
+        <div class="cs-board-card cs-card-locked-right">
+          <div class="cs-locked-right-content">
+            <span class="cs-locked-padlock-icon">🔒</span>
+            <span class="cs-locked-right-text">Zablokowane</span>
+          </div>
+        </div>
+      `;
+    }
+  };
+
+  const renderBottomAreaHtml = ({ hero, isHeroUnlocked, prevHero }) => {
+    if (isHeroUnlocked) {
+      return `
+        <button class="cs-start-play-btn" id="cs-btn-start" title="Wybierz ${hero.name} i rozpocznij grę!">
+          START
+        </button>
+      `;
+    } else {
+      return `
+        <div class="cs-pedestal-lock-banner">
+          <div class="cs-pedestal-lock-title">🔒 Aby odblokować tę postać:</div>
+          <div class="cs-pedestal-lock-sub">${prevHero ? `Wygraj Epizod 1 postacią: ${prevHero.name}` : '???'}</div>
+        </div>
+      `;
+    }
+  };
+
+  const updateSliderPosition = (idx, immediate = false) => {
+    const slider = document.getElementById('cs-pip-bracket-slider');
+    const buttons = screen.querySelectorAll('.cs-hero-pip-btn');
+    if (!slider) return;
+
+    buttons.forEach((btn, i) => {
+      btn.classList.toggle('is-active', i === idx);
     });
 
-    // 2. Wyzwania
-    document.getElementById('cs-btn-challenges')?.addEventListener('click', () => {
-      sound.playStep();
-      openFloorPickerModal(app);
-    });
+    const targetBtn = buttons[idx];
+    const left = (targetBtn && targetBtn.offsetLeft) ? targetBtn.offsetLeft : (idx * 56);
 
-    // 3. Kliknięcie w postać / kość bohatera u góry
-    screen.querySelectorAll('.cs-hero-pip-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const idx = Number(btn.getAttribute('data-hero-idx'));
-        if (!isNaN(idx) && idx >= 0 && idx < HEROES.length) {
-          switchToHero(idx);
-        }
-      });
-    });
+    if (immediate) {
+      slider.style.transition = 'none';
+      slider.style.transform = `translateX(${left}px) translateY(-4px) scale(1.18)`;
+      void slider.offsetWidth; // force reflow
+      slider.style.transition = 'transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+    } else {
+      slider.style.transform = `translateX(${left}px) translateY(-4px) scale(1.18)`;
+    }
+  };
 
-    // 4. Kliknięcie w odblokowany epizod na prawej tablicy
+  const bindEpisodeBadges = () => {
     screen.querySelectorAll('.cs-episode-badge').forEach((badge) => {
       badge.addEventListener('click', () => {
         const pip = Number(badge.getAttribute('data-pip'));
@@ -519,22 +421,13 @@ export function openCharacterSelectModal(app) {
         if (episodeManager.isEpisodeUnlocked(hero.id, pip)) {
           episodeManager.setSelectedEpisode(hero.id, pip);
           sound.playStep();
-          renderStage(false);
+          updateHeroBoards(currentHeroIndex);
         }
       });
     });
+  };
 
-    // 5. Strzałka w lewo (ze zmniejszeniem postaci i dźwiękiem whoosh)
-    document.getElementById('cs-arrow-left')?.addEventListener('click', () => {
-      switchToHero((currentHeroIndex - 1 + HEROES.length) % HEROES.length);
-    });
-
-    // 6. Strzałka w prawo (ze zmniejszeniem postaci i dźwiękiem whoosh)
-    document.getElementById('cs-arrow-right')?.addEventListener('click', () => {
-      switchToHero((currentHeroIndex + 1) % HEROES.length);
-    });
-
-    // 7. Przycisk START
+  const bindStartButton = () => {
     document.getElementById('cs-btn-start')?.addEventListener('click', () => {
       const selected = HEROES[currentHeroIndex];
       if (!episodeManager.isHeroUnlocked(selected.id)) return;
@@ -582,14 +475,209 @@ export function openCharacterSelectModal(app) {
     });
   };
 
-  // Obsługa klawiatury (Strzałki lewo/prawo z dźwiękiem whoosh i przełączeniem, Enter, Escape)
+  const updateHeroBoards = (idx) => {
+    const data = getHeroData(idx);
+
+    // 1. Lewa tablica
+    const leftBoard = document.getElementById('cs-marquee-left');
+    if (leftBoard) {
+      leftBoard.className = `cs-marquee-board cs-marquee-left ${!data.isHeroUnlocked ? 'is-locked-board' : ''}`;
+      leftBoard.innerHTML = renderLeftBoardHtml(data);
+    }
+
+    // 2. Prawa tablica
+    const rightBoard = document.getElementById('cs-marquee-right');
+    if (rightBoard) {
+      rightBoard.className = `cs-marquee-board cs-marquee-right ${!data.isHeroUnlocked ? 'is-locked-board' : ''}`;
+      rightBoard.innerHTML = renderRightBoardHtml(data);
+      bindEpisodeBadges();
+    }
+
+    // 3. Dolny obszar (przycisk START / baner zablokowania)
+    const bottomArea = document.getElementById('cs-bottom-action-area');
+    if (bottomArea) {
+      bottomArea.innerHTML = renderBottomAreaHtml(data);
+      bindStartButton();
+    }
+  };
+
+  const switchToHero = (newIndex) => {
+    if (newIndex < 0 || newIndex >= HEROES.length) return;
+    if (newIndex === currentHeroIndex && !spriteTimer) return;
+
+    currentHeroIndex = newIndex;
+    sound.setPlayerClass(HEROES[currentHeroIndex].characterClass);
+    sound.playWhoosh();
+
+    // 1. Płynne przesunięcie ramki klamerki
+    updateSliderPosition(currentHeroIndex, false);
+
+    // 2. Natychmiastowa aktualizacja tablic i przycisków
+    updateHeroBoards(currentHeroIndex);
+
+    // 3. Animacja zmniejszenia i powiększenia postaci na podeście
+    const sprite = document.getElementById('cs-hero-sprite');
+    if (sprite) {
+      if (spriteTimer) clearTimeout(spriteTimer);
+      if (popTimer) clearTimeout(popTimer);
+
+      sprite.classList.remove('hero-popping');
+      sprite.classList.add('hero-shrinking');
+
+      spriteTimer = setTimeout(() => {
+        spriteTimer = null;
+        const data = getHeroData(currentHeroIndex);
+        sprite.src = data.hero.avatar;
+        sprite.alt = data.hero.name;
+        sprite.onerror = () => { sprite.src = data.hero.fallbackAvatar; };
+        sprite.classList.toggle('is-locked-hero', !data.isHeroUnlocked);
+        sprite.classList.remove('hero-shrinking');
+        sprite.classList.add('hero-popping');
+
+        popTimer = setTimeout(() => {
+          popTimer = null;
+          sprite.classList.remove('hero-popping');
+        }, 220);
+      }, 120);
+    }
+  };
+
+  const initStage = () => {
+    const data = getHeroData(currentHeroIndex);
+
+    const heroIconsHtml = HEROES.map((h, idx) => {
+      const isUnlocked = episodeManager.isHeroUnlocked(h.id);
+      const isActive = idx === currentHeroIndex;
+
+      return `
+        <button
+          type="button"
+          class="cs-hero-pip-btn ${isActive ? 'is-active' : ''} ${!isUnlocked ? 'is-locked-pip' : ''}"
+          data-hero-idx="${idx}"
+          title="${h.name} (${isUnlocked ? 'Odblokowany' : 'Zablokowany'})"
+        >
+          <div class="cs-pip-dice">
+            <img src="${h.avatar}" alt="${h.name}" draggable="false" />
+          </div>
+        </button>
+      `;
+    }).join('');
+
+    screen.innerHTML = `
+      <div class="char-select-stage-wrap">
+        <div class="char-select-stage-inner">
+          <!-- Bezpośredni element IMG tła sceny z fallbackiem -->
+          <img
+            class="cs-stage-bg-img"
+            src="./assets/tla/character_selection_background.png"
+            onerror="if(!this.src.includes('public/')) { this.src='./public/assets/tla/character_selection_background.png'; } else { this.src='/assets/tla/character_selection_background.png'; }"
+            alt="Character Selection Stage"
+          />
+
+          <!-- 1. Przycisk MENU / TYTUŁ (górny lewy róg w ramce tła) -->
+          <button class="cs-top-btn cs-btn-menu" id="cs-btn-menu" title="Powrót do menu głównego">
+            TYTUŁ
+          </button>
+
+          <!-- 2. Rząd 6 kości bohaterów u góry z płynnie przesuwającą się klamerką -->
+          <div class="cs-icons-row" id="cs-icons-row">
+            <div class="cs-pip-bracket-slider" id="cs-pip-bracket-slider">
+              <svg class="cs-pip-bracket-svg" viewBox="0 0 44 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 2 9.5 V 3.5 C 2 2.67 2.67 2 3.5 2 H 10" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 34 2 H 40.5 C 41.33 2 42 2.67 42 3.5 V 9.5" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 2 32.5 V 38.5 C 2 39.33 2.67 40 3.5 40 H 10" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 34 40 H 40.5 C 41.33 40 42 39.33 42 38.5 V 32.5" stroke="#FFF7ED" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            ${heroIconsHtml}
+          </div>
+
+          <!-- 3. Przycisk WYZWANIA (górny prawy róg w ramce tła) -->
+          <button class="cs-top-btn cs-btn-challenges" id="cs-btn-challenges" title="Wybór poziomu / Wyzwania">
+            WYZWANIA
+          </button>
+
+          <!-- 4. Strzałka w lewo (Left Arrow) -->
+          <button class="cs-arrow-btn cs-arrow-left" id="cs-arrow-left" title="Poprzedni bohater (←)">
+            ‹
+          </button>
+
+          <!-- 5. Lewa świecąca tablica: Szczegóły bohatera LUB ZABLOKOWANY ZAWODNIK -->
+          <div class="cs-marquee-board cs-marquee-left ${!data.isHeroUnlocked ? 'is-locked-board' : ''}" id="cs-marquee-left">
+            ${renderLeftBoardHtml(data)}
+          </div>
+
+          <!-- 6. Centralny podest i postać bohatera (Pedestal Sprite) -->
+          <div class="cs-center-hero-wrap">
+            <img class="cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}" id="cs-hero-sprite" src="${data.hero.avatar}" alt="${data.hero.name}" onerror="this.src='${data.hero.fallbackAvatar}'" />
+          </div>
+
+          <!-- 7. Prawa świecąca tablica: Epizody LUB Zablokowane -->
+          <div class="cs-marquee-board cs-marquee-right ${!data.isHeroUnlocked ? 'is-locked-board' : ''}" id="cs-marquee-right">
+            ${renderRightBoardHtml(data)}
+          </div>
+
+          <!-- 8. Strzałka w prawo (Right Arrow) -->
+          <button class="cs-arrow-btn cs-arrow-right" id="cs-arrow-right" title="Następny bohater (→)">
+            ›
+          </button>
+
+          <!-- 9. Dolny obszar akcji (START lub Baner odblokowania) -->
+          <div id="cs-bottom-action-area" style="display: contents;">
+            ${renderBottomAreaHtml(data)}
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Wiązanie zdarzeń
+    document.getElementById('cs-btn-menu')?.addEventListener('click', () => {
+      sound.playStep();
+      playJaggedCurtainWipe(() => {
+        screen.classList.add('hidden');
+        if (app.titleScreen) {
+          app.titleScreen.show();
+        }
+        musicManager.playTitleMusic();
+      });
+    });
+
+    document.getElementById('cs-btn-challenges')?.addEventListener('click', () => {
+      sound.playStep();
+      openFloorPickerModal(app);
+    });
+
+    document.getElementById('cs-arrow-left')?.addEventListener('click', () => {
+      switchToHero((currentHeroIndex - 1 + HEROES.length) % HEROES.length);
+    });
+
+    document.getElementById('cs-arrow-right')?.addEventListener('click', () => {
+      switchToHero((currentHeroIndex + 1) % HEROES.length);
+    });
+
+    screen.querySelectorAll('.cs-hero-pip-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.getAttribute('data-hero-idx'));
+        if (!isNaN(idx) && idx >= 0 && idx < HEROES.length) {
+          switchToHero(idx);
+        }
+      });
+    });
+
+    bindEpisodeBadges();
+    bindStartButton();
+
+    requestAnimationFrame(() => {
+      updateSliderPosition(currentHeroIndex, true);
+    });
+  };
+
   const onKeyHandler = (e) => {
     if (screen.classList.contains('hidden')) {
       window.removeEventListener('keydown', onKeyHandler);
       return;
     }
 
-    // Jeśli menu Esc jest otwarte na wierzchu, nie przechwytuj klawiszy
     const escMount = document.getElementById('esc-modal-mount');
     if (escMount && !escMount.classList.contains('hidden')) {
       return;
@@ -602,7 +690,6 @@ export function openCharacterSelectModal(app) {
     } else if (e.key === 'Enter') {
       document.getElementById('cs-btn-start')?.click();
     } else if (e.key === 'Escape') {
-      // Naciśnięcie Esc otwiera menu pauzy/opcji ze ściszeniem dźwięku bez uciekania do menu głównego
       e.preventDefault();
       openSettingsModal(app);
     }
@@ -610,5 +697,12 @@ export function openCharacterSelectModal(app) {
 
   window.addEventListener('keydown', onKeyHandler);
 
-  renderStage();
+  const onResize = () => {
+    if (!screen.classList.contains('hidden')) {
+      updateSliderPosition(currentHeroIndex, true);
+    }
+  };
+  window.addEventListener('resize', onResize);
+
+  initStage();
 }

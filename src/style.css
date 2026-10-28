@@ -8881,13 +8881,26 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   transform: translateY(-4px) scale(1.18);
 }
 
+/* Przesuwająca się płynnie ramka klamerki wybranego bohatera */
+.cs-pip-bracket-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  pointer-events: none;
+  z-index: 10;
+  transition: transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  will-change: transform;
+}
+
 .cs-pip-bracket-svg {
   position: absolute;
-  inset: -3px;
-  width: calc(100% + 6px);
-  height: calc(100% + 6px);
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
   pointer-events: none;
-  filter: drop-shadow(0 0 3px rgba(255, 247, 237, 0.7));
+  filter: drop-shadow(0 0 5px rgba(255, 247, 237, 0.9));
 }
 
 /* Strzałki przewijania bohaterów */
