@@ -71,6 +71,8 @@ export function openSettingsModal(app, initialView = 'main') {
 
   keyHandler = (e) => {
     if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
       if (currentView === 'main') {
         closeModal();
       } else if (currentView === 'options' || currentView === 'edit_progress') {
@@ -650,17 +652,27 @@ export function openSettingsModal(app, initialView = 'main') {
     document.getElementById('options-btn-close')?.addEventListener('click', closeModal);
 
     // 3. Widok Display
-    document.getElementById('disp-btn-fullscreen')?.addEventListener('click', () => {
+    document.getElementById('disp-btn-fullscreen')?.addEventListener('click', async () => {
       sound.playStep();
       if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
+        try {
+          await document.documentElement.requestFullscreen();
+          if ('keyboard' in navigator && typeof navigator.keyboard?.lock === 'function') {
+            await navigator.keyboard.lock(['Escape']);
+          }
+        } catch (e) {}
       }
       setTimeout(render, 100);
     });
-    document.getElementById('disp-btn-windowed')?.addEventListener('click', () => {
+    document.getElementById('disp-btn-windowed')?.addEventListener('click', async () => {
       sound.playStep();
       if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
+        try {
+          if ('keyboard' in navigator && typeof navigator.keyboard?.unlock === 'function') {
+            navigator.keyboard.unlock();
+          }
+          await document.exitFullscreen();
+        } catch (e) {}
       }
       setTimeout(render, 100);
     });

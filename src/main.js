@@ -368,8 +368,27 @@ class NoiDiGameApp {
   }
 
   bindKeyboardShortcuts() {
+    // Blokowanie wyjścia z pełnego ekranu przez klawisz Escape (Keyboard Lock API)
+    // Pozwala na działanie klawisza Esc jak w natywnej grze (otwieranie menu pauzy zamiast wyłączania pełnego ekranu)
+    document.addEventListener('fullscreenchange', async () => {
+      if (document.fullscreenElement) {
+        if ('keyboard' in navigator && typeof navigator.keyboard?.lock === 'function') {
+          try {
+            await navigator.keyboard.lock(['Escape']);
+          } catch (e) {}
+        }
+      } else {
+        if ('keyboard' in navigator && typeof navigator.keyboard?.unlock === 'function') {
+          try {
+            navigator.keyboard.unlock();
+          } catch (e) {}
+        }
+      }
+    });
+
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        e.preventDefault();
         const escMount = document.getElementById('esc-modal-mount');
         if (escMount && !escMount.classList.contains('hidden')) {
           // Jeśli menu Esc jest już otwarte, jego wewnętrzny keyHandler obsłuży cofnięcie lub zamknięcie
@@ -377,7 +396,6 @@ class NoiDiGameApp {
         }
 
         // Naciśnięcie Esc w dowolnym miejscu (plansza, autor/credits, ekwipunek, menu) otwiera menu Esc ze ściszeniem dźwięku tła
-        e.preventDefault();
         openSettingsModal(this);
         return;
       }
