@@ -789,7 +789,7 @@
             `:`
               <div class="cs-board-card cs-card-locked-left">
                 <div class="cs-locked-contestant-label">
-                  <span class="cs-locked-red-dot">●</span> ZABLOKOWANY ZAWODNIK
+                  ZABLOKOWANY ZAWODNIK
                 </div>
               </div>
             `}
