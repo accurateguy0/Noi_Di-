@@ -9216,60 +9216,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   max-height: 100%;
   width: auto;
   object-fit: contain;
-  animation: heroStageIdle 4.6s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
   transform-origin: center bottom;
-  will-change: transform;
-}
-
-@keyframes heroStageIdle {
-  /* 0.0s - 0.76s: Spokojne zamyślenie i podwójne mrugnięcie (stabilna pionowa sylwetka bez chwiania) */
-  0%, 16.5% {
-    transform: translateY(0);
-  }
-  8% {
-    transform: translateY(-2px);
-  }
-
-  /* 0.76s - 0.85s: Radosny wyskok w momencie uśmiechu (w pionie, bez kołysania na boki) */
-  18% {
-    transform: translateY(-12px);
-  }
-  20% {
-    transform: translateY(-6px);
-  }
-
-  /* 0.85s - 2.80s: Sprężyste radosne podskakiwanie w rytm uśmiechu */
-  28% {
-    transform: translateY(-11px);
-  }
-  36% {
-    transform: translateY(-5px);
-  }
-  44% {
-    transform: translateY(-11px);
-  }
-  52% {
-    transform: translateY(-5px);
-  }
-  60% {
-    transform: translateY(-9px);
-  }
-
-  /* 2.80s: Nagłe opadnięcie sylwetki w momencie rozczarowania */
-  61% {
-    transform: translateY(2px);
-  }
-  64%, 82% {
-    transform: translateY(0);
-  }
-
-  /* 3.80s - 4.10s: Subtelny oddech przed ponownym cyklem */
-  85% {
-    transform: translateY(-2px);
-  }
-  91%, 100% {
-    transform: translateY(0);
-  }
 }
 
 @keyframes heroShrinkToZero {

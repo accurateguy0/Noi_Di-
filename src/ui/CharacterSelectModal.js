@@ -30,19 +30,10 @@ function buildHeroEpisodes(heroId) {
   });
 }
 
+// Hero pedestal animation cycles matching Dicey Dungeons idle cycles.
+// (Animations will be populated per character once generated from video references)
 export const HERO_ANIMATIONS = {
-  inventor: {
-    loopDuration: 4600,
-    keyframes: [
-      { time: 0, frame: './assets/heroes/inventor/inventor_quiet.png' },
-      { time: 400, frame: './assets/heroes/inventor/inventor_blink.png' },
-      { time: 520, frame: './assets/heroes/inventor/inventor_quiet.png' },
-      { time: 640, frame: './assets/heroes/inventor/inventor_blink.png' },
-      { time: 760, frame: './assets/heroes/inventor/inventor_smile.png' },
-      { time: 2800, frame: './assets/heroes/inventor/inventor_sad.png' },
-      { time: 3800, frame: './assets/heroes/inventor/inventor_quiet.png' }
-    ]
-  }
+  // Empty for now pending image generation quota reset
 };
 
 export const HEROES = [
