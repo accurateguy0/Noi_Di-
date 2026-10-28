@@ -52,6 +52,7 @@ export function openSettingsModal(app, initialView = 'main') {
   modalMount.classList.add('modal-mount-esc');
 
   let currentView = initialView;
+  let resetStep = 0;
   let keyHandler = null;
 
   const closeModal = () => {
@@ -68,8 +69,9 @@ export function openSettingsModal(app, initialView = 'main') {
     if (e.key === 'Escape') {
       if (currentView === 'main') {
         closeModal();
-      } else if (currentView === 'options') {
+      } else if (currentView === 'options' || currentView === 'edit_progress') {
         currentView = 'main';
+        resetStep = 0;
         render();
       } else {
         currentView = 'options';
@@ -339,38 +341,181 @@ export function openSettingsModal(app, initialView = 'main') {
     }
 
     // ==========================================
-    // 6. WIDOK: EDYTUJ PROGRES (EDIT PROGRESS)
+    // 6. WIDOK: EDYTUJ PROGRES (PROGRESS EDITOR 1:1 DICEY DUNGEONS)
     // ==========================================
     else if (currentView === 'edit_progress') {
-      contentHtml = `
-        <div class="esc-menu-container" style="max-width: 440px;">
-          <h2 class="esc-menu-title" style="color: #ef4444;">EDIT PROGRESS</h2>
+      let resetButtonsHtml = '';
+      if (resetStep === 0) {
+        resetButtonsHtml = `
+          <button type="button" class="btn-progress-reset-active" id="progress-reset-step-btn" title="Kliknij, aby rozpocząć resetowanie postępów">
+            RESETUJ POSTĘP
+          </button>
+        `;
+      } else if (resetStep === 1) {
+        resetButtonsHtml = `
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">RESETUJ POSTĘP</button>
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">CZY NA PEWNO?</button>
+          <button type="button" class="btn-progress-reset-active" id="progress-reset-step-btn">
+            NAPRAWDĘ?
+          </button>
+        `;
+      } else if (resetStep === 2) {
+        resetButtonsHtml = `
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">RESETUJ POSTĘP</button>
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">CZY NA PEWNO?</button>
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">NAPRAWDĘ?</button>
+          <button type="button" class="btn-progress-reset-active" id="progress-reset-step-btn">
+            POWAŻNIE?
+          </button>
+        `;
+      } else if (resetStep === 3) {
+        resetButtonsHtml = `
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">RESETUJ POSTĘP</button>
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">CZY NA PEWNO?</button>
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">NAPRAWDĘ?</button>
+          <button type="button" class="btn-progress-reset-dashed" title="Kliknij, aby anulować">POWAŻNIE?</button>
+          <button type="button" class="btn-progress-reset-active btn-last-chance" id="progress-reset-step-btn">
+            OSTATNIA SZANSA...
+          </button>
+        `;
+      }
 
-          <div style="background: rgba(15,23,42,0.7); padding: 18px; border-radius: 14px; border: 2px solid #ef4444; color: #f8fafc; text-align: center; font-family: 'Nunito', sans-serif; font-size: 0.95rem; line-height: 1.5; margin-bottom: 10px;">
-            <p style="margin: 0 0 10px;">
-              Możesz zresetować postępy wszystkich postaci, aby rozpocząć grę od początku od <b>Epizodu 1</b>.
-            </p>
-            <button
-              class="btn-dd-block btn-danger-red"
-              id="btn-confirm-reset"
-              style="width: 100%; font-size: 1.1rem; height: 48px;"
+      const PROGRESS_HEROES = [
+        { id: 'warrior', name: 'Wojownik', avatar: './assets/Warrior.png', episodes: 8 },
+        { id: 'thief', name: 'Złodziej', avatar: './assets/Thief.png', episodes: 8 },
+        { id: 'robot', name: 'Robot', avatar: './assets/Robot.png', episodes: 8 },
+        { id: 'inventor', name: 'Wynalazczyni', avatar: './assets/Inventor.png', episodes: 8 },
+        { id: 'witch', name: 'Czarownica', avatar: './assets/Witch.png', episodes: 8 },
+        { id: 'jester', name: 'Błazen', avatar: './assets/Jester.png', episodes: 8 }
+      ];
+
+      const rowsHtml = PROGRESS_HEROES.map((hero) => {
+        const data = episodeManager.getHeroProgress(hero.id);
+        const isHeroUnlocked = episodeManager.isHeroUnlocked(hero.id);
+
+        // Specjalny wiersz dla Błazna jeśli jest jeszcze zablokowany (zgodnie ze zrzutem 1 z Dicey Dungeons)
+        if (hero.id === 'jester' && !isHeroUnlocked) {
+          return `
+            <div class="progress-editor-row is-jester-locked">
+              <div class="progress-hero-icon-box" title="Błazen (Zablokowany)">
+                <img src="${hero.avatar}" alt="Błazen" class="progress-hero-avatar is-locked-silhouette" onerror="this.src='./assets/Warrior.png'" />
+              </div>
+              <div class="progress-jester-unlock-wrap">
+                <button type="button" class="btn-progress-unlock-jester" id="btn-unlock-jester" title="Odblokuj postać Błazna">
+                  ODBLOKUJ
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        const pipsHtml = Array.from({ length: hero.episodes }, (_, i) => {
+          const pip = i + 1;
+          const isPipUnlocked = isHeroUnlocked && pip <= data.unlocked;
+          return `
+            <div
+              class="progress-pip-square ${isPipUnlocked ? 'is-unlocked' : 'is-locked'}"
+              data-hero="${hero.id}"
+              data-pip="${pip}"
+              title="${hero.name} — Poziom / Epizod ${pip}: ${isPipUnlocked ? 'Odblokowany (kliknij, aby zablokować)' : 'Zaszarowany (kliknij, aby odblokować)'}"
             >
-              🗑️ ZRESETUJ POSTĘP
-            </button>
+              ${pip}
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="progress-editor-row ${!isHeroUnlocked ? 'is-hero-locked' : ''}">
+            <div class="progress-hero-icon-box" title="${hero.name}">
+              <img src="${hero.avatar}" alt="${hero.name}" class="progress-hero-avatar ${!isHeroUnlocked ? 'is-locked-silhouette' : ''}" onerror="this.src='./assets/Warrior.png'" />
+            </div>
+            <div class="progress-pips-strip">
+              ${pipsHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      contentHtml = `
+        <div class="credits-theatrical-screen progress-editor-screen" id="progress-editor-screen">
+          <!-- SVG Tła Sceny Teatralnej z żarówkami w stylu Dicey Dungeons -->
+          <svg class="credits-stage-backdrop-svg" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="stageGlow" cx="50%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#841f26" />
+                <stop offset="45%" stop-color="#5a1217" />
+                <stop offset="85%" stop-color="#3b080c" />
+                <stop offset="100%" stop-color="#240407" />
+              </radialGradient>
+              <filter id="bulbGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <rect width="1280" height="720" fill="url(#stageGlow)" />
+            <ellipse cx="640" cy="280" rx="580" ry="360" fill="none" stroke="#480f14" stroke-width="60" />
+            <ellipse cx="640" cy="280" rx="460" ry="290" fill="none" stroke="#63161c" stroke-width="50" />
+            <ellipse cx="640" cy="280" rx="360" ry="230" fill="none" stroke="#781d23" stroke-width="40" />
+            <path d="M 40 -20 L 120 70 L 60 110 L -20 20 Z" fill="#2d0508" opacity="0.8" />
+            <path d="M 1240 -20 L 1160 70 L 1220 110 L 1300 20 Z" fill="#2d0508" opacity="0.8" />
+            <g filter="url(#bulbGlow)">
+              <circle cx="80" cy="540" r="15" fill="#fef3c7" />
+              <circle cx="95" cy="420" r="15" fill="#e2ded2" />
+              <circle cx="125" cy="310" r="15" fill="#fde047" />
+              <circle cx="175" cy="210" r="15" fill="#e2ded2" />
+              <circle cx="255" cy="130" r="15" fill="#fef3c7" />
+              <circle cx="360" cy="70" r="15" fill="#fde047" />
+              <circle cx="485" cy="35" r="15" fill="#e2ded2" />
+              <circle cx="640" cy="22" r="16" fill="#fef3c7" />
+              <circle cx="795" cy="35" r="15" fill="#fde047" />
+              <circle cx="920" cy="70" r="15" fill="#e2ded2" />
+              <circle cx="1025" cy="130" r="15" fill="#fef3c7" />
+              <circle cx="1105" cy="210" r="15" fill="#fde047" />
+              <circle cx="1155" cy="310" r="15" fill="#e2ded2" />
+              <circle cx="1185" cy="420" r="15" fill="#fef3c7" />
+              <circle cx="1200" cy="540" r="15" fill="#fde047" />
+            </g>
+            <rect y="580" width="1280" height="140" fill="#300609" />
+            <line x1="0" y1="580" x2="1280" y2="580" stroke="#5a1217" stroke-width="4" />
+          </svg>
+
+          <!-- Przycisk POWRÓT (TITLE w oryginale) w lewym górnym rogu -->
+          <button class="credits-top-title-btn" id="progress-btn-back" title="Wróć do menu">
+            POWRÓT
+          </button>
+
+          <!-- Wielostopniowy reset w prawym górnym rogu -->
+          <div class="progress-reset-cluster">
+            ${resetButtonsHtml}
           </div>
 
-          <button class="btn-dd-block" id="edit-progress-btn-back">
-            BACK
-          </button>
+          <!-- Główna zawartość -->
+          <div class="progress-content-layer">
+            <h1 class="progress-main-title">EDYTOR POSTĘPÓW</h1>
+            <p class="progress-subtitle">MOŻESZ UŻYĆ TEGO EDYTORA, ABY DOWOLNIE ODBLOKOWAĆ ZAWARTOŚĆ W KAŻDEJ CHWILI</p>
+
+            <div class="progress-editor-card">
+              ${rowsHtml}
+            </div>
+          </div>
         </div>
       `;
     }
 
-    modalMount.innerHTML = `
-      <div class="esc-menu-backdrop" id="esc-backdrop">
-        ${contentHtml}
-      </div>
-    `;
+    if (currentView === 'edit_progress') {
+      modalMount.classList.remove('modal-mount-esc');
+      modalMount.innerHTML = contentHtml;
+    } else {
+      modalMount.classList.add('modal-mount-esc');
+      modalMount.innerHTML = `
+        <div class="esc-menu-backdrop" id="esc-backdrop">
+          ${contentHtml}
+        </div>
+      `;
+    }
 
     bindEvents();
   };
@@ -503,20 +648,74 @@ export function openSettingsModal(app, initialView = 'main') {
       render();
     });
 
-    // 6. Widok Edit Progress
-    document.getElementById('btn-confirm-reset')?.addEventListener('click', () => {
-      if (confirm('Czy na pewno chcesz zresetować wszystkie postępy?')) {
-        episodeManager.resetAllProgress();
+    // 6. Widok Edit Progress (Zgodny z 4 zrzutami ekranu z Dicey Dungeons)
+    document.getElementById('progress-btn-back')?.addEventListener('click', () => {
+      sound.playStep();
+      currentView = 'main';
+      resetStep = 0;
+      render();
+    });
+
+    document.getElementById('progress-reset-step-btn')?.addEventListener('click', () => {
+      if (resetStep < 3) {
+        resetStep++;
         sound.playStep();
-        alert('Postępy zostały zresetowane. Dostępny jest tylko Epizod 1.');
-        currentView = 'main';
+        render();
+      } else {
+        // Krok 3: OSTATNIA SZANSA... -> RESETUJEMY!
+        episodeManager.resetAllProgress();
+        resetStep = 0;
+        sound.playHitImpact(true);
         render();
       }
     });
-    document.getElementById('edit-progress-btn-back')?.addEventListener('click', () => {
-      sound.playStep();
-      currentView = 'main';
+
+    modalMount.querySelectorAll('.btn-progress-reset-dashed').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        resetStep = 0;
+        sound.playPop();
+        render();
+      });
+    });
+
+    document.getElementById('btn-unlock-jester')?.addEventListener('click', () => {
+      const data = episodeManager.getHeroProgress('jester');
+      data.heroUnlocked = true;
+      data.unlocked = Math.max(1, data.unlocked || 1);
+      episodeManager.save();
+      sound.playLevelUp();
       render();
+    });
+
+    modalMount.querySelectorAll('.progress-pip-square').forEach((sq) => {
+      sq.addEventListener('click', () => {
+        const heroId = sq.dataset.hero;
+        const pip = Number(sq.dataset.pip);
+        const data = episodeManager.getHeroProgress(heroId);
+        const isHeroUnlocked = episodeManager.isHeroUnlocked(heroId);
+        const isPipUnlocked = isHeroUnlocked && pip <= data.unlocked;
+
+        if (!isPipUnlocked) {
+          // Odblokuj poziom
+          data.heroUnlocked = true;
+          data.unlocked = Math.max(data.unlocked || 0, pip);
+          episodeManager.save();
+          sound.playSuccess();
+        } else {
+          // Zablokuj poziom z powrotem
+          if (heroId === 'warrior' && pip <= 1) {
+            sound.playMiss();
+            return;
+          }
+          data.unlocked = pip - 1;
+          if (data.unlocked <= 0 && heroId !== 'warrior') {
+            data.heroUnlocked = false;
+          }
+          episodeManager.save();
+          sound.playStep();
+        }
+        render();
+      });
     });
   };
 
@@ -750,5 +949,12 @@ export function openCreditsModal(app) {
   };
 
   renderCredits();
+}
+
+/**
+ * Otwiera bezpośrednio teatralny Edytor Postępów (Progress Editor)
+ */
+export function openProgressEditorModal(app, onBack = null) {
+  openSettingsModal(app, 'edit_progress');
 }
 
