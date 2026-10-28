@@ -365,12 +365,6 @@ export function openCharacterSelectModal(app) {
           <!-- 6. Centralny podest i postać bohatera (Pedestal Sprite) -->
           <div class="cs-center-hero-wrap">
             <img class="cs-hero-pedestal-sprite ${!isHeroUnlocked ? 'is-locked-hero' : ''}" id="cs-hero-sprite" src="${hero.avatar}" alt="${hero.name}" onerror="this.src='${hero.fallbackAvatar}'" />
-            ${!isHeroUnlocked ? `
-              <div class="cs-pedestal-lock-banner">
-                <div class="cs-pedestal-lock-title">🔒 Aby odblokować tę postać:</div>
-                <div class="cs-pedestal-lock-sub">${prevHero ? `Wygraj Epizod 1 postacią: ${prevHero.name}` : '???'}</div>
-              </div>
-            ` : ''}
           </div>
 
           <!-- 7. Prawa świecąca tablica: Epizody LUB Zablokowane -->
@@ -419,12 +413,17 @@ export function openCharacterSelectModal(app) {
             ›
           </button>
 
-          <!-- 9. Dolny czerwony przycisk START (tylko dla odblokowanej postaci) -->
+          <!-- 9. Dolny czerwony przycisk START (odblokowany) LUB baner odblokowania (zablokowany) -->
           ${isHeroUnlocked ? `
             <button class="cs-start-play-btn" id="cs-btn-start" title="Wybierz ${hero.name} i rozpocznij grę!">
               START
             </button>
-          ` : ''}
+          ` : `
+            <div class="cs-pedestal-lock-banner">
+              <div class="cs-pedestal-lock-title">🔒 Aby odblokować tę postać:</div>
+              <div class="cs-pedestal-lock-sub">${prevHero ? `Wygraj Epizod 1 postacią: ${prevHero.name}` : '???'}</div>
+            </div>
+          `}
         </div>
       </div>
     `;

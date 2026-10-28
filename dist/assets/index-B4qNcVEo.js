@@ -798,12 +798,6 @@
           <!-- 6. Centralny podest i postać bohatera (Pedestal Sprite) -->
           <div class="cs-center-hero-wrap">
             <img class="cs-hero-pedestal-sprite ${p?"":"is-locked-hero"}" id="cs-hero-sprite" src="${c.avatar}" alt="${c.name}" onerror="this.src='${c.fallbackAvatar}'" />
-            ${p?"":`
-              <div class="cs-pedestal-lock-banner">
-                <div class="cs-pedestal-lock-title">🔒 Aby odblokować tę postać:</div>
-                <div class="cs-pedestal-lock-sub">${y?`Wygraj Epizod 1 postacią: ${y.name}`:"???"}</div>
-              </div>
-            `}
           </div>
 
           <!-- 7. Prawa świecąca tablica: Epizody LUB Zablokowane -->
@@ -846,12 +840,17 @@
             ›
           </button>
 
-          <!-- 9. Dolny czerwony przycisk START (tylko dla odblokowanej postaci) -->
+          <!-- 9. Dolny czerwony przycisk START (odblokowany) LUB baner odblokowania (zablokowany) -->
           ${p?`
             <button class="cs-start-play-btn" id="cs-btn-start" title="Wybierz ${c.name} i rozpocznij grę!">
               START
             </button>
-          `:""}
+          `:`
+            <div class="cs-pedestal-lock-banner">
+              <div class="cs-pedestal-lock-title">🔒 Aby odblokować tę postać:</div>
+              <div class="cs-pedestal-lock-sub">${y?`Wygraj Epizod 1 postacią: ${y.name}`:"???"}</div>
+            </div>
+          `}
         </div>
       </div>
     `,r()},r=()=>{var c,p,l,y,k;(c=document.getElementById("cs-btn-menu"))==null||c.addEventListener("click",()=>{d.playStep(),g(()=>{e.classList.add("hidden"),n.titleScreen&&n.titleScreen.show(),C.playTitleMusic()})}),(p=document.getElementById("cs-btn-challenges"))==null||p.addEventListener("click",()=>{d.playStep(),openFloorPickerModal(n)}),e.querySelectorAll(".cs-hero-pip-btn").forEach(w=>{w.addEventListener("click",()=>{const u=Number(w.getAttribute("data-hero-idx"));!isNaN(u)&&u>=0&&u<R.length&&(o=u,d.setPlayerClass(R[o].characterClass),i())})}),e.querySelectorAll(".cs-episode-badge").forEach(w=>{w.addEventListener("click",()=>{const u=Number(w.getAttribute("data-pip")),m=R[o];E.isEpisodeUnlocked(m.id,u)?(E.setSelectedEpisode(m.id,u),d.playStep(),i()):(w.classList.remove("shake-hit"),w.offsetWidth,w.classList.add("shake-hit"))})}),(l=document.getElementById("cs-arrow-left"))==null||l.addEventListener("click",()=>{o=(o-1+R.length)%R.length,d.setPlayerClass(R[o].characterClass),i()}),(y=document.getElementById("cs-arrow-right"))==null||y.addEventListener("click",()=>{o=(o+1)%R.length,d.setPlayerClass(R[o].characterClass),i()}),(k=document.getElementById("cs-btn-start"))==null||k.addEventListener("click",()=>{const w=R[o];if(!E.isHeroUnlocked(w.id))return;const u=E.getSelectedEpisode(w.id),m=w.episodes.find(j=>j.pip===u)||w.episodes[0];Xe(n,w.id,!1),d.setPlayerClass(w.characterClass),d.playFanfare(),n.currentEpisode=m,n.player.level=1,n.player.xp=0,n.player.xpToNext=100,n.player.coins=w.id==="thief"?3:0,n.player.score=0,n.player.diceCount=3,n.player.boughtSneakers=!1,n.player.boughtShopItemIds&&n.player.boughtShopItemIds.clear(),n.unlockedWordIds&&n.unlockedWordIds.clear(),Yo(n,w.characterClass),g(()=>{var j;e.classList.add("hidden"),n.titleScreen&&n.titleScreen.hide(),(j=document.querySelector(".floating-corner-controls"))==null||j.classList.remove("hidden"),n.loadFloor(0),C.playBoardMusic(0,n.player),n.renderBoard(),n.updateHUD()})})},t=c=>{var l;if(e.classList.contains("hidden")){window.removeEventListener("keydown",t);return}const p=document.getElementById("esc-modal-mount");p&&!p.classList.contains("hidden")||(c.key==="ArrowLeft"?(o=(o-1+R.length)%R.length,d.setPlayerClass(R[o].characterClass),i()):c.key==="ArrowRight"?(o=(o+1)%R.length,d.setPlayerClass(R[o].characterClass),i()):c.key==="Enter"?(l=document.getElementById("cs-btn-start"))==null||l.click():c.key==="Escape"&&(c.preventDefault(),Ma(n)))};window.addEventListener("keydown",t),i()}function $o(n){C.playVictoryMusic(),d.playFanfare();const e=document.getElementById("modal-mount");if(!e)return;e.classList.remove("hidden"),e.innerHTML=`
