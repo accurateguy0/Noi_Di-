@@ -3,22 +3,29 @@
 
 import { MATCH_UP_DATA, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
+import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
 
 export class MatchUpGame {
   constructor(container, options = {}) {
     this.container = container;
-    this.player = options.player || { name: 'Tan', hp: 20, maxHp: 20 };
+    this.player = options.player || { name: 'Bohater', hp: 20, maxHp: 20 };
     this.onPlayerDamaged = options.onPlayerDamaged;
     this.onComplete = options.onComplete;
     this.onClose = options.onClose;
 
-    this.items = options.items ? [...options.items] : [...MATCH_UP_DATA];
+    this.items = (options.items && options.items.length > 0) ? [...options.items] : [...MATCH_UP_DATA];
+    this.titleText = options.title || 'Match up';
     this.tanDamage = options.tanDamage || getPlayerDamage(this.player);
-    this.enemyMaxHp = options.enemyMaxHp || (this.items.length * this.tanDamage);
-    this.enemyHp = options.enemyHp || this.enemyMaxHp;
+    this.enemyMaxHp = (this.items && this.items.length > 0) ? (this.items.length * this.tanDamage) : (options.enemyMaxHp || 12);
+    this.enemyHp = this.enemyMaxHp;
     this.enemyDamage = options.enemyDamage !== undefined ? options.enemyDamage : 2;
 
-    this.enemyName = options.enemyName || 'Jeżyk';
+    const rawName = (options.enemyName || 'Jeżyk')
+      .replace(/\s*\([^)]*\)/g, '')
+      .replace(/\s*\[[^\]]*\]/g, '')
+      .trim();
+    this.enemyName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+    this.titleText = this.enemyName;
     this.opponentAvatar = options.opponentAvatar || './assets/Postacie/Jez.png';
     this.spriteClass = options.spriteClass || 'sprite-jez';
 
@@ -43,7 +50,7 @@ export class MatchUpGame {
     this.container.innerHTML = `
       <div class="dd-combat-arena matchup-arena">
         <div class="mp-intro-click-layer" id="mp-intro-click-layer"></div>
-        <h2 class="mp-animated-title is-centered" id="mp-animated-title">Match up</h2>
+        <h2 class="mp-animated-title is-centered" id="mp-animated-title">${this.enemyName}</h2>
 
         <!-- Prawy górny róg: Przeciwnik -->
         <div class="dd-arena-fighter dd-arena-opponent" id="mp-opponent-box">
@@ -70,20 +77,20 @@ export class MatchUpGame {
         <!-- Środek areny: Match up -->
         <div class="matching-stage-wrapper matchup-stage-wrapper" id="matchup-stage"></div>
 
-        <!-- Lewy dolny róg: Tan -->
+        <!-- Lewy dolny róg: Bohater -->
         <div class="dd-arena-fighter dd-arena-player" id="mp-player-box">
           <div class="dd-sprite-container player-sprite-container" id="mp-player-sprite-wrap">
             <img
-              src="./assets/Tan.png"
-              alt="Tan"
+              src="${this.player?.avatar || './assets/Warrior.png'}"
+              alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
               id="mp-player-sprite"
-              onerror="this.src='./public/assets/Tan.png'"
+              onerror="this.src='./assets/Warrior.png'"
             />
           </div>
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Tan</span>
+              <span class="dd-fighter-name">${this.player?.heroName || this.player?.name || 'Bohater'}</span>
             </div>
             <div class="dd-fighter-hp-bar" id="mp-player-hp-bar">
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
@@ -101,8 +108,12 @@ export class MatchUpGame {
         this.introDismissed = true;
         sound.playStep();
         animatedTitle.classList.remove('is-centered');
+        animatedTitle.classList.add('is-dismissed');
         introLayer.classList.add('intro-dismissed');
-        setTimeout(() => introLayer.remove(), 650);
+        setTimeout(() => {
+          introLayer.remove();
+          if (animatedTitle.parentNode) animatedTitle.remove();
+        }, 650);
       });
     }
   }
@@ -119,8 +130,11 @@ export class MatchUpGame {
 
         <!-- Strefy docelowe z definicjami i obrazkami -->
         <div class="ww-matchup-targets-grid" id="matchup-targets">
-          ${this.items.map((it) => {
+          ${this.items.map((it, idx) => {
             const isMatched = this.matchedIds.has(it.id);
+            const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
+            const itemColor = it.color || palette[idx % palette.length];
+            const descText = it.defPl || it.matchPrompt || it.desc || '';
             return `
               <div
                 class="ww-matchup-target-slot ${isMatched ? 'is-matched' : ''}"
@@ -131,9 +145,9 @@ export class MatchUpGame {
                     <img src="${it.image}" alt="${it.word}" class="ww-target-img" onerror="this.style.display='none'" />
                   </div>
                 ` : ''}
-                <div class="ww-target-desc">${it.defPl}</div>
-                <div class="ww-target-dropzone" style="${isMatched ? `background:${it.color}; color:#111; font-weight:800;` : ''}">
-                  ${isMatched ? `✔ ${it.word}` : 'Upuść tutaj...'}
+                <div class="ww-target-desc">${descText}</div>
+                <div class="ww-target-dropzone" style="${isMatched ? `background:${itemColor}; color:#111; font-weight:800;` : ''}">
+                  ${isMatched ? `${it.word}` : 'Upuść tutaj...'}
                 </div>
               </div>
             `;
@@ -144,14 +158,16 @@ export class MatchUpGame {
         <div class="ww-matchup-words-row" id="matchup-words-pool">
           ${this.shuffledWords
             .filter((it) => !this.matchedIds.has(it.id))
-            .map((it) => {
+            .map((it, idx) => {
               const isSelected = this.selectedWordId === it.id;
+              const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
+              const itemColor = it.color || palette[idx % palette.length];
               return `
                 <div
                   class="ww-matchup-word-tile ${isSelected ? 'is-selected' : ''}"
                   draggable="false"
                   data-word-id="${it.id}"
-                  style="--item-color: ${it.color}"
+                  style="--item-color: ${itemColor}"
                 >
                   <span>${it.word}</span>
                 </div>
@@ -299,7 +315,7 @@ export class MatchUpGame {
           dropzone.style.background = matchedItem.color;
           dropzone.style.color = '#111';
           dropzone.style.fontWeight = '800';
-          dropzone.textContent = `✔ ${matchedItem.word}`;
+          dropzone.textContent = `${matchedItem.word}`;
         }
       }
       if (sourceTile) {
@@ -341,9 +357,10 @@ export class MatchUpGame {
         sourceTile.classList.remove('is-dragging-origin');
       }
 
-      this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
       if (this.onPlayerDamaged) {
         this.onPlayerDamaged(this.enemyDamage);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
       }
 
       this.updatePlayerHud();
@@ -356,11 +373,7 @@ export class MatchUpGame {
         this.renderMatchupBoard();
 
         if (this.player.hp <= 0) {
-          const arenaEl = this.container.querySelector('.dd-combat-arena');
-          if (arenaEl) arenaEl.classList.add('arena-defeat-exit');
-          setTimeout(() => {
-            if (this.onClose) this.onClose({ defeated: true });
-          }, 600);
+          playHeroDefeatAnimation(this.container, this.player, this.onClose);
         }
       }, 500);
     }

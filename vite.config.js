@@ -2,9 +2,10 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   base: './',
+  publicDir: 'public',
   server: {
-    watch: {
-      ignored: ['**/public/assets/**']
+    fs: {
+      strict: false
     }
   }
 });

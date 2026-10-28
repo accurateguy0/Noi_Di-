@@ -1,33 +1,33 @@
-// Klikalny Kotek Bolo ("🇻🇳 Trợ giúp") — koło ratunkowe z tłumaczeniem po wietnamsku
-// Domyślnie ekran jest w 100% po polsku; po kliknięciu wyskakuje Kotek Bolo z dymkiem po wietnamsku.
+// Klikalny Kotek Pomocnik ("Trợ giúp") — koło ratunkowe z tłumaczeniem po wietnamsku
+// Domyślnie ekran jest w 100% po polsku; po kliknięciu wyskakuje Kotek Pomocnik z dymkiem po wietnamsku.
 
 import { sound } from '../audio/sound.js';
 
 /**
- * Zwraca HTML przycisku Kotka Bolo ("🇻🇳 Trợ giúp") wraz z wyskakującym okienkiem/dymkiem
+ * Zwraca HTML przycisku Kotka Pomocnika ("Trợ giúp") wraz z wyskakującym okienkiem/dymkiem
  * @param {string} vnHtml - treść tłumaczenia po wietnamsku
  * @param {string} idSuffix - unikalny sufiks ID
  */
 export function renderBoloHelperHtml(vnHtml, idSuffix = 'main') {
   return `
     <div class="bolo-helper-widget" data-bolo-id="${idSuffix}">
-      <button type="button" class="bolo-trigger-btn" title="Kliknij, aby Kotek Bolo przetłumaczył na wietnamski (Trợ giúp)">
+      <button type="button" class="bolo-trigger-btn" title="Kliknij, aby Kotek przetłumaczył na wietnamski (Trợ giúp)">
         <img
           src="./assets/Kotek_Pomoc.png"
-          alt="Kotek Bolo"
+          alt="Kotek Pomocnik"
           width="24"
           height="24"
           class="bolo-trigger-icon"
           onerror="this.src='./public/assets/Kotek_Pomoc.png'"
         />
-        <span class="bolo-trigger-label">🇻🇳 Trợ giúp</span>
+        <span class="bolo-trigger-label">Trợ giúp</span>
       </button>
 
       <div class="bolo-popup-bubble hidden" role="dialog" aria-label="Wskazówka po wietnamsku">
         <div class="bolo-popup-inner">
           <img
             src="./assets/Kotek_Pomoc.png"
-            alt="Kotek Bolo"
+            alt="Kotek Pomocnik"
             width="48"
             height="48"
             class="bolo-popup-avatar"
@@ -35,11 +35,11 @@ export function renderBoloHelperHtml(vnHtml, idSuffix = 'main') {
           />
           <div class="bolo-popup-content">
             <div class="bolo-popup-header">
-              <span>🐱 <strong>Kotek Bolo podpowiada:</strong></span>
+              <span><strong>Kotek podpowiada:</strong></span>
             </div>
             <div class="bolo-popup-vn-text">${vnHtml}</div>
           </div>
-          <button type="button" class="bolo-popup-close" title="Zamknij">✖</button>
+          <button type="button" class="bolo-popup-close" title="Zamknij"></button>
         </div>
       </div>
     </div>

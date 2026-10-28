@@ -1,7 +1,7 @@
 // Ekran zwycięstwa w walce z inną postacią (wzorowany 1:1 na Dicey Dungeons)
 // Obsługuje dwa warianty:
 // 1. Zwykły postęp EXP ("Następny poziom:" + żółty pasek postępu)
-// 2. Awans na wyższy poziom ("Gratulacje! Osiągnąłeś poziom X! Maksymalne zdrowie zwiększone o ❤️4!" + "POZIOM WYŻEJ!")
+// 2. Awans na wyższy poziom ("Gratulacje! Osiągnąłeś poziom X! Maksymalne zdrowie zwiększone o +4 HP!" + "POZIOM WYŻEJ!")
 
 import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
@@ -33,7 +33,7 @@ function createStarburstSvg() {
 }
 
 /**
- * Wyświetla ekran "WYGRAŁEŚ!" po pokonaniu innej postaci
+ * Wyświetla ekran "WYGRANA!" po pokonaniu innej postaci
  * @param {HTMLElement} container - kontener, w którym pojawi się ekran
  * @param {Object} options
  * @param {number} options.coinsGain - zdobyte monety (np. 1)
@@ -100,7 +100,7 @@ export function showDiceyVictoryScreen(container, {
           </div>
         </div>
 
-        <!-- Centralny szyld "WYGRAŁEŚ!" -->
+        <!-- Centralny szyld "WYGRANA!" -->
         <div class="dd-marquee-sign">
           <div class="dd-dots-row top">${topDots}</div>
           <div class="dd-dots-col left">${sideDots}</div>
@@ -108,7 +108,7 @@ export function showDiceyVictoryScreen(container, {
           <div class="dd-dots-row bottom">${bottomDots}</div>
 
           <div class="dd-marquee-inner">
-            <h2 class="dd-win-title" data-text="WYGRAŁEŚ!">WYGRAŁEŚ!</h2>
+            <h2 class="dd-win-title" data-text="WYGRANA!">WYGRANA!</h2>
           </div>
         </div>
 
@@ -126,11 +126,11 @@ export function showDiceyVictoryScreen(container, {
       <div class="dd-victory-progress-area">
         ${leveledUp ? `
           <div class="dd-levelup-congrats">
-            <div>Gratulacje! Osiągnąłeś poziom ${newLevel}!</div>
-            <div>Maksymalne zdrowie zwiększone o <span class="dd-heart-inline">❤️4</span>!</div>
+            <div>Gratulacje! Awans na poziom ${newLevel}!</div>
+            <div>Maksymalne zdrowie zwiększone o <span class="dd-heart-inline">+4 HP</span>!</div>
             ${levelUpBonus ? `
               <div class="dd-levelup-stat-bonus">
-                <span class="dd-bonus-roll-badge">🎲 WYLOSOWANO BONUS ZA POZIOM:</span>
+                <span class="dd-bonus-roll-badge">WYLOSOWANO BONUS ZA POZIOM:</span>
                 <span class="dd-bonus-pill">
                   <span class="dd-bonus-icon">${levelUpBonus.icon}</span>
                   <strong>${levelUpBonus.text}</strong>
@@ -148,11 +148,6 @@ export function showDiceyVictoryScreen(container, {
             <div class="dd-exp-bar-fill" id="dd-exp-bar-fill" style="width: ${startBarPct}%"></div>
           </div>
         `}
-        ${flawlessBonusGain > 0 ? `
-          <div class="dd-flawless-notice">
-            ✨ Czysta walka (0 strat HP): +${flawlessBonusGain} 🪙 dodatkowej monety!
-          </div>
-        ` : ''}
       </div>
 
       <!-- Przycisk OK -->
@@ -284,4 +279,49 @@ export async function playJaggedCurtainWipe(onCovered, options = 'left') {
     curtain.remove();
   }
 }
+
+/**
+ * Odtwarza animację przegranej bohatera (przesunięcie w lewo) oraz wyświetla
+ * czysty biały napis bez tła i obramowania: "[character] was defeated"
+ */
+export function playHeroDefeatAnimation(container, player, onClose) {
+  const arenaEl = container?.querySelector('.dd-combat-arena') || container;
+  if (!arenaEl) {
+    if (onClose) onClose({ defeated: true });
+    return;
+  }
+  if (arenaEl.dataset.defeatTriggered === '1') return;
+  arenaEl.dataset.defeatTriggered = '1';
+
+  const characterName = player?.characterClass || player?.heroName || player?.name || 'Warrior';
+
+  arenaEl.classList.add('arena-defeat-exit');
+
+  const existing = arenaEl.querySelector('.dd-defeat-text-overlay');
+  if (!existing) {
+    const textEl = document.createElement('div');
+    textEl.className = 'dd-defeat-text-overlay';
+    textEl.textContent = `${characterName} was defeated`;
+    arenaEl.appendChild(textEl);
+  }
+
+  let closed = false;
+  const triggerClose = () => {
+    if (closed) return;
+    closed = true;
+    window.removeEventListener('pointerdown', triggerClose, true);
+    window.removeEventListener('keydown', triggerClose, true);
+    if (onClose) onClose({ defeated: true });
+  };
+
+  // Rejestracja kliknięcia w dowolnym miejscu ekranu lub klawisza po wyświetleniu napisu
+  setTimeout(() => {
+    window.addEventListener('pointerdown', triggerClose, true);
+    window.addEventListener('keydown', triggerClose, true);
+  }, 200);
+
+  // Bezpieczny fallback czasowy na wypadek braku interakcji gracza
+  setTimeout(triggerClose, 4500);
+}
+
 

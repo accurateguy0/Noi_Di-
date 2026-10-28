@@ -5,11 +5,12 @@
 
 import { sound } from '../audio/sound.js';
 import { getPlayerDamage } from '../data/vocabulary.js';
+import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
 
 export class OpenTheBoxGame {
   constructor(container, { player, onPlayerDamaged, onComplete, onClose, shoppingChoices = {} }) {
     this.container = container;
-    this.player = player || { name: 'Tan', hp: 20, maxHp: 20 };
+    this.player = player || { name: 'Bohater', hp: 20, maxHp: 20 };
     this.onPlayerDamaged = onPlayerDamaged;
     this.onComplete = onComplete;
     this.onClose = onClose;
@@ -34,10 +35,10 @@ export class OpenTheBoxGame {
         correctWord: 'wodę',
         correctPhrase: 'Poproszę wodę.',
         options: [
-          { text: '💧 Poproszę wodę.', correct: true },
-          { text: '🥖 Poproszę bułkę.', correct: false },
-          { text: '🥔 Poproszę czipsy.', correct: false },
-          { text: '🛍️ Poproszę reklamówkę.', correct: false }
+          { text: 'Poproszę wodę.', correct: true },
+          { text: 'Poproszę bułkę.', correct: false },
+          { text: 'Poproszę czipsy.', correct: false },
+          { text: 'Poproszę reklamówkę.', correct: false }
         ]
       },
       {
@@ -47,10 +48,10 @@ export class OpenTheBoxGame {
         correctWord: 'bułkę',
         correctPhrase: 'Poproszę bułkę.',
         options: [
-          { text: '🥖 Poproszę bułkę.', correct: true },
-          { text: '💧 Poproszę wodę.', correct: false },
-          { text: '💳 Płacę kartą.', correct: false },
-          { text: '🥔 Poproszę czipsy.', correct: false }
+          { text: 'Poproszę bułkę.', correct: true },
+          { text: 'Poproszę wodę.', correct: false },
+          { text: 'Płacę kartą.', correct: false },
+          { text: 'Poproszę czipsy.', correct: false }
         ]
       },
       {
@@ -60,10 +61,10 @@ export class OpenTheBoxGame {
         correctWord: 'czipsy',
         correctPhrase: 'Poproszę czipsy.',
         options: [
-          { text: '🥔 Poproszę czipsy.', correct: true },
-          { text: '🥖 Poproszę bułkę.', correct: false },
-          { text: '💵 Płacę gotówką.', correct: false },
-          { text: '💧 Poproszę wodę.', correct: false }
+          { text: 'Poproszę czipsy.', correct: true },
+          { text: 'Poproszę bułkę.', correct: false },
+          { text: 'Płacę gotówką.', correct: false },
+          { text: 'Poproszę wodę.', correct: false }
         ]
       },
       {
@@ -73,10 +74,10 @@ export class OpenTheBoxGame {
         correctWord: 'karta',
         correctPhrase: 'Zapłacę kartą.',
         options: [
-          { text: '💳 Zapłacę kartą.', correct: true },
-          { text: '💵 Zapłacę gotówką.', correct: false },
-          { text: '🛍️ Poproszę reklamówkę.', correct: false },
-          { text: '🥖 Poproszę bułkę.', correct: false }
+          { text: 'Zapłacę kartą.', correct: true },
+          { text: 'Zapłacę gotówką.', correct: false },
+          { text: 'Poproszę reklamówkę.', correct: false },
+          { text: 'Poproszę bułkę.', correct: false }
         ]
       },
       {
@@ -86,10 +87,10 @@ export class OpenTheBoxGame {
         correctWord: 'gotówka',
         correctPhrase: 'Zapłacę gotówką.',
         options: [
-          { text: '💵 Zapłacę gotówką.', correct: true },
-          { text: '💳 Zapłacę kartą.', correct: false },
-          { text: '💧 Poproszę wodę.', correct: false },
-          { text: '🥔 Poproszę czipsy.', correct: false }
+          { text: 'Zapłacę gotówką.', correct: true },
+          { text: 'Zapłacę kartą.', correct: false },
+          { text: 'Poproszę wodę.', correct: false },
+          { text: 'Poproszę czipsy.', correct: false }
         ]
       }
     ].sort(() => Math.random() - 0.5);
@@ -109,18 +110,18 @@ export class OpenTheBoxGame {
 
     this.container.innerHTML = `
       <div class="dd-combat-arena otb-arena">
-        <h2 class="mp-animated-title" id="otb-title" style="top: 22px;">📦 OPEN THE BOX (Czas 5s!) 📦</h2>
+        <h2 class="mp-animated-title" id="otb-title" style="top: 22px;">Kasjerka</h2>
 
         <!-- Licznik 5s -->
         <div class="otb-timer-pill" id="otb-timer-pill">
-          ⏱️ <span id="otb-timer-sec">5s</span>
+<span id="otb-timer-sec">5s</span>
         </div>
 
         <!-- Prawy górny róg: Kasjerka (Mistrzynia Żabki) -->
         <div class="dd-arena-fighter dd-arena-opponent" id="otb-opponent-box">
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Kasjerka (Żabka) 🛒</span>
+              <span class="dd-fighter-name">Kasjerka</span>
             </div>
             <div class="dd-fighter-hp-bar" id="otb-enemy-hp-bar">
               <div class="dd-fighter-hp-fill" id="otb-enemy-hp-fill" style="width: ${enemyHpPct}%"></div>
@@ -141,19 +142,19 @@ export class OpenTheBoxGame {
         <!-- Środek areny: Pudełko i pytania -->
         <div class="matching-stage-wrapper otb-stage-wrapper" id="otb-stage"></div>
 
-        <!-- Lewy dolny róg: Tan -->
+        <!-- Lewy dolny róg: Bohater -->
         <div class="dd-arena-fighter dd-arena-player" id="otb-player-box">
           <div class="dd-sprite-container player-sprite-container" id="otb-player-sprite-wrap">
             <img
-              src="./assets/Tan.png"
-              alt="Tan"
+              src="${this.player?.avatar || './assets/Warrior.png'}"
+              alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
-              onerror="this.src='./public/assets/Tan.png'"
+              onerror="this.src='./assets/Warrior.png'"
             />
           </div>
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">${this.player.name || 'Tan'}</span>
+              <span class="dd-fighter-name">${this.player?.heroName || this.player?.name || 'Bohater'}</span>
             </div>
             <div class="dd-fighter-hp-bar">
               <div class="dd-fighter-hp-fill" id="otb-player-hp-fill" style="width: ${playerHpPct}%"></div>
@@ -192,10 +193,12 @@ export class OpenTheBoxGame {
 
     const item = this.boxesPool[this.currentBoxIdx % this.boxesPool.length];
     const boxNumber = (this.currentBoxIdx % 4) + 1;
+    const shuffledOptions = item.options.map((opt, i) => ({ ...opt, origIdx: i })).sort(() => Math.random() - 0.5);
+    this._currentOtbOpts = shuffledOptions;
 
     stageEl.innerHTML = `
       <div class="otb-box-card">
-        <div class="otb-box-banner">PUDEŁKO NR ${boxNumber} 📦 — Dopasuj obraz do słowa:</div>
+        <div class="otb-box-banner">PUDEŁKO NR ${boxNumber}— Dopasuj obraz do słowa:</div>
         <div class="otb-box-content">
           <div class="otb-mystery-box opened">
             <div class="otb-box-lid"></div>
@@ -205,7 +208,7 @@ export class OpenTheBoxGame {
             </div>
           </div>
           <div class="otb-options-column">
-            ${item.options.map((opt, idx) => `
+            ${shuffledOptions.map((opt, idx) => `
               <button type="button" class="otb-choice-btn" data-idx="${idx}">
                 ${opt.text}
               </button>
@@ -220,9 +223,9 @@ export class OpenTheBoxGame {
         if (this.lockInput) return;
         this.lockInput = true;
         const idx = parseInt(btn.dataset.idx, 10);
-        const opt = item.options[idx];
+        const opt = this._currentOtbOpts[idx];
 
-        if (opt.correct) {
+        if (opt && opt.correct) {
           btn.classList.add('is-correct');
           this.handleCorrect();
         } else {
@@ -272,7 +275,7 @@ export class OpenTheBoxGame {
 
   handleCorrect() {
     this.stopTimer();
-    sound.playAttack();
+    sound.playAttackHit('kasjerka');
     sound.playSuccess();
     this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
     this.triggerFighterHit('opponent', `-${this.tanDamage}`);
@@ -290,7 +293,7 @@ export class OpenTheBoxGame {
 
   handleWrong() {
     this.stopTimer();
-    sound.playHurt();
+    sound.playEnemyHit('kasjerka');
     this.triggerFighterHit('player', `-${this.enemyDamage}`);
     if (this.onPlayerDamaged) {
       this.onPlayerDamaged(this.enemyDamage);
@@ -301,13 +304,15 @@ export class OpenTheBoxGame {
       if (this.player.hp > 0) {
         this.currentBoxIdx++;
         this.openNextBox();
+      } else {
+        playHeroDefeatAnimation(this.container, this.player, this.onClose);
       }
-    }, 800);
+    }, 650);
   }
 
   handleTimeout() {
     this.stopTimer();
-    sound.playHurt();
+    sound.playEnemyHit('kasjerka');
     this.triggerFighterHit('player', `-${this.enemyDamage}`);
     if (this.onPlayerDamaged) {
       this.onPlayerDamaged(this.enemyDamage);
@@ -318,8 +323,10 @@ export class OpenTheBoxGame {
       if (this.player.hp > 0) {
         this.currentBoxIdx++;
         this.openNextBox();
+      } else {
+        playHeroDefeatAnimation(this.container, this.player, this.onClose);
       }
-    }, 800);
+    }, 650);
   }
 
   triggerFighterHit(target = 'opponent', dmgText = '-10') {

@@ -3,114 +3,98 @@
 import { sound } from '../audio/sound.js';
 import { playJaggedCurtainWipe } from './victoryScreen.js';
 import { getPlayerDamage } from '../data/vocabulary.js';
-import {
-  SHOP_ITEMS,
-  MODULE_3_SHOP_ITEMS,
-  MODULE_4_SHOP_ITEMS,
-  MODULE_5_SHOP_ITEMS
-} from '../data/shopItems.js';
+import { ALL_ITEMS_CATALOG } from '../data/shopItems.js';
 
 export function openShopModal(app, node) {
   if (node) {
     node.completed = true;
+    node.boughtItemIds = node.boughtItemIds || new Set();
   }
   const modalMount = document.getElementById('modal-mount');
   modalMount.classList.remove('hidden');
   modalMount.classList.add('modal-mount-shop');
 
+  if (!app.player.boughtUniqueGear) {
+    app.player.boughtUniqueGear = new Set();
+  }
+
   const renderShop = () => {
-    const isM3 = String(app.currentFloor).startsWith('m3');
-    const isM4 = String(app.currentFloor).startsWith('m4');
-    const isM5 = String(app.currentFloor).startsWith('m5');
-    const currentShopPool = isM3 ? MODULE_3_SHOP_ITEMS : isM4 ? MODULE_4_SHOP_ITEMS : isM5 ? MODULE_5_SHOP_ITEMS : SHOP_ITEMS;
-    const shopTitle = isM3 ? 'Kramik Szkolny' : isM4 ? 'Kramik Apteczny' : isM5 ? 'Kramik Technologiczny' : 'Kramik Szkolny';
+    const fNum = Math.max(1, Math.min(5, Number(app.currentFloor) || 1));
+    const FLOOR_SHOPS = {
+      1: {
+        title: 'Kramik Szkolny',
+        items: [ALL_ITEMS_CATALOG.drozdzowka, ALL_ITEMS_CATALOG.woda, ALL_ITEMS_CATALOG.zeszyt]
+      },
+      2: {
+        title: 'Sklepik Papierniczy',
+        items: [ALL_ITEMS_CATALOG.piornik, ALL_ITEMS_CATALOG.plaster, ALL_ITEMS_CATALOG.energetyk]
+      },
+      3: {
+        title: 'Kramik Ratunkowy',
+        items: [ALL_ITEMS_CATALOG.szalik, ALL_ITEMS_CATALOG.woda, ALL_ITEMS_CATALOG.sluchawki]
+      },
+      4: {
+        title: 'Bufet i Kramik WF',
+        items: [ALL_ITEMS_CATALOG.kebab, ALL_ITEMS_CATALOG.sneakers, ALL_ITEMS_CATALOG.powerbank]
+      },
+      5: {
+        title: 'Sklepik Mistrzowski',
+        items: [ALL_ITEMS_CATALOG.sneakers, ALL_ITEMS_CATALOG.sluchawki, ALL_ITEMS_CATALOG.powerbank]
+      }
+    };
+
+    const currentShopData = FLOOR_SHOPS[fNum] || FLOOR_SHOPS[1];
+    const itemsToDisplay = currentShopData.items;
 
     modalMount.innerHTML = `
-      <div class="dd-shop-screen" style="background-image: url('./assets/kramik_background.png'), url('/assets/kramik_background.png');">
-        <!-- Kolorowa girlanda u góry -->
-        <div class="dd-shop-bunting">
-          <div class="bunting-flag" style="--c: #ff0054"></div>
-          <div class="bunting-flag" style="--c: #ffd166"></div>
-          <div class="bunting-flag" style="--c: #06d6a0"></div>
-          <div class="bunting-flag" style="--c: #118ab2"></div>
-          <div class="bunting-flag" style="--c: #8338ec"></div>
-          <div class="bunting-flag" style="--c: #ffbe0b"></div>
-          <div class="bunting-flag" style="--c: #ff0054"></div>
-        </div>
-
-        <!-- Górna belka: Tytuł sklepu z ikoną kramiku i sakiewka ze złotem -->
-        <div class="dd-shop-topbar">
-          <div class="dd-shop-title-badge">
-            <img
-              src="./assets/kramik.png"
-              alt="Kramik"
-              class="dd-shop-title-kramik-img"
-              onerror="this.src='./public/assets/kramik.png'"
-            />
-            <h2>${shopTitle.toUpperCase()}</h2>
-          </div>
-          <div class="dd-shop-top-right">
-            <div class="dd-shop-gold-badge">
-              <span class="gold-coin-icon">🪙</span>
-              <span class="gold-text"><b>${app.player.coins}</b> monet</span>
-            </div>
-            <button class="btn-dd-shop-close" id="shop-close-btn" title="Zamknij sklep">✖</button>
-          </div>
-        </div>
-
-        <!-- Dymek sprzedawcy wskazujący na żabę po prawej stronie w tle -->
-        <div class="dd-shopkeeper-bubble-area">
-          <div class="dd-shopkeeper-speech-bubble">
-            Witaj w Kramiku! Co dobrego dla Ciebie? 🐸✨
-          </div>
-        </div>
-
-        <!-- Sekcja lady sklepowej z kartami rozłożonymi po lewej/w centrum -->
+      <div class="dd-shop-screen" style="background-image: url('./assets/tla/kramik_background.png'), url('/assets/tla/kramik_background.png');">
+        <!-- Sekcja lady sklepowej z kartami na blacie w stylu Dicey Dungeons -->
         <div class="dd-shop-counter-section">
           <div class="dd-shop-cards-container">
-            ${currentShopPool.map((item) => {
-              const isAlreadyBought = app.player.boughtShopItemIds.has(item.id) || (item.id === 'sneakers' && app.player.boughtSneakers);
+            ${itemsToDisplay.map((item) => {
+              const isUniqueGear = ['sneakers', 'szalik', 'sluchawki'].includes(item.id);
+              const isAlreadyBought = isUniqueGear
+                ? app.player.boughtUniqueGear.has(item.id) || (item.id === 'sneakers' && app.player.boughtSneakers)
+                : Boolean(node?.boughtItemIds?.has(item.id));
               const canAfford = app.player.coins >= item.price && !isAlreadyBought;
 
-              let btnText = `KUP • 🪙 ${item.price}`;
+              let btnActionText = 'KUP';
               let btnClass = 'btn-dd-buy';
+              let costHtml = `Koszt: <b class="cost-val">${item.price} monet</b>`;
+
               if (isAlreadyBought) {
-                btnText = 'KUPIONE ✅';
+                btnActionText = 'KUPIONE';
                 btnClass += ' btn-dd-buy-owned';
+                costHtml = '<span class="cost-owned">Kupione</span>';
               } else if (!canAfford) {
-                btnText = `🪙 ${item.price} (ZA MAŁO)`;
+                btnActionText = 'KUP';
                 btnClass += ' btn-dd-buy-cant';
+                costHtml = `Koszt: <b class="cost-val">${item.price} monet</b> <span class="cost-shortage">(za mało)</span>`;
               }
 
               return `
-                <div class="dd-shop-item-card ${isAlreadyBought ? 'item-is-sold' : ''}" style="--card-color: ${item.color || '#8338ec'}">
-                  ${isAlreadyBought ? '<div class="dd-sold-stamp">SPRZEDANE</div>' : ''}
+                <div class="dd-shop-item-slot">
+                  <div class="dd-shop-item-card ${isAlreadyBought ? 'item-is-sold' : ''}" style="--card-color: ${item.color || '#8338ec'}">
+                    ${isAlreadyBought ? '<div class="dd-sold-stamp">SPRZEDANE</div>' : ''}
 
-                  <div class="dd-card-top-strip">
-                    <span class="dd-card-name">${item.namePl}</span>
-                  </div>
+                    <div class="dd-card-top-strip">
+                      <span class="dd-card-name">${item.namePl}</span>
+                    </div>
 
-                  <div class="dd-card-main-stat">
-                    ${item.icon ? `<img src="${item.icon}" alt="${item.namePl}" class="dd-card-item-img" onerror="this.style.display='none'" />` : ''}
-                    <div class="dd-stat-cluster">
-                      <span class="dd-stat-big-val">${item.bigStat || item.badgePl}</span>
-                      <span class="dd-stat-sub-label">${item.subStatText || item.badgePl}</span>
+                    <div class="dd-card-inner-frame">
+                      <div class="dd-card-artwork-box">
+                        ${item.icon ? `<img src="${item.icon}" alt="${item.namePl}" class="dd-card-item-img" onerror="this.style.display='none'" />` : ''}
+                      </div>
+                      <div class="dd-card-slot-rule">${item.subStatText || item.badgePl}</div>
                     </div>
                   </div>
 
-                  <div class="dd-card-desc-box">
-                    <p class="dd-card-desc-text">${item.descPl}</p>
-                  </div>
-
-                  <div class="dd-card-action-box">
-                    <button
-                      type="button"
-                      class="${btnClass}"
-                      data-item-id="${item.id}"
-                      ${canAfford ? '' : 'disabled'}
-                    >
-                      ${btnText}
+                  <!-- Przycisk KUP i informacja o koszcie na ladzie pod kartą (Dicey Dungeons) -->
+                  <div class="dd-card-purchase-row">
+                    <button type="button" class="${btnClass}" data-item-id="${item.id}" ${isAlreadyBought ? 'disabled' : ''}>
+                      ${btnActionText}
                     </button>
+                    <div class="dd-card-cost-tag">${costHtml}</div>
                   </div>
                 </div>
               `;
@@ -118,17 +102,32 @@ export function openShopModal(app, node) {
           </div>
         </div>
 
-        <!-- Dolny pasek podsumowania i wyjścia -->
+        <!-- Dolna listwa w stylu Dicey Dungeons HUD -->
         <div class="dd-shop-bottombar">
-          <div class="dd-shop-stats-status">
-            <span class="dd-stat-pill">👟 Max HP: <b>${app.player.maxHp}</b></span>
-            <span class="dd-stat-pill">⚔️ Atak: <b>${getPlayerDamage(app.player)} DMG</b></span>
-            <span class="dd-stat-pill">⏱️ Czas: <b>+${app.player.bonusTimeSec || 0}s</b></span>
-            <span class="dd-stat-pill">🥙 Kebaby: <b>${app.player.kebabs || 0}</b></span>
+          <div class="dd-shop-hud-left">
+            <div class="dd-shop-hud-portrait">
+              <img src="${app.player.avatar || './assets/Warrior.png'}" alt="${app.player.heroName || 'Bohater'}" onerror="this.src='./assets/Warrior.png'" />
+            </div>
+            <div class="dd-shop-hud-name">${app.player.heroName || app.player.name || 'Bohater'}</div>
+            <div class="dd-shop-hud-hp">
+              <div class="dd-shop-hud-hp-bar" style="width: ${Math.max(0, Math.min(100, (app.player.hp / app.player.maxHp) * 100))}%"></div>
+              <span class="dd-shop-hud-hp-text">${app.player.hp}/${app.player.maxHp} HP</span>
+            </div>
+            <div class="dd-shop-hud-gold">
+              <span>🪙</span> <b>${app.player.coins}</b>
+            </div>
           </div>
-          <button type="button" class="btn-dd-shop-exit" id="shop-leave-btn">
-            ⬅ WYJDŹ ZE SKLEPU
-          </button>
+
+          <div class="dd-shop-hud-center">
+            <span style="margin-right: 18px;">⚔️ Atak: <b>${getPlayerDamage(app.player)} DMG</b></span>
+            <span>💡 Podpowiedzi: <b>${app.player.hints ?? 5}</b></span>
+          </div>
+
+          <div class="dd-shop-hud-right">
+            <button type="button" class="btn-dd-shop-exit" id="shop-leave-btn">
+              WYJDŹ Z KRAMIKU
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -136,14 +135,13 @@ export function openShopModal(app, node) {
     const handleExit = () => {
       sound.playStep();
       playJaggedCurtainWipe(() => {
-        app.closeModal();
+        modalMount.classList.add('hidden');
+        modalMount.classList.remove('modal-mount-shop');
+        modalMount.innerHTML = '';
         app.renderBoard();
         app.updateHUD();
       });
     };
-
-    const closeBtn = modalMount.querySelector('#shop-close-btn');
-    if (closeBtn) closeBtn.addEventListener('click', handleExit);
 
     const leaveBtn = modalMount.querySelector('#shop-leave-btn');
     if (leaveBtn) leaveBtn.addEventListener('click', handleExit);
@@ -151,76 +149,50 @@ export function openShopModal(app, node) {
     modalMount.querySelectorAll('.btn-dd-buy').forEach((btn) => {
       btn.addEventListener('click', () => {
         const itemId = btn.dataset.itemId;
-        const item = currentShopPool.find((it) => it.id === itemId);
+        const item = itemsToDisplay.find((it) => it.id === itemId);
         if (!item) return;
 
-        if (app.player.boughtShopItemIds.has(item.id) || (item.id === 'sneakers' && app.player.boughtSneakers)) {
+        const isUniqueGear = ['sneakers', 'szalik', 'sluchawki'].includes(item.id);
+        if (isUniqueGear && (app.player.boughtUniqueGear.has(item.id) || (item.id === 'sneakers' && app.player.boughtSneakers))) {
+          return;
+        }
+        if (!isUniqueGear && node?.boughtItemIds?.has(item.id)) {
           return;
         }
 
         if (app.player.coins < item.price) {
           sound.playMiss();
-          app.showTemporaryPlayerBubble('Za mało monet! 🪙', 1400);
+          app.showTemporaryPlayerBubble('Za mało monet!', 1400);
           return;
         }
 
         app.player.coins -= item.price;
-        app.player.boughtShopItemIds.add(item.id);
+        if (node?.boughtItemIds) {
+          node.boughtItemIds.add(item.id);
+        }
+        if (isUniqueGear) {
+          app.player.boughtUniqueGear.add(item.id);
+        }
         sound.playSuccess();
 
+        if (item.maxHpBonus) {
+          app.player.maxHp += item.maxHpBonus;
+        }
+        if (item.healAmount) {
+          app.player.hp = Math.min(app.player.maxHp, app.player.hp + item.healAmount);
+        }
+        if (item.damageBonus) {
+          app.player.bonusDamage = (app.player.bonusDamage || 0) + item.damageBonus;
+        }
+        if (item.hintsBonus) {
+          app.player.hints = (app.player.hints || 0) + item.hintsBonus;
+        }
         if (item.id === 'sneakers') {
           app.player.boughtSneakers = true;
-          app.player.maxHp += 4;
-          app.player.hp = Math.min(app.player.maxHp, app.player.hp + 4);
-          sound.speakPolish('Świetne sneakersy!');
-          app.showTemporaryPlayerBubble('👟 Założono Sneakersy! Max HP +4', 1800);
-        } else if (item.id === 'energy_drink') {
-          app.player.bonusTimeSec += 1;
-          sound.speakPolish('Dużo energii!');
-          app.showTemporaryPlayerBubble('⚡ Napój energetyczny! +1s na odpowiedź', 1800);
-        } else if (item.id === 'kebab') {
-          app.player.kebabs += 1;
-          sound.speakPolish('Pyszny kebab!');
-          app.showTemporaryPlayerBubble('🥙 Kupiono Kebab! (W plecaku: 1x)', 1800);
-        } else if (item.id === 'piornik') {
-          app.player.bonusDamage = (app.player.bonusDamage || 0) + 1;
-          sound.speakPolish('Nowy piórnik! Siła ataku wzrosła!');
-          app.showTemporaryPlayerBubble('✏️ Kupiono Piórnik! Siła ataku +1 ⚔️', 1800);
-        } else if (item.id === 'zeszyt') {
-          app.player.bonusTimeSec = (app.player.bonusTimeSec || 0) + 1;
-          sound.speakPolish('Nowy zeszyt! Więcej czasu na myślenie!');
-          app.showTemporaryPlayerBubble('📓 Kupiono Zeszyt! Czas na odpowiedź +1s ⏱️', 1800);
-        } else if (item.id === 'drozdzowka') {
-          app.player.hp = Math.min(app.player.maxHp, app.player.hp + 6);
-          sound.speakPolish('Pyszna słodka drożdżówka!');
-          app.showTemporaryPlayerBubble('🥐 Zjedzono drożdżówkę! Uleczono +6 HP ❤️', 1800);
-        } else if (item.id === 'plaster') {
-          app.player.maxHp += 2;
-          app.player.hp = Math.min(app.player.maxHp, app.player.hp + 12);
-          sound.speakPolish('Opatrunek założony! Rany zagojone!');
-          app.showTemporaryPlayerBubble('🩹 Użyto Plaster! +12 HP i +2 Max HP ❤️', 1800);
-        } else if (item.id === 'szalik') {
-          app.player.maxHp += 4;
-          app.player.hp = Math.min(app.player.maxHp, app.player.hp + 4);
-          sound.speakPolish('Ciepły szalik chroni przed chorobą!');
-          app.showTemporaryPlayerBubble('🧣 Założono Szalik! Max HP +4 ❤️', 1800);
-        } else if (item.id === 'woda') {
-          app.player.hp = Math.min(app.player.maxHp, app.player.hp + 8);
-          sound.speakPolish('Orzeźwiająca chłodna woda!');
-          app.showTemporaryPlayerBubble('💧 Wypito Wodę! Uleczono +8 HP ❤️', 1800);
-        } else if (item.id === 'sluchawki') {
-          app.player.bonusDamage = (app.player.bonusDamage || 0) + 2;
-          sound.speakPolish('Słuchawki gamingowe! Pełna koncentracja!');
-          app.showTemporaryPlayerBubble('🎧 Założono Słuchawki! Siła ataku +2 ⚔️', 1800);
-        } else if (item.id === 'powerbank') {
-          app.player.bonusTimeSec = (app.player.bonusTimeSec || 0) + 2;
-          sound.speakPolish('Powerbank naładowany! Dodatkowy czas!');
-          app.showTemporaryPlayerBubble('🔋 Kupiono Powerbank! Czas +2s ⏱️', 1800);
-        } else if (item.id === 'breloczek') {
-          app.player.flawlessCoinBonus = (app.player.flawlessCoinBonus || 0) + 1;
-          sound.speakPolish('Szczęśliwy talizman w plecaku!');
-          app.showTemporaryPlayerBubble('🔑 Szczęśliwy Breloczek! +1 🪙 za czystą walkę!', 1800);
         }
+
+        sound.speakPolish(`Kupiono ${item.namePl}!`);
+        app.showTemporaryPlayerBubble(`Kupiono: ${item.namePl}! ${item.badgePl}`, 1800);
 
         app.updateHUD();
         renderShop();

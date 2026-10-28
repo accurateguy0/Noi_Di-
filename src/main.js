@@ -1,6 +1,5 @@
 // Główny kontroler gry edukacyjnej "Nói Đi! - Szkolne Lochy (Dicey Dungeons + Wordwall)"
-// Poziom A0 dla 13-letniego ucznia z Wietnamu
-// Temat: Powitania i pożegnania na korytarzu (siema, elo, nara, co tam)
+// Drużyna 6 Bohaterów: Wojownik, Złodziej, Robot, Wynalazczyni, Czarownica i Błazen
 
 import {
   INITIAL_BOARD_NODES,
@@ -41,6 +40,9 @@ import {
   handleFighterVictory as handleFighterVictoryScreen,
   completeCharacterBattle as completeCharacterBattleScreen
 } from './ui/VictoryModals.js';
+import { openCharacterSelectModal, selectHero } from './ui/CharacterSelectModal.js';
+import { episodeManager } from './data/episodeManager.js';
+import { TitleScreen } from './ui/TitleScreen.js';
 
 class NoiDiGameApp {
   constructor() {
@@ -50,8 +52,9 @@ class NoiDiGameApp {
     this.bossEncounterManager = new BossEncounterManager(this);
     this.cityEncounterManager = new CityEncounterManager(this);
     this.minigameLauncher = new MinigameLauncher(this);
+    this.titleScreen = new TitleScreen(this);
 
-    this.currentFloor = 1;
+    this.currentFloor = 0;
     this.nodes = INITIAL_BOARD_NODES.map(n => ({
       ...n,
       blocksEdgesTo: n.blocksEdgesTo ? [...n.blocksEdgesTo] : undefined
@@ -86,23 +89,28 @@ class NoiDiGameApp {
     this.m5_1_IntroShown = false;
     this.m5_2_IntroShown = false;
 
-    // Stan gracza wzorowany na Dicey Dungeons
+    // Stan gracza wzorowany na Dicey Dungeons (Domyślnie Warrior)
     this.player = {
-      name: 'Tan',
-      age: 13,
+      name: 'Warrior',
+      characterClass: 'Warrior',
+      avatar: './assets/Warrior.png',
+      heroId: 'warrior',
+      heroName: 'Warrior',
       level: 1,
       maxLevel: MAX_PLAYER_LEVEL,
-      hp: 20,
-      maxHp: 20,
+      hp: 24,
+      maxHp: 24,
+      limitBreakHp: 8,
       coins: 0,
+      hints: 5, // Licznik podpowiedzi (?) na start (5 użyć)
       diceCount: 3,
       xp: 0,
       xpToNext: XP_REQUIRED_FOR_NEXT_LEVEL[1],
       score: 0,
-      baseDamage: 5,
+      baseDamage: 2,
       bonusDamage: 0,
       get damage() {
-        return (this.baseDamage || 5) + Math.max(0, ((this.level || 1) - 1) * 2) + (this.bonusDamage || 0);
+        return (this.baseDamage || 2) + (this.bonusDamage || 0);
       },
       bonusTimeSec: 0,
       flawlessCoinBonus: 0,
@@ -126,34 +134,28 @@ class NoiDiGameApp {
       arenaMount.classList.add('hidden');
     }
 
-    this.loadFloor(1);
+    this.loadFloor(0, { playMusic: false });
     this.renderBoard();
     this.updateHUD();
+
+    try {
+      const savedHero = localStorage.getItem('noidi_selected_hero');
+      const validHero = (savedHero && episodeManager.isHeroUnlocked(savedHero)) ? savedHero : 'warrior';
+      selectHero(this, validHero, false);
+      localStorage.setItem('noidi_selected_hero', validHero);
+    } catch (e) {
+      selectHero(this, 'warrior', false);
+    }
+
+    // Wyświetl ekran startowy z przyciskami (Title Screen)
+    this.titleScreen.mount(this.root);
   }
 
   renderBoardStage() {
     this.root.innerHTML = `
       <div class="game-viewport">
-        <!-- Główna scena: Plansza Szatni (szatnia.jpg) w stylu Dicey Dungeons -->
+        <!-- Główna scena: Plansza w stylu Dicey Dungeons -->
         <main class="board-stage" id="board-stage">
-          <div class="floating-corner-controls">
-            <button class="btn-quick-mode" id="floor-indicator-badge" title="Kliknij, aby otworzyć listę wyboru planszy (TEST)" style="background: #1e293b; cursor: pointer;">
-              📍 Plansza 1: Szatnia
-            </button>
-            <button class="btn-quick-mode btn-select-floor" id="select-floor-btn" title="Wybierz dowolną planszę z listy (TEST)" style="background: #2563eb; color: #fff; font-weight: 800;">
-              🗺️ Wybierz planszę
-            </button>
-            <button class="btn-quick-mode btn-reset-board" id="reset-board-btn" title="Zresetuj całą planszę do stanu początkowego">
-              🔄 Resetuj planszę
-            </button>
-            <button class="btn-quick-mode btn-skip-test" id="skip-opponent-btn" title="Pomiń aktualnego przeciwnika (TEST)" style="background: #f59e0b; color: #111827; font-weight: 800;">
-              ⏭️ Pomiń przeciwnika
-            </button>
-            <button class="btn-quick-mode btn-qm-mute" id="qm-mute-btn" title="Wycisz / Włącz dźwięk">
-              🔊
-            </button>
-          </div>
-
           <div class="board-background-container" id="board-map">
             <!-- Warstwa linii ścieżek SVG -->
             <svg class="board-paths-svg" id="board-svg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
@@ -161,104 +163,154 @@ class NoiDiGameApp {
             <!-- Warstwa węzłów (pól na podłodze) -->
             <div class="board-nodes-layer" id="board-nodes-layer"></div>
 
-            <!-- Postać gracza: Tan -->
+            <!-- Postać gracza -->
             <div class="player-token" id="player-token">
               <div class="player-speech-mini speech-hidden" id="player-speech-mini"></div>
-              <img src="./assets/Tan.png" alt="Tan" onerror="this.src='./public/assets/Tan.png'" />
+              <img id="player-token-img" src="${this.player.avatar || './assets/Warrior.png'}" alt="${this.player.characterClass || 'Warrior'}" onerror="this.src='./assets/Warrior.png'" />
               <div class="player-shadow"></div>
             </div>
           </div>
 
+          <!-- Przycisk Pominięcia Przeciwnika -->
+          <button type="button" class="btn-dd-skip-opponent" id="skip-opponent-btn" title="Pomiń aktualnego przeciwnika lub walkę">
+            ⏩ POMIŃ
+          </button>
+
           <!-- Kontener na aktywny poziom Wordwall / Arenę -->
           <div id="arena-mount" class="arena-mount hidden"></div>
-
-          <!-- Kontener na modale (Słowniczek / Skrzynia / Sklepik) -->
-          <div id="modal-mount" class="modal-mount hidden"></div>
         </main>
 
-        <!-- Dolny pasek HUD -->
+        <!-- Dolny pasek HUD (Styl Dicey Dungeons: przezroczysty, poziom, HP, RULES, EQUIPMENT, Floor) -->
         <footer class="dicey-hud-bar">
-          <div class="hud-left-character">
-            <div class="hud-portrait-frame">
-              <img src="./assets/Tan.png" alt="Tan" onerror="this.src='./public/assets/Tan.png'" />
+          <!-- Lewa strona: Awatar + LEVEL + EXP -->
+          <div class="hud-hero-cluster">
+            <div class="hud-dice-avatar-frame" id="hud-character-card" title="Zmień bohatera (Warrior, Thief, Witch, Inventor, Robot, Jester)">
+              <img id="hud-portrait-img" src="${this.player.avatar || './assets/Warrior.png'}" alt="${this.player.characterClass || 'Warrior'}" onerror="this.src='./assets/Warrior.png'" />
             </div>
-            <div class="hud-char-name">
-              <strong>TAN</strong>
-              <span>13 lat • A0</span>
-            </div>
-          </div>
-
-          <div class="hud-stats-cluster">
-            <div class="hud-hp-bar-outer">
-              <div class="hud-hp-bar-fill" id="hud-hp-fill"></div>
-              <span class="hud-hp-label" id="hud-hp-text">20/20</span>
-            </div>
-            <div class="hud-sub-counters">
-              <span class="hud-counter-item" title="Złote monety">🪙 <b id="hud-coins">0</b></span>
-              <span class="hud-buff-pill hidden hud-damage-pill" id="hud-damage-pill" title="Siła ataku Tan: bonus obrażeń">⚔️ +<b id="hud-damage-sec">0</b></span>
-              <span class="hud-buff-pill hidden" id="hud-energy-pill" title="Dodatkowy czas na odpowiedź">⏱️ +<b id="hud-energy-sec">0</b>s</span>
-              <span class="hud-buff-pill hidden hud-flawless-pill" id="hud-flawless-pill" title="Premia monet za walkę bez strat HP">✨ +<b id="hud-flawless-sec">0</b>🪙</span>
+            <div class="hud-level-info">
+              <div class="hud-level-text" id="hud-level-title">LEVEL ${this.player.level || 1}</div>
+              <div class="hud-levelup-sub" id="hud-xp-sub">Level up in ★ ${Math.max(1, (this.player.xpToNext || 2) - (this.player.xp || 0))}</div>
             </div>
           </div>
 
-          <!-- Centralna wskazówka / hint planszy -->
-          <div class="hud-center-hint" id="board-hint-banner">
-            <span class="hud-hint-icon">💡</span>
-            <span class="hud-hint-text" id="hud-hint-pill">Wybierz pole na podłodze, aby przejść dalej!</span>
+          <!-- Środek-Lewo: Pasek HP + monety i atak mieczem (DMG) -->
+          <div class="hud-hp-cluster">
+            <div class="hud-hp-pill">
+              <div class="hud-hp-pill-fill" id="hud-hp-fill" style="width: ${Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100))}%;"></div>
+              <span class="hud-hp-pill-label" id="hud-hp-text">${this.player.hp}/${this.player.maxHp}</span>
+            </div>
+            <div class="hud-stats-under-hp">
+              <span class="hud-stat-coin" title="Złote monety">🪙 <b id="hud-coins">${this.player.coins || 0}</b></span>
+              <span class="hud-stat-dmg" title="Siła ataku (DMG)">⚔️ <b id="hud-damage-val">${this.player.damage || 2}</b></span>
+            </div>
           </div>
 
-          <!-- Prawe przyciski akcji: Plecak i Księga Słów -->
-          <div class="hud-right-actions">
-            <button class="btn-dicey-hud btn-hud-inventory" id="hud-inventory-btn" title="Otwórz Plecak (Ekwipunek i Przedmioty)">
-              <span class="hud-btn-icon">🎒</span>
-              <span class="hud-btn-text">PLECAK</span>
+          <!-- Środek-Prawo: Przycisk EQUIPMENT -->
+          <div class="hud-buttons-cluster">
+            <button type="button" class="btn-dd-hud-pill btn-dd-equipment" id="hud-inventory-btn" title="Otwórz Ekwipunek (Plecak)">
+              EQUIPMENT
             </button>
-            <button class="btn-dicey-hud btn-hud-spellbook" id="hud-spellbook-btn" title="Otwórz Księgę Słów (Karty i Słowniczek)">
-              <span class="hud-btn-icon">📖</span>
-              <span class="hud-btn-text">KSIĘGA SŁÓW</span>
-              <span class="hud-btn-badge" id="hud-words-count">0</span>
-            </button>
+          </div>
+
+          <!-- Prawa strona: Drabina / Piętra z czaszkami i kapturem bossa -->
+          <div class="hud-floor-cluster" id="hud-floor-picker-btn" style="cursor: pointer;" title="Wybierz planszę">
+            <div class="hud-floor-top-row">
+              <span class="hud-floor-stair-icon">🪜</span>
+              <div class="hud-floor-skulls" id="hud-floor-skulls">
+                <span class="hud-skull is-current" data-floor="1">💀</span>
+                <span class="hud-skull" data-floor="2">💀</span>
+                <span class="hud-skull" data-floor="3">💀</span>
+                <span class="hud-skull" data-floor="4">💀</span>
+                <span class="hud-skull" data-floor="5">💀</span>
+                <span class="hud-boss-hood" data-floor="6">🦹</span>
+              </div>
+            </div>
+            <div class="hud-floor-label" id="hud-floor-title">Floor ${this.currentFloor === 0 ? 1 : this.currentFloor}</div>
           </div>
         </footer>
       </div>
+      <!-- Globalny kontener na modale (Słowniczek / Skrzynia / Sklepik / Edytor / Wybór planszy) -->
+      <div id="modal-mount" class="modal-mount hidden"></div>
     `;
 
-    document.getElementById('floor-indicator-badge')?.addEventListener('click', () => {
-      this.openFloorPickerModal();
+    document.getElementById('hud-character-card')?.addEventListener('click', () => {
+      openCharacterSelectModal(this);
     });
-    document.getElementById('select-floor-btn')?.addEventListener('click', () => {
-      this.openFloorPickerModal();
+    document.getElementById('hud-inventory-btn')?.addEventListener('click', () => {
+      this.openInventoryModal(null, 'equipment');
     });
-    document.getElementById('reset-board-btn')?.addEventListener('click', () => {
-      sound.playStep();
-      playJaggedCurtainWipe(() => {
-        this.resetBoard(true);
-      });
+    document.getElementById('hud-floor-picker-btn')?.addEventListener('click', () => {
+      this.openFloorPickerModal();
     });
     document.getElementById('skip-opponent-btn')?.addEventListener('click', () => {
       this.skipOpponentForTest();
     });
+  }
 
-    const qmMuteBtn = document.getElementById('qm-mute-btn');
-    if (qmMuteBtn) {
-      qmMuteBtn.textContent = sound.isMuted() ? '🔇' : '🔊';
-      qmMuteBtn.style.opacity = sound.isMuted() ? '0.6' : '1';
-      qmMuteBtn.addEventListener('click', () => {
-        const isMuted = sound.toggleMute();
-        qmMuteBtn.textContent = isMuted ? '🔇' : '🔊';
-        qmMuteBtn.style.opacity = isMuted ? '0.6' : '1';
-        this.showTemporaryPlayerBubble(isMuted ? 'Dźwięk wyłączony 🔇' : 'Dźwięk włączony 🔊', 1200);
+  openRulesModal() {
+    sound.playStep();
+    const modalMount = document.getElementById('modal-mount');
+    if (!modalMount) return;
+    modalMount.classList.remove('hidden');
+    const heroClass = this.player.characterClass || 'Warrior';
+    const isMuted = sound.isMuted();
+
+    modalMount.innerHTML = `
+      <div class="dicey-modal-backdrop dd-rules-modal-backdrop">
+        <div class="dicey-rules-card">
+          <div class="drc-header">
+            <h2>RULES • ${heroClass.toUpperCase()}</h2>
+            <button type="button" class="drc-close-x" id="rules-close-x">✕</button>
+          </div>
+          <div class="drc-body">
+            <div class="drc-hero-row">
+              <img src="${this.player.avatar || './assets/Warrior.png'}" class="drc-hero-img" alt="${heroClass}" />
+              <div class="drc-hero-desc">
+                <h3>${heroClass}</h3>
+                <p>Level ${this.player.level || 1} • HP: ${this.player.hp}/${this.player.maxHp} • Limit Break: ${this.player.limitBreakHp || 8} HP</p>
+                <div class="drc-trait-badge">Limit Break ładuje się od otrzymywanych obrażeń i aktywuje unikalną zdolność klasy!</div>
+              </div>
+            </div>
+            <div class="drc-nav-buttons">
+              <button type="button" class="btn-drc-action" id="rules-btn-select-hero">
+                👥 CHANGE HERO
+              </button>
+              <button type="button" class="btn-drc-action" id="rules-btn-select-floor">
+                🗺️ CHOOSE FLOOR
+              </button>
+              <button type="button" class="btn-drc-action" id="rules-btn-mute">
+                🔊 ${isMuted ? 'UNMUTE SOUND' : 'MUTE SOUND'}
+              </button>
+              <button type="button" class="btn-drc-action btn-drc-danger" id="rules-btn-title">
+                🏠 TITLE MENU
+              </button>
+            </div>
+          </div>
+          <button type="button" class="btn-drc-ok" id="rules-close-btn">RETURN TO GAME</button>
+        </div>
+      </div>
+    `;
+
+    modalMount.querySelector('#rules-close-x')?.addEventListener('click', () => this.closeModal());
+    modalMount.querySelector('#rules-close-btn')?.addEventListener('click', () => this.closeModal());
+    modalMount.querySelector('#rules-btn-select-hero')?.addEventListener('click', () => {
+      this.closeModal();
+      openCharacterSelectModal(this);
+    });
+    modalMount.querySelector('#rules-btn-select-floor')?.addEventListener('click', () => {
+      this.closeModal();
+      this.openFloorPickerModal();
+    });
+    modalMount.querySelector('#rules-btn-mute')?.addEventListener('click', () => {
+      const nowMuted = sound.toggleMute();
+      this.closeModal();
+      this.showTemporaryPlayerBubble(nowMuted ? 'Dźwięk wyłączony' : 'Dźwięk włączony', 1200);
+    });
+    modalMount.querySelector('#rules-btn-title')?.addEventListener('click', () => {
+      this.closeModal();
+      playJaggedCurtainWipe(() => {
+        this.titleScreen.show();
       });
-    }
-
-    document.getElementById('hud-inventory-btn')?.addEventListener('click', () => {
-      this.openInventoryModal(null, 'equipment');
-    });
-    document.getElementById('hud-spellbook-btn')?.addEventListener('click', () => {
-      this.openInventoryModal(null, 'slang');
-    });
-    document.getElementById('hud-eat-kebab-btn')?.addEventListener('click', () => {
-      this.eatKebab();
     });
   }
 
@@ -269,7 +321,7 @@ class NoiDiGameApp {
     this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmount);
     sound.playHeal();
     sound.speakPolish('Mniam! Pyszny kebab!');
-    this.showTemporaryPlayerBubble('🥙 Zjedzono Kebab! +10 HP', 1800);
+    this.showTemporaryPlayerBubble('Zjedzono Kebab! +10 HP', 1800);
     this.updateHUD();
   }
 
@@ -295,18 +347,33 @@ class NoiDiGameApp {
       return;
     }
 
-    // 2. Jeśli jesteśmy na planszy, zalicz kolejnego nieukończonego przeciwnika i odblokuj ścieżkę
-    const nextFighter = this.nodes.find(
-      n => !n.completed && this.isCompletableFighterType(n.type, n)
-    );
+    // 2. Jeśli jesteśmy na planszy, zalicz kolejnego nieukończonego przeciwnika lub wyzwanie (w tym Kotka Pomocnika) i odblokuj ścieżkę
+    const isChallengeNode = (n) => {
+      if (!n || n.completed) return false;
+      if (['start', 'next_board', 'shop', 'apple', 'chest', 'step', 'waypoint'].includes(n.type)) {
+        return false;
+      }
+      return (
+        this.isCompletableFighterType(n.type, n) ||
+        this.isCatNode(n) ||
+        (n.type && n.type.includes('cat')) ||
+        (n.blocksEdgesTo && n.blocksEdgesTo.length > 0)
+      );
+    };
+
+    const nextFighter = this.nodes.find(isChallengeNode);
 
     if (nextFighter) {
       nextFighter.completed = true;
-      this.awardProgress(1, 1, 200);
+      const isCat = this.isCatNode(nextFighter) || (nextFighter.type && nextFighter.type.includes('cat'));
+      const xpEarned = isCat ? 0 : 1;
+      this.awardProgress(xpEarned, 1, 200);
       sound.playSuccess();
-      this.showTemporaryPlayerBubble(`Pominięto: ${nextFighter.titlePl} ⏭️`, 1600);
+      this.showTemporaryPlayerBubble(`Pominięto: ${nextFighter.titlePl}`, 1600);
       this.renderBoard();
       this.updateHUD();
+    } else {
+      this.showTemporaryPlayerBubble('Brak przeciwników do pominięcia na tej planszy!', 1600);
     }
   }
 
@@ -338,6 +405,10 @@ class NoiDiGameApp {
           this.interactWithNode(currentNode);
         }
       }
+
+      if (e.key === 'F8') {
+        this.skipOpponentForTest();
+      }
     });
   }
 
@@ -347,17 +418,74 @@ class NoiDiGameApp {
     const theme = this.getFloorTheme(this.currentFloor);
     arenaMount.className = `arena-mount arena-theme-${theme} floor-${this.currentFloor}-arena`;
 
+    const boardStage = document.querySelector('.board-stage');
+    if (boardStage) boardStage.classList.add('in-arena');
+    const boardMap = document.getElementById('board-map');
+    if (boardMap) boardMap.classList.add('hidden');
+
+    sound.playFightStart();
+
     if (bossModule !== null) {
       musicManager.playBossFightMusic(bossModule);
     } else {
-      musicManager.playCombatMusic(this.currentFloor);
+      musicManager.playCombatMusic(this.currentFloor, this.player);
     }
 
     return arenaMount;
   }
 
+  closeArena() {
+    const arenaMount = document.getElementById('arena-mount');
+    if (arenaMount) {
+      arenaMount.classList.add('hidden');
+      arenaMount.innerHTML = '';
+    }
+    const boardStage = document.querySelector('.board-stage');
+    if (boardStage) boardStage.classList.remove('in-arena');
+    const boardMap = document.getElementById('board-map');
+    if (boardMap) boardMap.classList.remove('hidden');
+  }
+
+  // Obsługa przegranej (skończenie życia gracza -> powrót do menu tytułowego)
+  handleGameOver() {
+    playJaggedCurtainWipe(() => {
+      if (this.activeMinigame) {
+        try {
+          this.activeMinigame.destroy();
+        } catch (e) {}
+        this.activeMinigame = null;
+      }
+      this.closeArena();
+      this.closeModal();
+
+      // Zresetuj bieg i statystyki do pełnego zdrowia na start nowej rozgrywki
+      this.resetBoard(true);
+
+      // Pokaż menu tytułowe
+      if (this.titleScreen) {
+        this.titleScreen.show();
+      }
+
+      // Odtwórz muzykę ekranu startowego
+      musicManager.playTitleMusic();
+    });
+  }
+
   // Delegacje do BoardManager
   renderBoard() {
+    const arenaMount = document.getElementById('arena-mount');
+    const isArenaOpen = arenaMount && !arenaMount.classList.contains('hidden');
+    const boardMap = document.getElementById('board-map');
+    const boardStage = document.querySelector('.board-stage');
+
+    if (isArenaOpen) {
+      if (boardStage) boardStage.classList.add('in-arena');
+      if (boardMap) boardMap.classList.add('hidden');
+    } else {
+      if (boardStage) boardStage.classList.remove('in-arena');
+      if (boardMap) boardMap.classList.remove('hidden');
+    }
+
     return this.boardManager.renderBoard();
   }
   positionPlayerToken(nodeId, jumping = false) {
@@ -451,27 +579,27 @@ class NoiDiGameApp {
     ) {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchMatchingPairs(node.id);
+        this.launchMatchingPairs(node.id, node);
       });
-    } else if (node.type === 'cat_anagram') {
+    } else if (node.type === 'cat_anagram' || node.type === 'squid_anagram' || node.type === 'rat_king_letters') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchAnagram(node.id);
+        this.launchAnagram(node.id, node);
       });
     } else if (node.type === 'olek_quiz_1') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchOlekQuiz(node.id, 'encounter_1');
+        this.launchOlekQuiz(node.id, 'encounter_1', node);
       });
     } else if (node.type === 'olek_quiz_2') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchOlekQuiz(node.id, 'encounter_2');
+        this.launchOlekQuiz(node.id, 'encounter_2', node);
       });
     } else if (node.type === 'cat_wheel') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchSpinWheel(node.id);
+        this.launchSpinWheel(node.id, node);
       });
     } else if (node.type === 'shop') {
       sound.playStep();
@@ -483,35 +611,55 @@ class NoiDiGameApp {
       playJaggedCurtainWipe(() => {
         this.launchSpellWord(node.id);
       });
-    } else if (node.type === 'hedgehog_matchup') {
+    } else if (node.type === 'hedgehog_matchup' || node.type === 'match_up' || node.type === 'singer_rhymes' || node.type === 'singer_matchup' || node.type === 'skeleton_anatomy' || node.type === 'kraken_matchup') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchMatchUp(node.id);
+        this.launchMatchUp(node.id, node);
       });
-    } else if (node.type === 'puppy_find_match') {
+    } else if (node.type === 'puppy_find_match' || node.type === 'find_match' || node.type === 'frog_balloon' || node.type === 'bird_find_match' || node.type === 'bird_tf') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchFindMatch(node.id);
+        this.launchFindMatch(node.id, node);
+      });
+    } else if (node.type === 'classmate_rank' || node.type === 'girl_rank_order') {
+      await this.playFighterCollisionOnBoard(node.id);
+      playJaggedCurtainWipe(() => {
+        this.launchModuleRankOrder(node.id, 'classmate_rank', node);
+      });
+    } else if (node.type === 'doctor_visit') {
+      await this.playFighterCollisionOnBoard(node.id);
+      playJaggedCurtainWipe(() => {
+        this.launchDoctorDialog(node.id, node);
+      });
+    } else if (node.type === 'thoughts_tf') {
+      await this.playFighterCollisionOnBoard(node.id);
+      playJaggedCurtainWipe(() => {
+        this.launchThoughtsTF(node.id, node);
+      });
+    } else if (node.type === 'wolfhound_tf') {
+      await this.playFighterCollisionOnBoard(node.id);
+      playJaggedCurtainWipe(() => {
+        this.launchWolfhoundTF(node.id, node);
+      });
+    } else if (node.type === 'puss_quiz') {
+      await this.playFighterCollisionOnBoard(node.id);
+      playJaggedCurtainWipe(() => {
+        this.launchOlekQuiz(node.id, 'puss_quiz', node);
       });
     } else if (node.type === 'olek_quiz_3') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchOlekQuiz(node.id, 'encounter_board4');
+        this.launchOlekQuiz(node.id, 'encounter_board4', node);
       });
-    } else if (node.type === 'rabbit_wordsearch') {
+    } else if (node.type === 'rabbit_wordsearch' || node.type === 'hare_wordsearch') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchWordSearch(node.id);
+        this.launchWordSearch(node.id, node);
       });
     } else if (node.type === 'olek_quiz_5') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchOlekQuiz(node.id, 'encounter_board5');
-      });
-    } else if (node.type === 'teacher_quiz_5') {
-      await this.playFighterCollisionOnBoard(node.id);
-      playJaggedCurtainWipe(() => {
-        this.launchOlekQuiz(node.id, 'encounter_teacher');
+        this.launchOlekQuiz(node.id, 'encounter_board5', node);
       });
     } else if (node.type === 'b6_hedgehog_matchup') {
       await this.playFighterCollisionOnBoard(node.id);
@@ -588,35 +736,39 @@ class NoiDiGameApp {
       playJaggedCurtainWipe(() => {
         this.launchCity3Inspector(node.id);
       });
-    } else if (node.type === 'city_boss_cwaniak') {
+    } else if (
+      node.bossId ||
+      node.type === 'boss_footballer' ||
+      node.type === 'footballer_regular' ||
+      node.type === 'city_boss_cwaniak' ||
+      node.type === 'boss_cwaniak' ||
+      node.type === 'cwaniak_tf' ||
+      node.type === 'm3_boss_nauczycielka' ||
+      node.type === 'teacher_quiz_5' ||
+      node.type === 'm4_boss_lekarz' ||
+      node.type === 'm5_boss_instagramerka' ||
+      node.type === 'boss_instagramerka' ||
+      node.type === 'instagramerka_trends' ||
+      node.type === 'silaczka_workout' ||
+      node.type === 'dyrektorka_office' ||
+      node.type === 'profesor_quiz' ||
+      node.type === 'smok_boss' ||
+      node.type === 'boss_smok' ||
+      String(node.type || '').startsWith('boss_')
+    ) {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchBossCwaniak(node.id);
+        this.launchBossById(node.bossId || node.type, node.id, node);
       });
-    } else if (node.type === 'm3_boss_nauczycielka') {
+    } else if (node.type === 'wuefista_dialog' || node.type === 'm3_wuefista') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchBossNauczycielka(node.id);
+        this.launchWuefistaDialog(node.id, node);
       });
-    } else if (node.type === 'm4_boss_lekarz') {
+    } else if (node.type === 'pielegniarka_dialog' || node.type === 'm4_pielegniarka' || node.type === 'm4_pielegniarka_kontrola' || node.type === 'm4_pielegniarka_rejestracja') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchBossLekarz(node.id);
-      });
-    } else if (node.type === 'm5_boss_instagramerka') {
-      await this.playFighterCollisionOnBoard(node.id);
-      playJaggedCurtainWipe(() => {
-        this.launchBossInstagramerka(node.id);
-      });
-    } else if (node.type === 'm3_wuefista') {
-      await this.playFighterCollisionOnBoard(node.id);
-      playJaggedCurtainWipe(() => {
-        this.launchWuefistaDialog(node.id);
-      });
-    } else if (node.type === 'm4_pielegniarka' || node.type === 'm4_pielegniarka_kontrola' || node.type === 'm4_pielegniarka_rejestracja') {
-      await this.playFighterCollisionOnBoard(node.id);
-      playJaggedCurtainWipe(() => {
-        this.launchPielegniarkaDialog(node.id, node.type);
+        this.launchPielegniarkaDialog(node.id, node.type, node);
       });
     } else if (node.type === 'm5_gejmer') {
       await this.playFighterCollisionOnBoard(node.id);
@@ -637,19 +789,19 @@ class NoiDiGameApp {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
         const words = node.type === 'm3_1_cat_wheel' || node.type === 'm3_cat_wheel' ? MODULE_3_1_WORDS : node.type === 'm3_2_cat_wheel' ? MODULE_3_2_WORDS : MODULE_3_3_WORDS;
-        this.launchGenericCatWheel(node.id, words, 'Kot Bolo: Szkoła');
+        this.launchGenericCatWheel(node.id, words, 'Kotek: Szkoła');
       });
     } else if (node.type === 'm4_cat_wheel' || node.type === 'm4_2_cat_wheel' || node.type === 'm4_3_cat_wheel') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
         const words = node.type === 'm4_cat_wheel' ? MODULE_4_1_WORDS : node.type === 'm4_2_cat_wheel' ? MODULE_4_2_WORDS : MODULE_4_3_WORDS;
-        this.launchGenericCatWheel(node.id, words, 'Kot Bolo: Zdrowie i Emocje');
+        this.launchGenericCatWheel(node.id, words, 'Kotek: Zdrowie i Emocje');
       });
     } else if (node.type === 'm5_cat_wheel' || node.type === 'm5_2_cat_wheel') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
         const words = node.type === 'm5_cat_wheel' ? MODULE_5_1_WORDS : MODULE_5_2_WORDS;
-        this.launchGenericCatWheel(node.id, words, 'Kot Bolo: Pasje i Trendy');
+        this.launchGenericCatWheel(node.id, words, 'Kotek: Pasje i Trendy');
       });
     } else if (node.type === 'm3_matchup' || node.type === 'm4_matchup' || node.type === 'm5_matchup') {
       await this.playFighterCollisionOnBoard(node.id);
@@ -676,69 +828,52 @@ class NoiDiGameApp {
       playJaggedCurtainWipe(() => {
         this.launchModuleThoughts(node.id, node.type);
       });
+    } else if (this.isCompletableFighterType(node.type, node)) {
+      await this.playFighterCollisionOnBoard(node.id);
+      playJaggedCurtainWipe(() => {
+        if (node.steps && node.steps.length) {
+          this.launchModuleRankOrder(node.id, node.type || 'classmate_rank', node);
+        } else if (node.items && node.items.length) {
+          this.launchMatchUp(node.id, node);
+        } else if (node.words && node.words.length) {
+          if (typeof node.words[0] === 'object' && node.words[0]?.scrambled) {
+            this.launchAnagram(node.id, node);
+          } else {
+            this.launchWordSearch(node.id, node);
+          }
+        } else if (node.questions && node.questions.length) {
+          const firstQ = node.questions[0];
+          if (firstQ?.correctWord || firstQ?.options?.[0]?.word) {
+            this.launchFindMatch(node.id, node);
+          } else if (firstQ?.correct !== undefined && typeof firstQ.correct === 'boolean') {
+            this.launchThoughtsTF(node.id, node);
+          } else {
+            this.launchBossById(node.bossId || node.type || 'nauczycielka', node.id, node);
+          }
+        } else if (node.scenarios && node.scenarios.length) {
+          this.launchSpinWheel(node.id, node);
+        } else {
+          this.launchBossById(node.bossId || node.type || 'nauczycielka', node.id, node);
+        }
+      });
     } else if (node.type === 'next_board') {
       sound.playNextBoard();
       this.isWalking = true;
       let targetFloor = 1;
-      if (node.id === 'node_5') targetFloor = 2;
-      else if (node.id === 'b2_node_5') targetFloor = 3;
-      else if (node.id === 'b3_node_6') targetFloor = 4;
-      else if (node.id === 'b4_node_9') targetFloor = 5;
-      else if (node.id === 'b5_node_7') {
+      if (node.id === 'node_5' || this.currentFloor === 0) {
+        targetFloor = 1;
+      } else if (node.id === 'b1_node_19' || this.currentFloor === 1) {
+        targetFloor = 2;
+      } else if (node.id === 'b2_node_19' || this.currentFloor === 2) {
+        targetFloor = 3;
+      } else if (node.id === 'b3_node_19' || this.currentFloor === 3) {
+        targetFloor = 4;
+      } else if (node.id === 'b4_node_19' || this.currentFloor === 4) {
+        targetFloor = 5;
+      } else if (node.id === 'b5_node_19' || this.currentFloor === 5) {
         sound.playSchoolBell();
         targetFloor = 6;
-      }
-      else if (node.id === 'b6_node_7') targetFloor = 7;
-      else if (node.id === 'b7_node_5') {
-        this.showCityVictoryModal();
-        return;
-      } else if (node.id === 'c1_node_7') {
-        this.showCityCompleteModal();
-        return;
-      } else if (node.id === 'c2_node_7') {
-        this.showCity2CompleteModal();
-        return;
-      } else if (node.id === 'c3_node_7') {
-        playJaggedCurtainWipe(() => {
-          this.resetBoard(false, 'city_boss');
-        });
-        return;
-      } else if (node.id === 'cb_node_7') {
-        playJaggedCurtainWipe(() => {
-          this.resetBoard(false, 'm3_1');
-        });
-        return;
-      } else if (node.id === 'm3_1_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm3_2'));
-        return;
-      } else if (node.id === 'm3_2_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm3_3'));
-        return;
-      } else if (node.id === 'm3_3_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm3_boss'));
-        return;
-      } else if (node.id === 'm3_b_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm4_1'));
-        return;
-      } else if (node.id === 'm4_1_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm4_2'));
-        return;
-      } else if (node.id === 'm4_2_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm4_3'));
-        return;
-      } else if (node.id === 'm4_3_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm4_boss'));
-        return;
-      } else if (node.id === 'm4_b_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm5_1'));
-        return;
-      } else if (node.id === 'm5_1_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm5_2'));
-        return;
-      } else if (node.id === 'm5_2_node_7') {
-        playJaggedCurtainWipe(() => this.resetBoard(false, 'm5_boss'));
-        return;
-      } else if (node.id === 'm5_b_node_7') {
+      } else if (this.currentFloor === 6) {
         this.showGrandVictoryModal();
         return;
       }
@@ -815,6 +950,9 @@ class NoiDiGameApp {
   }
 
   // Starcia z Bossami
+  launchBossById(...args) {
+    return this.bossEncounterManager.launchBossById(...args);
+  }
   launchBossFootballer(...args) {
     return this.bossEncounterManager.launchBossFootballer(...args);
   }
@@ -829,6 +967,9 @@ class NoiDiGameApp {
   }
   launchBossInstagramerka(...args) {
     return this.bossEncounterManager.launchBossInstagramerka(...args);
+  }
+  launchBossSmok(...args) {
+    return this.bossEncounterManager.launchBossSmok(...args);
   }
 
   // Moduł 2: Miasto
@@ -896,6 +1037,15 @@ class NoiDiGameApp {
   }
   launchModuleThoughts(...args) {
     return this.minigameLauncher.launchModuleThoughts(...args);
+  }
+  launchDoctorDialog(...args) {
+    return this.minigameLauncher.launchDoctorDialog(...args);
+  }
+  launchThoughtsTF(...args) {
+    return this.minigameLauncher.launchThoughtsTF(...args);
+  }
+  launchWolfhoundTF(...args) {
+    return this.minigameLauncher.launchWolfhoundTF(...args);
   }
 
   // Modale sklepiku, ekwipunku i zakończenia walk

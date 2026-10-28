@@ -161,27 +161,40 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   position: relative;
   width: 100%;
   height: 100%;
-  background-image: url('/assets/szatnia.jpg'), url('./public/assets/szatnia.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-image: url('/assets/tla/klasa.png');
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
   overflow: hidden;
 }
 
+.board-background-container.floor-0,
+.board-background-container.floor-szatnia {
+  background-image: url('/assets/tla/szatnia_lub_korytarz.jpg') !important;
+}
+
+.board-background-container.floor-1 {
+  background-image: url('/assets/tla/klasa.png') !important;
+}
+
+.board-background-container.floor-2 {
+  background-image: url('/assets/tla/biblioteka.png') !important;
+}
+
+.board-background-container.floor-3 {
+  background-image: url('/assets/tla/gabinet.png') !important;
+}
+
+.board-background-container.floor-4 {
+  background-image: url('/assets/tla/stolowka.png') !important;
+}
+
 .board-background-container.floor-5 {
-  background-image: url('/assets/klasa.png'), url('./public/assets/klasa.png');
+  background-image: url('/assets/tla/boisko_zewnetrzne.png') !important;
 }
 
 .board-background-container.floor-6 {
-  background-image: url('/assets/szatnia.jpg'), url('./public/assets/szatnia.jpg');
-}
-
-.board-background-container.floor-7 {
-  background-image: url('/assets/szatnia_arena.jpg'), url('./public/assets/szatnia_arena.jpg');
-}
-
-.board-background-container.floor-miasto {
-  background-image: url('/assets/miasto.png'), url('./public/assets/miasto.png');
+  background-image: url('/assets/tla/sala_gimnastyczna.jpg') !important;
 }
 
 /* Linie łączące pola jak w Dicey Dungeons */
@@ -195,18 +208,19 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 }
 
 .board-edge-line {
-  stroke-width: 1.05;
+  stroke-width: 1.1;
   stroke-linecap: round;
-  transition: stroke 0.3s;
+  transition: stroke 0.3s, opacity 0.3s;
 }
 
 .board-edge-line.edge-open {
   stroke: #966b41;
+  opacity: 0.95;
 }
 
 .board-edge-line.edge-locked {
-  stroke: rgba(150, 107, 65, 0.45);
-  stroke-dasharray: 1.5, 1.2;
+  stroke: #966b41;
+  opacity: 0.7;
 }
 
 /* Warstwa węzłów */
@@ -233,6 +247,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 .board-node:hover {
   transform: translate(-50%, -53%) scale(1.05);
+  z-index: 25;
 }
 
 /* Owalne pole na podłodze w stylu Dicey Dungeons (bez outline, ciemniejszy odcień podłogi) */
@@ -268,7 +283,16 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   opacity: 0.78;
 }
 
-/* Ikony i postacie stojące na polach */
+.board-node.node-done .node-sprite-wrap,
+.board-node.node-done .node-sprite-img,
+.board-node.node-done .node-sprite-slot,
+.board-node.node-done .node-label-tag {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Ikony i postacie stojące na polach (stabilne, bez pożerania CPU na 19 animacji) */
 .node-sprite-wrap {
   position: relative;
   z-index: 3;
@@ -277,7 +301,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  animation: floatIdle 3s ease-in-out infinite;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .node-number-watermark {
@@ -311,6 +335,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .node-sprite-wrap.b6_thoughts_opinion .node-sprite-img,
 .node-sprite-wrap.b6_olek_quiz .node-sprite-img,
 .node-sprite-wrap.b6_thoughts_fight .node-sprite-img,
+.node-sprite-wrap[class*="boss_"] .node-sprite-img,
 .node-sprite-wrap.boss_footballer .node-sprite-img,
 .node-sprite-wrap.olek_spell_word .node-sprite-img,
 .node-sprite-wrap.city_boss_cwaniak .node-sprite-img,
@@ -320,6 +345,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .node-sprite-wrap.m4_pielegniarka .node-sprite-img,
 .node-sprite-wrap.m4_pielegniarka_kontrola .node-sprite-img,
 .node-sprite-wrap.m4_pielegniarka_rejestracja .node-sprite-img,
+.node-sprite-wrap.pielegniarka_dialog .node-sprite-img,
+.node-sprite-wrap.wuefista_dialog .node-sprite-img,
 .node-sprite-wrap.m3_wuefista .node-sprite-img,
 .node-sprite-wrap.m5_gejmer .node-sprite-img,
 .node-sprite-wrap.m5_pilkarz .node-sprite-img,
@@ -417,26 +444,53 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   animation: floatIdle 2.4s ease-in-out infinite;
 }
 
-/* Podpisy pól */
+/* Podpisy pól — ukryte pod postacią, pojawiają się NAD nią wyłącznie przy najechaniu kursorem (hover) */
 .node-label-tag {
   position: absolute;
-  bottom: -14px;
-  background: rgba(20, 27, 36, 0.88);
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
-  padding: 2px 9px;
-  border-radius: 8px;
+  bottom: calc(100% + 44px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 2px 6px;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   white-space: nowrap;
-  z-index: 4;
+  z-index: 30;
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+}
+
+.board-node[data-node-type="shop"] .node-label-tag,
+.board-node[data-node-type="apple"] .node-label-tag,
+.board-node[data-node-type="chest"] .node-label-tag,
+.board-node[data-node-type="stairs"] .node-label-tag,
+.board-node[data-node-type="next_board"] .node-label-tag,
+.board-node[data-node-type="start"] .node-label-tag,
+.board-node[data-node-type="waypoint"] .node-label-tag {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.board-node:hover .node-label-tag {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 .node-label-tag .n-pl {
-  font-size: 0.74rem;
+  font-size: 0.92rem;
   font-weight: 800;
   color: #ffffff;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
 }
 
 .node-label-tag .n-vn {
@@ -475,7 +529,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   transform: scale(1.06);
 }
 
-/* Postać gracza: Tan.png */
+/* Postać gracza (Bohater Szkolnych Lochów) */
 .player-token {
   position: absolute;
   transform: translate(-50%, -72%);
@@ -560,144 +614,404 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 76px;
-  background: rgba(16, 23, 32, 0.72);
-  backdrop-filter: blur(8px);
+  height: 84px;
+  background: rgba(15, 23, 42, 0.40) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1.5px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 0 24px;
+  padding: 0 32px;
   z-index: 20;
 }
 
-.hud-left-character {
+/* Left Hero Cluster: Dice Portrait + Level Info */
+.hud-hero-cluster {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-.hud-portrait-frame {
-  width: 56px;
-  height: 56px;
-  background: transparent;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  overflow: hidden;
+.hud-dice-avatar-frame {
+  width: 58px;
+  height: 58px;
+  border-radius: 6px;
+  background: transparent !important;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
+  overflow: visible;
+  box-shadow: none !important;
+  border: none !important;
+  cursor: pointer;
+  transition: transform 0.15s ease;
 }
 
-.hud-portrait-frame img {
-  width: 68px;
+.hud-dice-avatar-frame:hover {
+  transform: scale(1.08);
+}
+
+.hud-dice-avatar-frame img {
+  width: 66px;
   height: auto;
-  margin-top: 2px;
-  border: none;
-  outline: none;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
 }
 
-.hud-char-name {
+.hud-level-info {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  line-height: 1.15;
 }
 
-.hud-char-name strong {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.35rem;
-  letter-spacing: 1px;
+.hud-level-text {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 1.32rem;
+  font-weight: 800;
   color: #ffffff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.hud-char-name span {
-  font-size: 0.78rem;
-  color: var(--vn-accent);
+.hud-levelup-sub {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 0.98rem;
   font-weight: 700;
+  color: #e2e8f0;
+  opacity: 0.92;
 }
 
-/* Pasek HP i monety umieszczone po lewej stronie obok postaci */
-.hud-stats-cluster {
+/* Center-Left: HP Bar + Coins & Dice Cluster */
+.hud-hp-cluster {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  min-width: 240px;
-  margin-right: auto;
+  align-items: center;
+  gap: 6px;
+  min-width: 290px;
 }
 
-.hud-hp-bar-outer {
+.hud-hp-pill {
   position: relative;
-  width: 240px;
-  height: 26px;
-  background: rgba(61, 30, 40, 0.75);
+  width: 290px;
+  height: 34px;
+  background: #2a151b;
   border: 2.5px solid #ffffff;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
 }
 
-.hud-hp-bar-fill {
+.hud-hp-pill-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
-  width: 85%;
-  background: linear-gradient(180deg, #ff758f 0%, #e63956 100%);
+  width: 100%;
+  background: #f45b69;
+  border-radius: 3px;
   transition: width 0.3s ease;
 }
 
-.hud-hp-label {
+.hud-hp-pill-label {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fredoka', sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 1.12rem;
   color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.03em;
+  z-index: 2;
 }
 
-.hud-sub-counters {
+.hud-stats-under-hp {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.hud-stat-coin b,
+.hud-stat-dmg b,
+.hud-stat-dice b {
+  color: #ffffff;
+}
+
+/* Center-Right: RULES & EQUIPMENT Buttons */
+.hud-buttons-cluster {
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 0.9rem;
-  color: #e0fbfc;
 }
 
-.hud-level-box {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  pointer-events: none;
-}
-
-.hud-level-title {
-  font-size: 1.15rem;
+.btn-dd-hud-pill {
+  background: #475569;
   color: #ffffff;
-  letter-spacing: 0.6px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  outline: none;
+  border-radius: 6px;
+  padding: 10px 28px;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  transition: background 0.15s ease, transform 0.12s ease, border-color 0.15s ease;
 }
 
-.hud-xp-sub {
-  font-size: 0.88rem;
-  color: var(--gold);
-  font-weight: 700;
+.btn-dd-hud-pill:hover {
+  background: #64748b;
+  border-color: #ffffff;
+  transform: translateY(-2px);
 }
 
-/* ==================== WSKAZÓWKA PLANSZY (ŚRODEK HUD) ==================== */
-.hud-center-hint {
+.btn-dd-hud-pill:active {
+  transform: translateY(1px);
+}
+
+/* Right Floor Cluster: Staircase + Skulls + Boss Hood + Floor Label */
+.hud-floor-cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  user-select: none;
+}
+
+.hud-floor-top-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(27, 38, 59, 0.85);
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  border-radius: 999px;
+}
+
+.hud-floor-stair-icon {
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.hud-floor-skulls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-skull,
+.hud-boss-hood {
+  font-size: 1.35rem;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.hud-skull.is-cleared {
+  opacity: 0.7;
+}
+
+.hud-skull.is-current,
+.hud-boss-hood.is-current {
+  opacity: 1;
+  transform: scale(1.18);
+  filter: drop-shadow(0 0 8px #f43f5e);
+}
+
+.hud-floor-label {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+}
+
+/* Hide the floating corner controls as requested */
+.floating-corner-controls {
+  display: none !important;
+}
+
+/* Przycisk Pominięcia Przeciwnika / Walki (Skip) */
+.btn-dd-skip-opponent {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  z-index: 100;
+  background: rgba(245, 158, 11, 0.92);
+  color: #0f172a;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
   padding: 8px 18px;
-  color: #f8fafc;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-dd-skip-opponent:hover {
+  background: #fbbf24;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.55);
+}
+
+.btn-dd-skip-opponent:active {
+  transform: translateY(1px);
+}
+
+/* Modal Zasad (RULES) w stylu Dicey Dungeons */
+.dd-rules-modal-backdrop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dicey-rules-card {
+  width: 90%;
+  max-width: 540px;
+  background: #18181b;
+  border: 3px solid #3f3f46;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: ddModalPopIn 0.25s ease;
+}
+
+.drc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #27272a;
+  padding-bottom: 12px;
+}
+
+.drc-header h2 {
+  margin: 0;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+}
+
+.drc-close-x {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: color 0.15s ease;
+}
+
+.drc-close-x:hover {
+  color: #ffffff;
+}
+
+.drc-hero-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #27272a;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.drc-hero-img {
+  width: 64px;
+  height: auto;
+  border-radius: 12px;
+}
+
+.drc-hero-desc h3 {
+  margin: 0 0 4px 0;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.25rem;
+  color: #ffd166;
+}
+
+.drc-hero-desc p {
+  margin: 0 0 6px 0;
   font-size: 0.9rem;
-  max-width: 440px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  pointer-events: none;
+  color: #e2e8f0;
+}
+
+.drc-trait-badge {
+  font-size: 0.82rem;
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.drc-nav-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-drc-action {
+  background: #3f3f46;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-drc-action:hover {
+  background: #52525b;
+  transform: translateY(-2px);
+}
+
+.btn-drc-danger {
+  background: #991b1b;
+}
+
+.btn-drc-danger:hover {
+  background: #b91c1c;
+}
+
+.btn-drc-ok {
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  transition: filter 0.15s ease;
+}
+
+.btn-drc-ok:hover {
+  filter: brightness(1.1);
+}
+
+
+
+/* Ukrycie paska podpowiedzi zgodnie z życzeniem */
+.hud-center-hint,
+#board-hint-banner {
+  display: none !important;
 }
 
 .hud-hint-icon {
@@ -791,6 +1105,34 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   box-shadow: 0 1px 0 #1e3a8a, 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
+/* Przycisk Wyjdź ze sklepu (identyczny styl przycisków HUD) */
+.btn-hud-shop-exit {
+  background: linear-gradient(180deg, #475569 0%, #334155 100%);
+  border: 2.5px solid #94a3b8;
+  box-shadow: 0 4px 0 #1e293b, 0 6px 14px rgba(0, 0, 0, 0.45);
+  padding: 8px 24px;
+}
+
+.btn-hud-shop-exit:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 6px 0 #1e293b, 0 8px 18px rgba(0, 0, 0, 0.55);
+}
+
+.btn-hud-shop-exit:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #1e293b, 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.dicey-hud-bar.dd-shop-hud-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 /* Licznik odblokowanych kart w Księdze Słów */
 .hud-btn-badge {
   background: #f59e0b;
@@ -862,14 +1204,20 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 }
 
 /* ==================== ARENA POZIOMÓW WORDWALL / DICEY DUNGEONS ==================== */
+/* Gdy arena walki/minigry jest aktywna, ukryj całą planszę (węzły, ścieżki i tło planszy) */
+.board-stage:has(.arena-mount:not(.hidden)) #board-map,
+.board-stage.in-arena #board-map {
+  display: none !important;
+}
+
 .arena-mount {
   position: absolute;
   inset: 0;
   z-index: 30;
+  background-color: #141b24;
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/szatnia_arena.jpg'),
-    url('./public/assets/szatnia_arena.jpg');
+    url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -888,60 +1236,62 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .arena-mount.floor-11-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/miasto_arena.png'),
-    url('./public/assets/miasto_arena.png'),
-    url('/assets/miasto.png'),
-    url('./public/assets/miasto.png');
+    url('/assets/tla/miasto_arena.png');
 }
 
-/* Moduł 3 & Szkoła (klasa.png) */
-.arena-mount.arena-theme-school,
-.arena-mount.floor-3-arena,
-.arena-mount.floor-4-arena,
-.arena-mount.floor-5-arena,
-.arena-mount.floor-6-arena,
-.arena-mount.floor-7-arena,
-.arena-mount.floor-m3_1-arena,
-.arena-mount.floor-m3_2-arena,
-.arena-mount.floor-m3_3-arena,
-.arena-mount.floor-m3_boss-arena {
-  background-image:
-    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/klasa.png'),
-    url('./public/assets/klasa.png');
-}
-
-/* Moduł 4: Zdrowie / Gabinet lekarski (gabinet.png) */
-.arena-mount.arena-theme-clinic,
-.arena-mount.floor-m4_1-arena,
-.arena-mount.floor-m4_2-arena,
-.arena-mount.floor-m4_3-arena,
-.arena-mount.floor-m4_boss-arena {
-  background-image:
-    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/gabinet.png'),
-    url('./public/assets/gabinet.png');
-}
-
-/* Moduł 5: Pokój / Pasje / Trendy (pokoj.png) */
-.arena-mount.arena-theme-room,
-.arena-mount.floor-m5_1-arena,
-.arena-mount.floor-m5_2-arena,
-.arena-mount.floor-m5_boss-arena {
-  background-image:
-    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/pokoj.png'),
-    url('./public/assets/pokoj.png');
-}
-
-/* Moduł 1: Szatnia (szatnia_arena.jpg) */
+/* Kampania Szkolna A0 - Areny Walk i Dialogów */
 .arena-mount.arena-theme-szatnia,
-.arena-mount.floor-1-arena,
+.arena-mount.floor-0-arena {
+  background-image:
+    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
+    url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
+}
+
+.arena-mount.arena-theme-school,
+.arena-mount.floor-1-arena {
+  background-image:
+    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
+    url('/assets/tla/klasa_arena.png');
+}
+
 .arena-mount.floor-2-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/szatnia_arena.jpg'),
-    url('./public/assets/szatnia_arena.jpg');
+    url('/assets/tla/biblioteka_arena.png');
+}
+
+.arena-mount.arena-theme-clinic,
+.arena-mount.floor-3-arena {
+  background-image:
+    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
+    url('/assets/tla/gabinet_arena.png');
+}
+
+.arena-mount.floor-4-arena {
+  background-image:
+    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
+    url('/assets/tla/stolowka_arena.png');
+}
+
+.arena-mount.floor-5-arena {
+  background-image:
+    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
+    url('/assets/tla/boisko_zewnetrzne_arena.png');
+}
+
+.arena-mount.arena-theme-gym,
+.arena-mount.floor-6-arena {
+  background-image:
+    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
+    url('/assets/tla/sala_gimnastyczna_arena.jpg');
+}
+
+.arena-mount.arena-theme-room,
+.arena-mount.floor-room-arena {
+  background-image:
+    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
+    url('/assets/tla/pokoj_arena.png'),
+    url('./public/assets/tla/pokoj_arena.png');
 }
 
 .arena-overlay {
@@ -1175,27 +1525,42 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 .wheel-wrapper {
   position: relative;
-  width: 380px;
-  height: 380px;
+  width: 440px;
+  height: 440px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 #wheel-canvas {
-  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
+  width: 440px;
+  height: 440px;
+  max-width: 100%;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6));
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#wheel-canvas:hover:not(:disabled) {
+  transform: scale(1.02);
 }
 
 .wheel-pointer {
   position: absolute;
-  right: -8px;
+  right: -14px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 2.3rem;
+  font-size: 2.8rem;
   color: #ffd166;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.75);
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.85);
   pointer-events: none;
-  z-index: 5;
+  z-index: 10;
+  line-height: 1;
+}
+
+.wheel-pointer::before {
+  content: '◀';
+  display: block;
 }
 
 .wheel-center-btn {
@@ -1308,6 +1673,37 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   margin: 4px 0 6px;
   letter-spacing: 0.5px;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.scenario-quote-box {
+  background: rgba(255, 255, 255, 0.08);
+  border-left: 3px solid #3b82f6;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 92%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.scenario-quote-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.scenario-quote-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-style: italic;
+  color: #f8fafc;
+  line-height: 1.3;
 }
 
 .scenario-prompt-pl {
@@ -1586,7 +1982,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .modal-mount, .victory-modal-backdrop, .dicey-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 100005;
   background: rgba(10, 15, 24, 0.82);
   backdrop-filter: blur(4px);
   display: flex;
@@ -1908,6 +2304,12 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   width: 100%;
 }
 
+.matching-grid.grid-6 {
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 680px;
+  margin: 0 auto;
+}
+
 .matching-grid.grid-8 {
   grid-template-columns: repeat(4, 1fr);
 }
@@ -2059,8 +2461,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   z-index: 60;
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/szatnia_arena.jpg'),
-    url('./public/assets/szatnia_arena.jpg');
+    url('/assets/tla/szatnia_lub_korytarz_arena.jpg'),
+    url('./public/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -2082,10 +2484,10 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-11-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/miasto_arena.png'),
-    url('./public/assets/miasto_arena.png'),
-    url('/assets/miasto.png'),
-    url('./public/assets/miasto.png');
+    url('/assets/tla/miasto_arena.png'),
+    url('./public/assets/tla/miasto_arena.png'),
+    url('/assets/tla/miasto.png'),
+    url('./public/assets/tla/miasto.png');
 }
 
 .dicey-chest-scene.floor-theme-school,
@@ -2100,8 +2502,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-m3_boss-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/klasa.png'),
-    url('./public/assets/klasa.png');
+    url('/assets/tla/klasa.png'),
+    url('./public/assets/tla/klasa.png');
 }
 
 .dicey-chest-scene.floor-theme-clinic,
@@ -2111,8 +2513,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-m4_boss-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/gabinet.png'),
-    url('./public/assets/gabinet.png');
+    url('/assets/tla/gabinet.png'),
+    url('./public/assets/tla/gabinet.png');
 }
 
 .dicey-chest-scene.floor-theme-room,
@@ -2121,8 +2523,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-m5_boss-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/pokoj.png'),
-    url('./public/assets/pokoj.png');
+    url('/assets/tla/pokoj.png'),
+    url('./public/assets/tla/pokoj.png');
 }
 
 .dicey-chest-scene.floor-theme-szatnia,
@@ -2130,8 +2532,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-2-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/szatnia_arena.jpg'),
-    url('./public/assets/szatnia_arena.jpg');
+    url('/assets/tla/szatnia_lub_korytarz_arena.jpg'),
+    url('./public/assets/tla/szatnia_lub_korytarz_arena.jpg');
 }
 
 .btn-chest-scene-close {
@@ -2416,7 +2818,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
-/* ==================== EKRAN ZWYCIĘSTWA DICEY DUNGEONS ("WYGRAŁEŚ!") ==================== */
+/* ==================== EKRAN ZWYCIĘSTWA DICEY DUNGEONS ("WYGRANA!") ==================== */
 .dd-victory-backdrop {
   position: fixed;
   inset: 0;
@@ -2533,7 +2935,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   text-shadow: 0 2px 0 #7a1c24;
 }
 
-/* Centralny szyld "WYGRAŁEŚ!" z żarówkami */
+/* Centralny szyld "WYGRANA!" z żarówkami */
 .dd-marquee-sign {
   position: relative;
   width: 460px;
@@ -2762,7 +3164,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   }
 }
 
-/* 1. Najpierw tablica "WYGRAŁEŚ!" wraz z wieszakami */
+/* 1. Najpierw tablica "WYGRANA!" wraz z wieszakami */
 .dd-sign-hangers,
 .dd-marquee-sign {
   opacity: 0;
@@ -2845,7 +3247,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   align-items: flex-start;
 }
 
-/* Gracz (Tan) w lewym dolnym rogu */
+/* Gracz (Bohater) w lewym dolnym rogu */
 .dd-arena-player {
   bottom: 0;
   left: 14px;
@@ -2853,8 +3255,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 }
 
 /* Wyjazd postaci i kart dopasowania poza ekran po zakończeniu walki (wygrana lub przegrana) */
-.dd-combat-arena.arena-victory-exit .dd-arena-opponent,
-.dd-combat-arena.arena-defeat-exit .dd-arena-opponent {
+.dd-combat-arena.arena-victory-exit .dd-arena-opponent {
   transform: translateX(135%);
   opacity: 0;
 }
@@ -2865,17 +3266,70 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   opacity: 0;
 }
 
-.dd-combat-arena.arena-victory-exit .matching-stage-wrapper,
-.dd-combat-arena.arena-defeat-exit .matching-stage-wrapper {
+.dd-combat-arena.arena-victory-exit .matching-stage-wrapper {
   transform: translateX(-130vw);
   opacity: 0;
   pointer-events: none;
+}
+
+.dd-combat-arena.arena-defeat-exit .matching-stage-wrapper,
+.dd-combat-arena.arena-defeat-exit .boss-stage-center,
+.dd-combat-arena.arena-defeat-exit .cwaniak-stage-center,
+.dd-combat-arena.arena-defeat-exit .cd-stage-center,
+.dd-combat-arena.arena-defeat-exit .km-stage-center,
+.dd-combat-arena.arena-defeat-exit .otb-stage-center,
+.dd-combat-arena.arena-defeat-exit .ro-stage-center,
+.dd-combat-arena.arena-defeat-exit .boss-top-bar,
+.dd-combat-arena.arena-defeat-exit .cwaniak-top-bar,
+.dd-combat-arena.arena-defeat-exit .cd-top-bar,
+.dd-combat-arena.arena-defeat-exit .km-top-bar,
+.dd-combat-arena.arena-defeat-exit .otb-top-bar,
+.dd-combat-arena.arena-defeat-exit .ro-top-bar,
+.dd-combat-arena.arena-defeat-exit #cwaniak-witch-bar {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
 }
 
 .dd-combat-arena.arena-victory-exit .mp-animated-title,
 .dd-combat-arena.arena-defeat-exit .mp-animated-title {
   transform: translate(calc(-50% - 130vw), 0) scale(1);
   opacity: 0;
+}
+
+/* Czysty biały napis po przegranej bohatera (bez backgroundu i bez outline'u) */
+.dd-defeat-text-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 95;
+  pointer-events: none;
+  color: #ffffff;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+  animation: ddDefeatTextFadeIn 0.35s ease forwards;
+}
+
+@keyframes ddDefeatTextFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dd-sprite-container {
@@ -2893,6 +3347,13 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 }
 
 .opponent-sprite-container {
+  margin-left: 0;
+  margin-right: 14px;
+  margin-top: -22px;
+}
+
+.opponent-sprite-container.wide-sprite-container,
+.opponent-sprite-container.szczeniak-sprite-container {
   margin-left: -195px;
   margin-right: -200px;
   margin-top: -22px;
@@ -2930,6 +3391,13 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dd-fighter-sprite.sprite-zajac {
   height: 325px;
   max-width: 680px;
+}
+
+.dd-fighter-sprite.sprite-opponent {
+  height: 310px;
+  max-width: 480px;
+  object-fit: contain;
+  display: block;
 }
 
 .opponent-sprite-container.nauczycielka-sprite-container {
@@ -3103,6 +3571,69 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
 }
 
+/* Żółty pasek Limit Break pod paskiem życia bohatera (w stylu Dicey Dungeons) */
+.dd-limit-break-bar {
+  position: relative;
+  width: 225px;
+  height: 24px;
+  background: #78350f;
+  border: 2.5px solid #92400e;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dd-limit-break-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b 0%, #fde047 100%);
+  transition: width 0.35s ease;
+}
+
+.dd-limit-break-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+.dd-limit-break-bar.is-ready {
+  cursor: pointer;
+  border-color: #fef08a;
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.85);
+  animation: ddLimitBreakPulse 1s infinite alternate ease-in-out;
+}
+
+.dd-limit-break-bar.is-ready:hover {
+  transform: scale(1.04);
+}
+
+.dd-limit-break-bar.is-active {
+  border-color: #ffffff;
+  box-shadow: 0 0 18px rgba(249, 115, 22, 0.95);
+}
+
+.dd-limit-break-bar.is-active .dd-limit-break-fill {
+  background: linear-gradient(90deg, #ea580c 0%, #facc15 100%);
+}
+
+@keyframes ddLimitBreakPulse {
+  from {
+    box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+  }
+  to {
+    box-shadow: 0 0 18px rgba(250, 204, 21, 1);
+  }
+}
+
 /* ==================== ANIMACJA ZASŁONY I ODSŁONY W STYLU DICEY DUNGEONS ==================== */
 .dd-jagged-curtain {
   position: fixed;
@@ -3182,26 +3713,23 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   }
 }
 
-/* Drżenie całego ekranu, gdy postać otrzymuje obrażenia (subtelne) */
+/* Drżenie całego ekranu, gdy postać otrzymuje obrażenia (delikatny, zrównoważony impakt) */
 .dd-screen-shake {
-  animation: ddScreenShake 0.24s ease-out;
+  animation: ddScreenShake 0.28s ease-out both;
 }
 
 @keyframes ddScreenShake {
   0%, 100% {
     transform: translate(0, 0);
   }
-  20% {
-    transform: translate(-3px, 2px);
+  25% {
+    transform: translate(-5px, 3px);
   }
-  40% {
-    transform: translate(3px, -2px);
+  50% {
+    transform: translate(5px, -3px);
   }
-  60% {
-    transform: translate(-2px, -1px);
-  }
-  80% {
-    transform: translate(1.5px, 1px);
+  75% {
+    transform: translate(-2px, 1px);
   }
 }
 
@@ -3595,7 +4123,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   75% { transform: translateX(6px); }
 }
 
-/* ==================== KOTEK BOLO (🇻🇳 TRỢ GIÚP) - KOŁO RATUNKOWE ==================== */
+/* ==================== KOTEK BOLO (TRỢ GIÚP) - KOŁO RATUNKOWE ==================== */
 
 .bolo-helper-widget {
   position: relative;
@@ -3784,8 +4312,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .b3-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.45) 0%, rgba(10, 12, 20, 0.88) 100%),
-    url('/assets/klasa.png'),
-    url('./public/assets/klasa.png');
+    url('/assets/tla/klasa.png'),
+    url('./public/assets/tla/klasa.png');
   background-size: cover;
   background-position: center;
 }
@@ -3859,7 +4387,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 60 !important;
+  z-index: 99999 !important;
   display: block !important;
   overflow: hidden !important;
 }
@@ -3869,410 +4397,338 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url('/assets/kramik_background.png'), url('./public/assets/kramik_background.png');
+  background-image: url('/assets/tla/kramik_background.png'), url('./public/assets/tla/kramik_background.png');
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   box-sizing: border-box;
   overflow: hidden;
   z-index: 10;
 }
 
-/* Girlanda u góry */
-.dd-shop-bunting {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 38px;
-  display: flex;
-  justify-content: space-around;
-  padding: 0 40px;
-  pointer-events: none;
-  z-index: 12;
-}
-
-.bunting-flag {
-  width: 32px;
-  height: 36px;
-  background: var(--c, #ffd166);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
-  transform-origin: top center;
-  animation: buntingSway 3.6s ease-in-out infinite alternate;
-}
-
-.bunting-flag:nth-child(2n) {
-  animation-delay: -1.2s;
-}
-
-.bunting-flag:nth-child(3n) {
-  animation-delay: -2.1s;
-}
-
-@keyframes buntingSway {
-  0% { transform: rotate(-3deg); }
-  100% { transform: rotate(3deg); }
-}
-
-/* Belka górna: Bez ciężkich obramowań, zgrabne pigułki */
-.dd-shop-topbar {
-  position: relative;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 28px;
-  background: linear-gradient(180deg, rgba(15, 10, 8, 0.75) 0%, transparent 100%);
-}
-
-.dd-shop-title-badge {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(20, 14, 10, 0.6);
-  padding: 6px 16px;
-  border-radius: 999px;
-  backdrop-filter: blur(4px);
-}
-
-.dd-shop-title-badge h2 {
-  margin: 0;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 900;
-  letter-spacing: 1.2px;
-  color: #ffd166;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-}
-
-.dd-shop-title-kramik-img {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
-}
-
-.dd-shop-top-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.dd-shop-gold-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(20, 14, 10, 0.7);
-  border-radius: 999px;
-  padding: 8px 20px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.2rem;
-  color: #ffd166;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.dd-shop-gold-badge b {
-  color: #ffffff;
-  font-size: 1.35rem;
-}
-
-.btn-dd-shop-close {
-  background: #e63946;
-  color: #ffffff;
-  border: none;
-  border-radius: 50%;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.6);
-  transition: transform 0.14s ease, filter 0.14s ease;
-}
-
-.btn-dd-shop-close:hover {
-  transform: scale(1.12);
-  filter: brightness(1.2);
-}
-
-/* Dymek sprzedawcy (żaby) - po prawej stronie nad postacią w tle */
-.dd-shopkeeper-bubble-area {
-  position: absolute;
-  right: 5vw;
-  top: 14vh;
-  z-index: 15;
-  pointer-events: none;
-}
-
-.dd-shopkeeper-speech-bubble {
-  background: #ffffff;
-  color: #1e293b;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.12rem;
-  font-weight: 700;
-  padding: 12px 22px;
-  border-radius: 22px;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5);
-  position: relative;
-  max-width: 300px;
-  text-align: center;
-  animation: ddShopkeeperFloat 3.4s ease-in-out infinite;
-}
-
-.dd-shopkeeper-speech-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -12px;
-  right: 60px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 12px solid #ffffff;
-}
-
-@keyframes ddShopkeeperFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-/* Sekcja z kartami na ladzie - rozłożona zgrabnie po lewej i w centrum */
+/* Sekcja z kartami na ladzie w stylu Dicey Dungeons (prostokąty leżące, powiększone i uniesione wysoko) */
 .dd-shop-counter-section {
   position: relative;
   z-index: 10;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-start;
-  padding-left: max(4vw, 48px);
-  margin-bottom: 24px;
+  padding-left: clamp(24px, 5vw, 64px);
+  margin-bottom: clamp(280px, 38vh, 440px);
 }
 
 .dd-shop-cards-container {
   display: flex;
-  gap: 24px;
-  max-width: 820px;
-  width: 100%;
+  gap: clamp(18px, 2.2vw, 32px);
+  align-items: flex-end;
 }
 
-/* Karta przedmiotu w stylu Dicey Dungeons */
+.dd-shop-item-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(310px, 27vw, 390px);
+}
+
+/* Karta przedmiotu: PROSTOKĄT LEŻĄCY (landscape) */
 .dd-shop-item-card {
   position: relative;
-  flex: 1;
-  max-width: 250px;
-  min-height: 290px;
-  background: #191627;
-  border-radius: 16px;
+  width: 100%;
+  height: clamp(225px, 27vh, 270px);
+  background: rgba(22, 17, 32, 0.95);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-  transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.18s ease;
-  border: 3.5px solid var(--card-color, #8338ec);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.75), 0 4px 14px rgba(0, 0, 0, 0.5);
+  border: 5px solid var(--card-color, #8338ec);
 }
 
-.dd-shop-item-card:hover:not(.item-is-sold) {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85), 0 0 20px var(--card-color, #8338ec);
-}
-
-/* Górna listwa z nazwą karty */
+/* Górna belka karty z nazwą w stylu Dicey Dungeons */
 .dd-card-top-strip {
   background: var(--card-color, #8338ec);
   color: #ffffff;
   font-family: 'Fredoka', sans-serif;
   font-weight: 900;
-  font-size: 1.15rem;
+  font-size: 1.38rem;
   text-align: center;
-  padding: 8px 12px;
-  letter-spacing: 0.8px;
+  padding: 9px 16px;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
 }
 
-/* Środek karty: bez żadnych przerywanych kresek czy podwójnych ramek! */
-.dd-card-main-stat {
-  padding: 16px 12px 8px;
+/* Wnętrze karty (leżący prostokąt: duża grafika i czytelny podpis) */
+.dd-card-inner-frame {
+  padding: 12px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  background: rgba(14, 10, 22, 0.55);
+  box-sizing: border-box;
+}
+
+.dd-card-artwork-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  width: 100%;
+  flex: 1;
+  min-height: 95px;
 }
 
 .dd-card-item-img {
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  max-width: clamp(160px, 18vw, 220px);
+  height: 100%;
+  max-height: clamp(110px, 14vh, 145px);
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.75));
 }
 
-.dd-stat-cluster {
+.dd-card-slot-rule {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(1.15rem, 1.25vw, 1.32rem);
+  font-weight: 700;
+  color: #f1f5f9;
+  text-align: center;
+  line-height: 1.25;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  flex-shrink: 0;
+}
+
+/* Rząd zakupu pod kartą na ladzie sklepowej */
+.dd-card-purchase-row {
+  margin-top: 14px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-}
-
-.dd-stat-big-val {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.55rem;
-  font-weight: 900;
-  color: #ffd166;
-  line-height: 1.1;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
-}
-
-.dd-stat-sub-label {
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #cbd5e1;
-}
-
-.dd-card-desc-box {
-  padding: 4px 14px 12px;
-  flex: 1;
-  display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-.dd-card-desc-text {
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.85rem;
-  color: #e2e8f0;
-  line-height: 1.35;
-  text-align: center;
-  margin: 0;
-  font-weight: 600;
-}
-
-/* Zintegrowany przycisk zakupu bezpośrednio w karcie */
-.dd-card-action-box {
-  padding: 10px 14px 14px;
 }
 
 .btn-dd-buy {
-  width: 100%;
-  background: linear-gradient(180deg, #ff0054 0%, #d90429 100%);
-  color: #ffffff;
+  width: 145px;
+  height: 46px;
+  background: #e2e8f0;
+  color: #1e293b;
   border: none;
-  border-radius: 999px;
+  border-radius: 10px;
   font-family: 'Fredoka', sans-serif;
-  font-size: 1.12rem;
+  font-size: 1.32rem;
   font-weight: 900;
-  letter-spacing: 0.5px;
-  padding: 10px 14px;
+  letter-spacing: 0.8px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(217, 4, 41, 0.5);
-  transition: transform 0.14s ease, filter 0.14s ease;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45);
+  transition: transform 0.12s ease, background 0.12s ease, filter 0.12s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
 }
 
 .btn-dd-buy:hover:not(:disabled) {
-  transform: scale(1.05);
-  filter: brightness(1.18);
-  box-shadow: 0 6px 18px rgba(217, 4, 41, 0.7);
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
 }
 
 .btn-dd-buy:disabled {
-  background: #334155 !important;
-  color: #94a3b8 !important;
+  background: #3e384c !important;
+  color: #837a96 !important;
   cursor: not-allowed;
   box-shadow: none !important;
   filter: none !important;
   transform: none !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
 }
 
 .btn-dd-buy-owned {
   background: #10b981 !important;
   color: #ffffff !important;
+  border: none !important;
+}
+
+.dd-card-cost-label {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #ffd166;
+  margin-top: 6px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  text-align: center;
+}
+
+.dd-card-cost-label .cost-val {
+  color: #ffd166;
+}
+
+.dd-card-cost-label .cost-shortage {
+  color: #f87171;
+  font-size: 0.88rem;
+}
+
+.dd-card-cost-label .cost-owned {
+  color: #34d399;
 }
 
 .dd-sold-stamp {
   position: absolute;
-  top: 42%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-14deg);
   border: 4px solid #ef4444;
   color: #ef4444;
   font-family: 'Fredoka', sans-serif;
-  font-size: 1.55rem;
+  font-size: 1.45rem;
   font-weight: 900;
   letter-spacing: 2px;
-  padding: 5px 18px;
-  border-radius: 10px;
+  padding: 4px 16px;
+  border-radius: 8px;
   background: rgba(15, 23, 42, 0.92);
   text-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
   pointer-events: none;
   z-index: 10;
-  box-shadow: 0 0 18px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.5);
 }
 
 .item-is-sold {
   filter: grayscale(0.2) opacity(0.85);
 }
 
-/* Dolna listwa: statystyki i wyjście bez sztucznych grubych linii */
+/* Dolna listwa w stylu Dicey Dungeons HUD */
 .dd-shop-bottombar {
   position: relative;
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 28px 18px;
-  background: linear-gradient(0deg, rgba(15, 10, 8, 0.8) 0%, transparent 100%);
+  padding: 0 28px;
+  height: 56px;
+  background: rgba(22, 16, 29, 0.96);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
 }
 
-.dd-shop-stats-status {
+.dd-shop-hud-left {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.dd-stat-pill {
-  background: rgba(20, 14, 10, 0.65);
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #f1f5f9;
-  backdrop-filter: blur(4px);
+.dd-shop-hud-portrait {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ffd166;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1e1b2e;
 }
 
-.dd-stat-pill b {
-  color: #ffd166;
+.dd-shop-hud-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.btn-dd-shop-exit {
-  background: linear-gradient(180deg, #3a86ff 0%, #1e60d0 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 999px;
+.dd-shop-hud-name {
   font-family: 'Fredoka', sans-serif;
   font-size: 1.15rem;
   font-weight: 900;
-  padding: 10px 28px;
+  color: #ffffff;
+  letter-spacing: 0.8px;
+}
+
+.dd-shop-hud-hp {
+  position: relative;
+  width: 130px;
+  height: 24px;
+  background: #3b1722;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+}
+
+.dd-shop-hud-hp-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.dd-shop-hud-hp-text {
+  position: relative;
+  z-index: 2;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.dd-shop-hud-gold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffd166;
+}
+
+.dd-shop-hud-center {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #e2e8f0;
+  letter-spacing: 0.8px;
+}
+
+.dd-shop-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-dd-shop-exit {
+  background: #4b5563;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 6px 24px;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(58, 134, 255, 0.5);
-  transition: transform 0.14s ease, filter 0.14s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.14s ease, background 0.14s ease;
 }
 
 .btn-dd-shop-exit:hover {
-  transform: translateY(-2px) scale(1.04);
-  filter: brightness(1.2);
-  box-shadow: 0 8px 24px rgba(58, 134, 255, 0.7);
+  background: #6b7280;
+  transform: translateY(-1px);
+}
+
+.dd-shop-hud-floor {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #94a3b8;
 }
 
 @media (max-width: 820px) {
@@ -4326,15 +4782,34 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 /* ==================== PLANSZA 3: SPIN THE WHEEL & SPELL THE WORD ==================== */
 
+.wheel-dd-arena .mp-animated-title {
+  position: absolute;
+  top: 16px;
+  left: 28px;
+  transform: none;
+  font-size: 1.35rem;
+  max-width: 460px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.wheel-stage-wrapper {
+  max-width: 1080px;
+  width: 96%;
+}
+
 .ww-wheel-combat-card {
   display: flex;
-  gap: 24px;
+  gap: 32px;
   align-items: center;
-  background: rgba(18, 28, 42, 0.94);
-  border-radius: 20px;
-  padding: 22px 28px;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.52);
-  max-width: 820px;
+  background: rgba(18, 28, 42, 0.95);
+  border-radius: 24px;
+  padding: 24px 34px;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  max-width: 1080px;
   width: 100%;
 }
 
@@ -4342,12 +4817,42 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  flex-shrink: 0;
 }
 
 .ww-wheel-right-col {
   flex: 1;
   min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .wheel-stage-wrapper,
+  .ww-wheel-combat-card {
+    max-width: 95vw;
+  }
+  .ww-wheel-combat-card {
+    gap: 20px;
+    padding: 18px 22px;
+  }
+  .wheel-wrapper,
+  #wheel-canvas {
+    width: 380px;
+    height: 380px;
+  }
+}
+
+@media (max-width: 860px) {
+  .ww-wheel-combat-card {
+    flex-direction: column;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .wheel-wrapper,
+  #wheel-canvas {
+    width: 310px;
+    height: 310px;
+  }
 }
 
 .ww-spell-card {
@@ -4558,6 +5063,9 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .ww-matchup-target-slot {
@@ -4855,9 +5363,9 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 }
 
 .ww-ws-word-badge {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffd166;
-  border: 1.5px solid rgba(255, 209, 102, 0.4);
+  background: rgba(6, 214, 160, 0.15);
+  color: #06d6a0;
+  border: 1.5px solid rgba(6, 214, 160, 0.5);
   border-radius: 999px;
   padding: 4px 12px;
   font-family: 'Fredoka', sans-serif;
@@ -5777,8 +6285,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .boss-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/szatnia_arena.jpg'),
-    url('./public/assets/szatnia_arena.jpg');
+    url('/assets/tla/szatnia_lub_korytarz_arena.jpg'),
+    url('./public/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
 }
@@ -6060,7 +6568,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 .board-background-container.floor-city_1,
 .board-background-container.floor-8 {
-  background-image: url('/assets/miasto.png'), url('./public/assets/miasto.png');
+  background-image: url('/assets/tla/miasto.png'), url('./public/assets/tla/miasto.png');
 }
 
 .sprite-kasjerka,
@@ -6075,9 +6583,28 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 .otb-arena,
 .ro-arena {
-  background-image: url('/assets/miasto_arena.png'), url('./public/assets/miasto_arena.png'), url('/assets/szatnia_arena.jpg');
+  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
+}
+
+.ro-arena.ro-theme-school {
+  background-image: radial-gradient(circle at center, rgba(10, 14, 22, 0.15) 0%, rgba(10, 14, 22, 0.45) 100%), url('/assets/tla/klasa_arena.png'), url('./public/assets/tla/klasa_arena.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.ro-arena.ro-theme-city {
+  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.ro-arena .sprite-opponent {
+  height: 330px;
+  max-width: 320px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
 }
 
 .otb-timer-pill {
@@ -6272,6 +6799,9 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .ro-item-row {
@@ -6498,7 +7028,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 .board-background-container.floor-city_2,
 .board-background-container.floor-9 {
-  background-image: url('/assets/miasto.png'), url('./public/assets/miasto.png');
+  background-image: url('/assets/tla/miasto.png'), url('./public/assets/tla/miasto.png');
 }
 
 .sprite-kebab-master {
@@ -6507,7 +7037,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 /* Arena walki / dialogu z Mistrzem Kebaba */
 .km-arena {
-  background-image: url('/assets/miasto_arena.png'), url('./public/assets/miasto_arena.png'), url('/assets/szatnia_arena.jpg');
+  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
 }
@@ -6809,7 +7339,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .board-background-container.floor-10,
 .board-background-container.floor-city_boss,
 .board-background-container.floor-11 {
-  background-image: url('/assets/miasto.png'), url('./public/assets/miasto.png');
+  background-image: url('/assets/tla/miasto.png'), url('./public/assets/tla/miasto.png');
 }
 
 /* ==================== BILETOMAT MIEJSKI ==================== */
@@ -6820,8 +7350,13 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   justify-content: center;
   width: 100%;
   height: 100%;
-  background: rgba(5, 10, 20, 0.94);
-  backdrop-filter: blur(12px);
+  background-image:
+    radial-gradient(circle at center, rgba(5, 10, 20, 0.72) 0%, rgba(5, 10, 20, 0.94) 100%),
+    url('/assets/tla/sklep_biletow.jpg'),
+    url('./public/assets/tla/sklep_biletow.jpg');
+  background-size: cover;
+  background-position: center;
+  backdrop-filter: blur(8px);
   padding: 16px;
   box-sizing: border-box;
 }
@@ -7409,19 +7944,29 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 /* ==================== BOSS CWANIAK ARENA & CHALLEGES ==================== */
 
 .cwaniak-arena {
-  background-image: url('/assets/miasto_arena.png'), url('./public/assets/miasto_arena.png'), url('/assets/szatnia_arena.jpg');
+  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
 }
 
+.opponent-sprite-container.boss-opponent-sprite-container .dd-fighter-sprite,
 .sprite-cwaniak,
 .dd-fighter-sprite.sprite-cwaniak,
 .dd-fighter-sprite.sprite-instagramerka,
 .dd-fighter-sprite.sprite-lekarz {
-  height: 330px;
-  max-height: 330px;
-  max-width: 260px;
+  height: 310px;
+  max-height: 310px;
+  max-width: 250px;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
+}
+
+.dd-fighter-sprite.sprite-dyrektorka,
+.opponent-sprite-container.boss-opponent-sprite-container .dd-fighter-sprite.sprite-dyrektorka {
+  height: 270px;
+  max-height: 270px;
+  max-width: 215px;
+  width: auto;
+  object-fit: contain;
 }
 
 .opponent-sprite-container.boss-opponent-sprite-container {
@@ -7691,76 +8236,84 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .board-background-container.floor-m3_2,
 .board-background-container.floor-m3_3,
 .board-background-container.floor-m3_boss {
-  background-image: url('/assets/klasa.png'), url('./public/assets/klasa.png');
+  background-image: url('/assets/tla/klasa.png'), url('./public/assets/tla/klasa.png');
 }
 
 .board-background-container.floor-m4_1,
 .board-background-container.floor-m4_2,
 .board-background-container.floor-m4_3,
 .board-background-container.floor-m4_boss {
-  background-image: url('/assets/gabinet.png'), url('./public/assets/gabinet.png');
+  background-image: url('/assets/tla/gabinet.png'), url('./public/assets/tla/gabinet.png');
 }
 
 .board-background-container.floor-m5_1,
 .board-background-container.floor-m5_2,
 .board-background-container.floor-m5_boss {
-  background-image: url('/assets/pokoj.png'), url('./public/assets/pokoj.png');
+  background-image: url('/assets/tla/pokoj.png'), url('./public/assets/tla/pokoj.png');
 }
 
 /* ==================== CHARACTER DIALOG ARENA (Wuefista, Pielęgniarka, Gejmer, Piłkarz, Cwaniak) ==================== */
 .cd-arena {
-  background-image: url('/assets/miasto_arena.png'), url('./public/assets/miasto_arena.png'), url('/assets/szatnia_arena.jpg');
+  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
+}
+
+.cd-arena.gym-dialog-arena {
+  background-image:
+    radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
+    url('/assets/tla/sala_gimnastyczna_arena.jpg'),
+    url('./public/assets/tla/sala_gimnastyczna_arena.jpg'),
+    url('/assets/tla/sala_gimnastyczna.jpg');
 }
 
 .cd-arena.school-dialog-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/klasa.png'),
-    url('./public/assets/klasa.png');
+    url('/assets/tla/klasa.png'),
+    url('./public/assets/tla/klasa.png');
 }
 
 .cd-arena.clinic-dialog-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/gabinet.png'),
-    url('./public/assets/gabinet.png');
+    url('/assets/tla/gabinet.png'),
+    url('./public/assets/tla/gabinet.png');
 }
 
 .cd-arena.room-dialog-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/pokoj.png'),
-    url('./public/assets/pokoj.png');
+    url('/assets/tla/pokoj_arena.png'),
+    url('./public/assets/tla/pokoj_arena.png');
 }
 
 .boss-arena.cwaniak-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/miasto_arena.png'),
-    url('./public/assets/miasto_arena.png');
+    url('/assets/tla/miasto_arena.png'),
+    url('./public/assets/tla/miasto_arena.png');
 }
 
 .boss-arena.nauczycielka-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/klasa.png'),
-    url('./public/assets/klasa.png');
+    url('/assets/tla/klasa.png'),
+    url('./public/assets/tla/klasa.png');
 }
 
 .boss-arena.lekarz-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/gabinet.png'),
-    url('./public/assets/gabinet.png');
+    url('/assets/tla/gabinet.png'),
+    url('./public/assets/tla/gabinet.png');
 }
 
 .boss-arena.instagramerka-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/pokoj.png'),
-    url('./public/assets/pokoj.png');
+    url('/assets/tla/pokoj_arena.png'),
+    url('./public/assets/tla/pokoj_arena.png');
 }
 
 .cd-stage-wrapper {
@@ -7861,14 +8414,25 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   animation: shakeHit 0.4s ease-in-out;
 }
 
+.cd-arena .opponent-sprite-container {
+  margin: 0;
+}
+
+.cd-arena .player-sprite-container {
+  margin: 0;
+  margin-bottom: -10px;
+}
+
 .cd-opponent-sprite {
-  max-height: 190px;
+  height: 320px;
+  max-height: 360px;
   object-fit: contain;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
 }
 
 .cd-tan-sprite {
-  max-height: 190px;
+  height: 360px;
+  max-height: 390px;
   object-fit: contain;
 }
 
@@ -7888,9 +8452,9 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .city-thoughts-arena {
   background-image:
     radial-gradient(circle at center, rgba(16, 24, 38, 0.45) 0%, rgba(10, 14, 22, 0.9) 100%),
-    url('/assets/miasto_arena.png'),
-    url('./public/assets/miasto_arena.png'),
-    url('/assets/miasto.png');
+    url('/assets/tla/miasto_arena.png'),
+    url('./public/assets/tla/miasto_arena.png'),
+    url('/assets/tla/miasto.png');
   background-size: cover;
   background-position: center;
 }
@@ -8248,6 +8812,1095 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   font-size: 0.78rem;
   color: #94a3b8;
 }
+
+/* ==================== EKRAN STARTOWY (TITLE SCREEN - DICEY DUNGEONS STYLE) ==================== */
+.title-screen-container {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #0b1320;
+}
+
+.title-screen-container.hidden {
+  display: none !important;
+}
+
+.title-bg-ambient {
+  position: absolute;
+  inset: -40px;
+  width: calc(100% + 80px);
+  height: calc(100% + 80px);
+  object-fit: cover;
+  object-position: center;
+  filter: blur(28px) brightness(0.35) saturate(1.2);
+  transform: scale(1.05);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.title-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.7));
+}
+
+.title-screen-backdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  max-width: calc(100vh * (1671 / 941));
+  max-height: calc(100vw / (1671 / 941));
+  aspect-ratio: 1671 / 941;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 40px 48px;
+  box-sizing: border-box;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.title-corner-controls {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.title-mute-btn {
+  background: rgba(15, 23, 42, 0.75);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  font-size: 1.3rem;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.title-mute-btn:hover {
+  transform: scale(1.08);
+  border-color: #60a5fa;
+  background: rgba(30, 41, 59, 0.85);
+}
+
+.title-actions-cluster {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 350px;
+  max-width: 90vw;
+  z-index: 10;
+  margin-right: 20px;
+  margin-bottom: 24px;
+}
+
+.dd-title-btn {
+  background: linear-gradient(180deg, #2a4970 0%, #1a324f 100%);
+  border: 3px solid #4a75a7;
+  border-radius: 14px;
+  padding: 14px 22px;
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 6px 0 #0e1c2e, 0 10px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+  text-decoration: none;
+}
+
+.btn-title-play {
+  background: linear-gradient(180deg, #2b6cb0 0%, #1a497a 100%);
+  border-color: #63b3ed;
+  padding: 18px 26px;
+}
+
+.btn-title-play .dd-title-btn-text {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.dd-title-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 9px 0 #0e1c2e, 0 14px 25px rgba(0, 0, 0, 0.45);
+  border-color: #90cdf4;
+  filter: brightness(1.1);
+}
+
+.dd-title-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #0e1c2e, 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+.dd-title-btn-icon {
+  font-size: 1.4rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.dd-title-btn-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.dd-title-btn-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.dd-title-btn-sub {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #90cdf4;
+  line-height: 1.1;
+  margin-top: 3px;
+}
+
+.title-version-tag {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-align: center;
+  margin-top: 4px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+@media (max-width: 768px) {
+  .title-screen-backdrop {
+    padding: 20px;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .title-actions-cluster {
+    width: 100%;
+    max-width: 330px;
+    margin-right: 0;
+  }
+}
+
+/* ==================== EKRAN WYBORU POSTACI (DICEY DUNGEONS HERO STAGE) ==================== */
+.char-select-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #0b0f19;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.char-select-screen.hidden {
+  display: none !important;
+}
+
+.char-select-stage-wrap {
+  width: 100vw;
+  height: 56.25vw;
+  max-height: 100vh;
+  max-width: 177.78vh;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  box-sizing: border-box;
+}
+
+.char-select-stage-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.cs-stage-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Przyciski w narożnikach tła */
+.cs-top-btn {
+  position: absolute;
+  top: 4.8%;
+  height: 6.8%;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  transition: transform 0.12s ease, filter 0.12s ease;
+  z-index: 30;
+}
+
+.cs-btn-menu {
+  left: 2.2%;
+  width: 17.5%;
+}
+
+.cs-btn-challenges {
+  right: 2.2%;
+  width: 17.5%;
+}
+
+.cs-top-btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
+}
+
+.cs-top-btn:active {
+  transform: scale(0.96);
+}
+
+/* Rząd ikonek kości bohaterów u góry */
+.cs-icons-row {
+  position: absolute;
+  top: 13%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 25;
+}
+
+.cs-hero-pip-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cs-pip-dice {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  border: 2.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #1e293b;
+}
+
+.cs-pip-dice img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cs-hero-pip-btn:hover {
+  transform: translateY(-2px) scale(1.08);
+}
+
+.cs-hero-pip-btn.is-active {
+  transform: translateY(-4px) scale(1.18);
+}
+
+.cs-pip-bracket {
+  position: absolute;
+  inset: -4px;
+  border: 3px solid #ffffff;
+  border-radius: 13px;
+  pointer-events: none;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+  animation: bracketPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes bracketPulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(255, 255, 255, 1);
+  }
+}
+
+/* Strzałki przewijania bohaterów */
+.cs-arrow-btn {
+  position: absolute;
+  top: 40.5%;
+  width: 6.8%;
+  height: 12%;
+  background: transparent;
+  border: none;
+  color: transparent;
+  cursor: pointer;
+  z-index: 30;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.cs-arrow-left {
+  left: 1.5%;
+}
+
+.cs-arrow-right {
+  right: 1.5%;
+}
+
+.cs-arrow-btn:hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 8px #ffffff);
+}
+
+.cs-arrow-btn:active {
+  transform: scale(0.92);
+}
+
+/* Świecące tablice (marquee boards) */
+.cs-marquee-board {
+  position: absolute;
+  top: 18%;
+  width: 21.8%;
+  height: 48%;
+  box-sizing: border-box;
+  z-index: 10;
+  display: flex;
+}
+
+.cs-marquee-board.is-locked-board {
+  filter: grayscale(0.92) brightness(0.6) opacity(0.5);
+  pointer-events: none;
+  transition: filter 0.22s ease, opacity 0.22s ease;
+}
+
+.cs-marquee-left {
+  left: 10%;
+  padding: 2.2% 2.8% 2% 2.8%;
+}
+
+.cs-marquee-right {
+  right: 10%;
+  padding: 2% 2.4% 1.8% 2.4%;
+}
+
+.cs-board-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.cs-board-hero-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #b91c1c;
+  margin: 0 0 6px 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.cs-board-quote {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #451a03;
+  margin: 0 0 8px 0;
+  font-style: italic;
+  flex-grow: 1;
+}
+
+.cs-board-spec {
+  background: rgba(254, 243, 199, 0.75);
+  border: 1.5px solid #d97706;
+  border-radius: 8px;
+  padding: 5px 8px;
+  margin-bottom: 6px;
+}
+
+.cs-spec-badge {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #b45309;
+  letter-spacing: 0.5px;
+}
+
+.cs-spec-desc {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #78350f;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.cs-board-diff {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 900;
+  color: #9a3412;
+  font-size: 0.88rem;
+}
+
+.cs-diff-stars {
+  font-size: 1.05rem;
+  letter-spacing: -1px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.cs-diff-text {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #78350f;
+  margin-left: 4px;
+}
+
+/* Prawa tablica: Epizody */
+.cs-board-episodes-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #b91c1c;
+  margin: 0 0 3px 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+.cs-episodes-grid {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2px;
+  flex-grow: 1;
+  min-height: 0;
+  overflow: hidden !important;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.cs-episode-badge {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 6px;
+  padding: 1px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  user-select: none;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 0;
+  box-sizing: border-box;
+}
+
+.cs-episode-badge:hover {
+  transform: translateX(2px);
+  border-color: #f59e0b;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.cs-episode-badge.is-selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+  transform: none;
+}
+
+.cs-episode-badge.is-completed {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #f59e0b;
+}
+
+.cs-episode-badge.is-completed.is-selected {
+  border-color: #d97706;
+  box-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
+}
+
+.cs-episode-badge.is-locked {
+  opacity: 0.55;
+  filter: grayscale(0.85);
+  cursor: not-allowed;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.cs-episode-badge.is-locked:hover {
+  transform: none;
+  border-color: #cbd5e1;
+}
+
+.cs-episode-pip {
+  font-size: 0.95rem;
+  color: #1e293b;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.cs-episode-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cs-ep-top-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cs-ep-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.cs-ep-tag {
+  font-size: 0.5rem;
+  font-weight: 900;
+  background: #ef4444;
+  color: #ffffff;
+  padding: 0px 4px;
+  border-radius: 3px;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.cs-ep-sub {
+  font-size: 0.52rem;
+  color: #64748b;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0;
+}
+
+.cs-ep-status-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1;
+  background: transparent;
+  color: #475569;
+}
+
+.cs-episode-badge.is-completed .cs-ep-status-pill {
+  color: #d97706;
+}
+
+.cs-episode-badge.is-selected:not(.is-completed) .cs-ep-status-pill {
+  color: #2563eb;
+}
+
+.cs-episode-badge.is-locked .cs-ep-status-pill {
+  color: #94a3b8;
+}
+
+/* Centralny podest i sprite bohatera */
+.cs-center-hero-wrap {
+  position: absolute;
+  bottom: 33.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 38%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.cs-hero-pedestal-sprite {
+  max-height: 100%;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.55));
+  animation: heroStageBob 2.8s ease-in-out infinite;
+}
+
+@keyframes heroStageBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Dolny czerwony przycisk START */
+.cs-start-play-btn {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15.5%;
+  height: 6.8%;
+  background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+  border: 3px solid #f87171;
+  border-radius: 9px;
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 0 #7f1d1d, 0 8px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  z-index: 30;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cs-start-play-btn:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 7px 0 #7f1d1d, 0 12px 20px rgba(0, 0, 0, 0.45);
+  filter: brightness(1.12);
+}
+
+.cs-start-play-btn:active {
+  transform: translateX(-50%) translateY(3px);
+  box-shadow: 0 2px 0 #7f1d1d, 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ==================== PASEK MECHANIK KLASOWYCH (DICEY DUNGEONS) & KARTA TEORII ==================== */
+.class-mechanic-bar {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 2px solid #ffd166;
+  border-radius: 14px;
+  padding: 6px 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+  max-width: 90vw;
+  font-family: 'Fredoka', sans-serif;
+  color: #f8fafc;
+  font-size: 0.92rem;
+}
+
+.cmb-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cmb-meter {
+  width: 90px;
+  height: 12px;
+  background: #1e293b;
+  border: 2px solid #38bdf8;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cmb-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #06b6d4, #22c55e);
+  transition: width 0.25s ease;
+}
+
+.cmb-action-btn,
+.btn-witch-spell {
+  background: #2563eb;
+  color: #ffffff;
+  border: 2px solid #93c5fd;
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.cmb-action-btn:hover,
+.btn-witch-spell:hover {
+  transform: translateY(-2px);
+  background: #1d4ed8;
+}
+
+.cmb-action-btn.is-ready,
+.cmb-action-btn.is-active,
+.btn-witch-spell.is-active {
+  background: #f59e0b;
+  color: #0f172a;
+  border-color: #ffffff;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
+}
+
+.witch-spells-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.witch-fancy-hit-fx {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, #a855f7 0%, #6b21a8 100%);
+  color: #ffffff;
+  border: 2px solid #fde047;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  white-space: nowrap;
+  box-shadow: 0 0 24px #c084fc;
+  animation: witchSpellPop 0.9s ease-out forwards;
+  z-index: 60;
+}
+
+@keyframes witchSpellPop {
+  0% { opacity: 0; transform: translate(-50%, 10px) scale(0.7); }
+  30% { opacity: 1; transform: translate(-50%, -6px) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -28px) scale(0.95); }
+}
+
+/* Karta Teorii / Ściąga Mistrza */
+.boss-theory-wrap {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.btn-toggle-theory {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.95);
+  border: 2px dashed #38bdf8;
+  color: #7dd3fc;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-toggle-theory:hover {
+  background: rgba(56, 189, 248, 0.18);
+}
+
+.boss-theory-drawer {
+  margin-top: 6px;
+  background: #0f172a;
+  border: 2px solid #38bdf8;
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-align: left;
+  color: #e2e8f0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.boss-theory-drawer h4 {
+  margin: 0 0 6px 0;
+  color: #ffd166;
+  font-family: 'Fredoka', sans-serif;
+}
+
+/* Nowe minigry: Złodziej Końcówek, Algorytm Zdania, Word Magnets, Architekt Tekstu, Detektyw Lektur, Swipe */
+.cloze-sentence-box,
+.algo-sentence-banner,
+.reading-excerpt-box,
+.swipe-card-deck {
+  background: #1e293b;
+  border: 2px solid #475569;
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin: 8px 0 12px 0;
+  color: #f8fafc;
+  font-size: 1.08rem;
+  line-height: 1.5;
+}
+
+.cloze-slot {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 0 2px;
+  border-radius: 6px;
+  background: #334155;
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.cloze-slot.is-active {
+  background: #f59e0b;
+  color: #0f172a;
+}
+
+.cloze-slot.is-filled {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.cloze-options-row,
+.magnets-pool-grid,
+.reading-tf-buttons,
+.swipe-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-cloze-opt,
+.magnet-chip-btn,
+.btn-tf-choice,
+.btn-swipe-choice {
+  background: #1e293b;
+  border: 3px solid #38bdf8;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.btn-cloze-opt:hover,
+.magnet-chip-btn:hover:not(:disabled),
+.btn-tf-choice:hover,
+.btn-swipe-choice:hover {
+  transform: translateY(-2px);
+  background: #334155;
+  border-color: #ffd166;
+}
+
+.magnet-chip-btn.is-used {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.magnets-answer-strip {
+  min-height: 46px;
+  background: #0f172a;
+  border: 2px dashed #ffd166;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.magnet-chip.is-placed {
+  background: #10b981;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.architect-built-list,
+.architect-choices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.arch-placed-block {
+  background: rgba(16, 185, 129, 0.2);
+  border: 2px solid #10b981;
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #ecfdf5;
+  font-size: 0.92rem;
+  text-align: left;
+}
+
+.btn-arch-block {
+  background: #1e293b;
+  border: 2px solid #64748b;
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #f8fafc;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.btn-arch-block:hover {
+  border-color: #ffd166;
+  background: #334155;
+}
+
+.arch-label {
+  color: #ffd166;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.reb-title {
+  color: #ffd166;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.reb-quote {
+  margin: 0;
+  font-style: italic;
+  color: #e2e8f0;
+}
+
+.swipe-card-feedback {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffd166;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+/* ==================== ZABLOKOWANE POSTACIE NA EKRANIE WYBORU BOHATERA ==================== */
+.cs-hero-pip-btn.is-locked-pip .cs-pip-dice img {
+  filter: grayscale(100%) brightness(0.45);
+}
+
+.cs-pip-lock-icon {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 0.85rem;
+  background: rgba(15, 23, 42, 0.92);
+  border-radius: 50%;
+  padding: 1px 3px;
+  line-height: 1;
+}
+
+.cs-hero-pedestal-sprite.is-locked-hero {
+  filter: grayscale(100%) brightness(0.42) contrast(1.1);
+}
+
+.cs-pedestal-lock-banner {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.92);
+  border: 2px solid #f59e0b;
+  color: #fde047;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65);
+}
+
+.cs-hero-unlock-req {
+  background: rgba(245, 158, 11, 0.16);
+  border: 1.5px solid #f59e0b;
+  border-radius: 10px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  color: #fde047;
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.cs-start-play-btn.is-locked-start {
+  background: linear-gradient(180deg, #475569 0%, #1e293b 100%);
+  border-color: #94a3b8;
+  color: #cbd5e1;
+  font-size: 1.05rem;
+  box-shadow: 0 5px 0 #0f172a, 0 8px 16px rgba(0, 0, 0, 0.4);
+  cursor: not-allowed;
+}
+
+
+
+
 
 
 

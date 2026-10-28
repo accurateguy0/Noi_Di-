@@ -4,11 +4,12 @@
 
 import { sound } from '../audio/sound.js';
 import { getPlayerDamage } from '../data/vocabulary.js';
+import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
 
 export class KebabMasterGame {
   constructor(container, { player, onPlayerDamaged, onComplete, onClose, foodChoices = {} }) {
     this.container = container;
-    this.player = player || { name: 'Tan', hp: 20, maxHp: 20 };
+    this.player = player || { name: 'Bohater', hp: 20, maxHp: 20 };
     this.onPlayerDamaged = onPlayerDamaged;
     this.onComplete = onComplete;
     this.onClose = onClose;
@@ -40,7 +41,7 @@ export class KebabMasterGame {
     this.steps = [
       {
         id: 'step_order',
-        chefQuestion: '„Siemanko, szefie! Co dzisiaj dla Ciebie przygotować i w jakim rozmiarze?” 👨‍🍳',
+        chefQuestion: '„Siemanko, szefie! Co dzisiaj dla Ciebie przygotować i w jakim rozmiarze?”',
         options: [
           {
             text: `„Poproszę ${dishNamePl} w rozmiarze ${size}.”`,
@@ -61,7 +62,7 @@ export class KebabMasterGame {
       },
       {
         id: 'step_sauce',
-        chefQuestion: '„Elegancko! A jaki sosik do tego polewamy? Czosnek czy ostry?” 🧄🌶️',
+        chefQuestion: '„Elegancko! A jaki sosik do tego polewamy? Czosnek czy ostry?”',
         options: [
           {
             text: `„Poproszę ${sauceTextPl}!”`,
@@ -82,7 +83,7 @@ export class KebabMasterGame {
       },
       {
         id: 'step_dining',
-        chefQuestion: '„A jak podajemy: będzie jedzone na miejscu czy zapakować na wynos?” 🍽️🥡',
+        chefQuestion: '„A jak podajemy: będzie jedzone na miejscu czy zapakować na wynos?”',
         options: [
           {
             text: `„Poproszę ${diningTextPl}.”`,
@@ -103,7 +104,7 @@ export class KebabMasterGame {
       },
       {
         id: 'step_wait',
-        chefQuestion: '„Super sprawa! Zaraz wrzucam na ruszt. Proszę poczekać około 5 minut przy ladzie!” ⏳',
+        chefQuestion: '„Super sprawa! Zaraz wrzucam na ruszt. Proszę poczekać około 5 minut przy ladzie!”',
         options: [
           {
             text: '„Jasne, poczekam! Dziękuję bardzo!”',
@@ -124,7 +125,7 @@ export class KebabMasterGame {
       },
       {
         id: 'step_thanks',
-        chefQuestion: '„Gotowe, szefie! Świeżutkie, gorące i pachnące! Proszę bardzo, życzę smacznego!” 🥙✨',
+        chefQuestion: '„Gotowe, szefie! Świeżutkie, gorące i pachnące! Proszę bardzo, życzę smacznego!”',
         options: [
           {
             text: '„Dziękuję bardzo! Miłego dnia i do widzenia!”',
@@ -132,12 +133,12 @@ export class KebabMasterGame {
             hint: 'Kulturalne podziękowanie za posiłek i pożegnanie!'
           },
           {
-            text: '„To pomyłka, nie zapłacę ani słowa.”',
+            text: '„Dawaj ten gorący kebab i zaraz uciekam stąd!”',
             correct: false,
             hint: 'Wypada podziękować za przygotowane jedzenie.'
           },
           {
-            text: '„Zabieram i nic nie powiem.”',
+            text: '„Zapomniałem zapłacić za ten zamówiony kebab.”',
             correct: false,
             hint: 'Pamiętaj o zwrocie: „Dziękuję!”'
           }
@@ -157,13 +158,13 @@ export class KebabMasterGame {
 
     this.container.innerHTML = `
       <div class="dd-combat-arena km-arena">
-        <h2 class="mp-animated-title" style="top: 22px;">🥙 MISTRZ KEBABA: ZAMÓWIENIE 🥙</h2>
+        <h2 class="mp-animated-title" style="top: 22px;">Mistrz Kebaba</h2>
 
         <!-- Prawy górny róg: Mistrz Kebaba -->
         <div class="dd-arena-fighter dd-arena-opponent" id="km-opponent-box">
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Mistrz Kebaba 👨‍🍳</span>
+              <span class="dd-fighter-name">Mistrz Kebaba</span>
             </div>
             <div class="dd-fighter-hp-bar" id="km-enemy-hp-bar">
               <div class="dd-fighter-hp-fill" id="km-enemy-hp-fill" style="width: ${enemyHpPct}%"></div>
@@ -181,22 +182,22 @@ export class KebabMasterGame {
           </div>
         </div>
 
-        <!-- Środek: Dymek Mistrza Kebaba i opcje odpowiedzi Tana -->
+        <!-- Środek: Dymek Mistrza Kebaba i opcje odpowiedzi Bohatera -->
         <div class="matching-stage-wrapper km-stage-wrapper" id="km-stage"></div>
 
-        <!-- Lewy dolny róg: Tan -->
+        <!-- Lewy dolny róg: Bohater -->
         <div class="dd-arena-fighter dd-arena-player" id="km-player-box">
           <div class="dd-sprite-container player-sprite-container" id="km-player-sprite-wrap">
             <img
-              src="./assets/Tan.png"
-              alt="Tan"
+              src="${this.player?.avatar || './assets/Warrior.png'}"
+              alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
-              onerror="this.src='./public/assets/Tan.png'"
+              onerror="this.src='./assets/Warrior.png'"
             />
           </div>
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">${this.player.name || 'Tan'}</span>
+              <span class="dd-fighter-name">${this.player?.heroName || this.player?.name || 'Bohater'}</span>
             </div>
             <div class="dd-fighter-hp-bar">
               <div class="dd-fighter-hp-fill" id="km-player-hp-fill" style="width: ${playerHpPct}%"></div>
@@ -235,19 +236,22 @@ export class KebabMasterGame {
 
     this.lockInput = false;
 
+    const shuffledOptions = step.options.map((opt, i) => ({ ...opt, origIdx: i })).sort(() => Math.random() - 0.5);
+    this._currentKebabOpts = shuffledOptions;
+
     stageEl.innerHTML = `
       <div class="km-dialog-card">
         <div class="km-step-badge">PYTANIE ${this.currentStepIdx + 1} Z ${this.steps.length}</div>
         
         <div class="km-chef-bubble" id="km-chef-bubble">
-          <span class="km-chef-avatar">👨‍🍳</span>
+          <span class="km-chef-avatar"></span>
           <p class="km-chef-text">${step.chefQuestion}</p>
         </div>
 
         <div class="km-options-grid">
-          ${step.options.map((opt, idx) => `
+          ${shuffledOptions.map((opt, idx) => `
             <button type="button" class="km-choice-btn" data-idx="${idx}">
-              <span class="km-choice-bullet">💬</span>
+              <span class="km-choice-bullet"></span>
               <span class="km-choice-text">${opt.text}</span>
             </button>
           `).join('')}
@@ -260,9 +264,9 @@ export class KebabMasterGame {
         if (this.lockInput) return;
         this.lockInput = true;
         const idx = parseInt(btn.dataset.idx, 10);
-        const opt = step.options[idx];
+        const opt = this._currentKebabOpts[idx];
 
-        if (opt.correct) {
+        if (opt && opt.correct) {
           btn.classList.add('is-correct');
           this.handleCorrect(opt.text);
         } else {
@@ -316,7 +320,14 @@ export class KebabMasterGame {
 
     const bubbleEl = this.container.querySelector('#km-chef-bubble .km-chef-text');
     if (bubbleEl) {
-      bubbleEl.textContent = '„Oj, szefie, chyba się nie dogadaliśmy! Spróbuj odpowiedzieć jeszcze raz!” 🤔';
+      bubbleEl.textContent = '„Oj, szefie, chyba się nie dogadaliśmy! Spróbuj odpowiedzieć jeszcze raz!”';
+    }
+
+    if (this.player.hp <= 0) {
+      setTimeout(() => {
+        playHeroDefeatAnimation(this.container, this.player, this.onClose);
+      }, 500);
+      return;
     }
 
     setTimeout(() => {
@@ -340,7 +351,7 @@ export class KebabMasterGame {
     if (stageEl) {
       stageEl.innerHTML = `
         <div class="km-dialog-card km-victory-card">
-          <div class="km-vic-icon">🥙🎉</div>
+          <div class="km-vic-icon"></div>
           <h3>ZAMÓWIENIE ZŁOŻONE PERFEKCYJNIE!</h3>
           <p>Mistrz Kebaba przybił Ci piątkę! Znasz zwroty zamawiania, sosów, rozmiarów i uprzejmej obsługi klienta!</p>
         </div>

@@ -36,15 +36,15 @@ export class BalloonPopGame {
       <div class="arena-overlay balloon-arena">
         <div class="arena-header">
           <div class="fighter-badge player-fighter">
-            <img src="/assets/Tan.png" alt="Tan" class="fighter-avatar" onerror="this.src='./public/assets/Tan.png'" />
+            <img src="./assets/Warrior.png" alt="Bohater" class="fighter-avatar" onerror="this.src='./public/assets/Warrior.png'" />
             <div>
-              <div class="fighter-name">TAN (Poziom A0)</div>
-              <div class="fighter-sub">Uczeń z Wietnamu 🇻🇳</div>
+              <div class="fighter-name">BOHATER (Poziom A0)</div>
+              <div class="fighter-sub">Szkolne Lochy</div>
             </div>
           </div>
 
           <div class="minigame-title-box">
-            <div class="wordwall-badge">🎈 WORDWALL MODE: BALLOON POP</div>
+            <div class="wordwall-badge">WORDWALL MODE: BALLOON POP</div>
             <h2>Przebij Balony! • Đập Bóng Bay!</h2>
             <p class="minigame-instruction">
               Kliknij balon, gdy leci nad pasującą definicją na dole, aby zrzucić słowo do właściwego wagonika!
@@ -54,7 +54,7 @@ export class BalloonPopGame {
 
           <div class="fighter-badge enemy-fighter">
             <div class="enemy-info-right">
-              <div class="fighter-name">GEJMER KUBA 🎮</div>
+              <div class="fighter-name">GEJMER KUBA</div>
               <div class="fighter-sub" id="bp-level-indicator">Fala 1 / 3 • Pkt: 0</div>
             </div>
             <img src="./assets/Postacie/Gejmer.png" alt="Gejmer" class="fighter-avatar" onerror="this.src='./public/assets/Postacie/Gejmer.png'" />
@@ -63,19 +63,19 @@ export class BalloonPopGame {
 
         <div class="balloon-controls-bar">
           <div class="bp-stats">
-            <span class="bp-pill" id="bp-wave-pill">⭐ Poziom 1 / 3</span>
-            <span class="bp-pill" id="bp-remaining-pill">🎯 Dopasowano: 0 / 3</span>
-            <span class="bp-pill bp-score-pill" id="bp-score-pill">🏆 Punkty: 0</span>
+            <span class="bp-pill" id="bp-wave-pill">Poziom 1 / 3</span>
+            <span class="bp-pill" id="bp-remaining-pill">Dopasowano: 0 / 3</span>
+            <span class="bp-pill bp-score-pill" id="bp-score-pill">Punkty: 0</span>
           </div>
           <div class="bp-actions">
             <button class="btn-tool" id="bp-toggle-speed" title="Zatrzymaj lub uruchom ruch wagoników (ułatwienie dla poziomu A0)">
-              🐢 Zatrzymaj wagoniki (Dừng toa tàu: OFF)
+Zatrzymaj wagoniki (Dừng toa tàu: OFF)
             </button>
             <button class="btn-tool btn-help-audio" id="bp-read-all">
-              🔊 Wymowa słów (Nghe phát âm)
+Wymowa słów (Nghe phát âm)
             </button>
             <button class="btn-tool btn-close-arena" id="bp-exit-btn">
-              ⬅ Wróć na planszę (Quay lại bản đồ)
+Wróć na planszę (Quay lại bản đồ)
             </button>
           </div>
         </div>
@@ -86,7 +86,7 @@ export class BalloonPopGame {
         </div>
 
         <div class="arena-QuickHint">
-          💡 <strong>Wskazówka A0 (Mẹo nhỏ):</strong> Przerywana linia pod balonem pokazuje, gdzie spadnie słowo! Kliknij balon, aby go przebić 💥
+<strong>Wskazówka A0 (Mẹo nhỏ):</strong> Przerywana linia pod balonem pokazuje, gdzie spadnie słowo! Kliknij balon, aby go przebić
         </div>
       </div>
     `;
@@ -98,8 +98,8 @@ export class BalloonPopGame {
     this.container.querySelector('#bp-toggle-speed').addEventListener('click', (e) => {
       this.slowMode = !this.slowMode;
       e.currentTarget.textContent = this.slowMode
-        ? '🐇 Uruchom ruch wagoników (Đang dừng toa)'
-        : '🐢 Zatrzymaj wagoniki (Dừng toa tàu: OFF)';
+        ? 'Uruchom ruch wagoników (Đang dừng toa)'
+        : 'Zatrzymaj wagoniki (Dừng toa tàu: OFF)';
       e.currentTarget.classList.toggle('active-toggle', this.slowMode);
     });
 
@@ -191,9 +191,9 @@ export class BalloonPopGame {
     const scorePill = this.container.querySelector('#bp-score-pill');
     const lvlInd = this.container.querySelector('#bp-level-indicator');
 
-    if (wavePill) wavePill.textContent = `⭐ Poziom ${this.level} / ${this.maxLevels}`;
-    if (remPill) remPill.textContent = `🎯 Dopasowano: ${matchedCount} / ${totalCount}`;
-    if (scorePill) scorePill.textContent = `🏆 Punkty: ${this.score}`;
+    if (wavePill) wavePill.textContent = `Poziom ${this.level} / ${this.maxLevels}`;
+    if (remPill) remPill.textContent = `Dopasowano: ${matchedCount} / ${totalCount}`;
+    if (scorePill) scorePill.textContent = `Punkty: ${this.score}`;
     if (lvlInd) lvlInd.textContent = `Poziom ${this.level}/${this.maxLevels} • Dopasowano ${matchedCount}/${totalCount}`;
   }
 
@@ -377,13 +377,13 @@ export class BalloonPopGame {
           this.floatingTexts.push({
             x: landedInTarget.x + landedInTarget.width / 2,
             y: landedInTarget.y - 10,
-            text: `✅ ${c.item.word} +100!`,
+            text: `${c.item.word} +100!`,
             color: '#06d6a0',
             life: 1.3
           });
 
           this.showBanner(
-            `🎉 Brawo! „${c.item.word}” = ${c.item.plMeaning}`,
+            `Brawo! „${c.item.word}” = ${c.item.plMeaning}`,
             `Đúng rồi! "${c.item.word}" = ${c.item.vnMeaning}`,
             true
           );
@@ -399,12 +399,12 @@ export class BalloonPopGame {
           this.floatingTexts.push({
             x: c.x,
             y: landedInTarget.y - 10,
-            text: `❌ To znaczy: ${c.item.categoryVn}!`,
+            text: `To znaczy: ${c.item.categoryVn}!`,
             color: '#ff595e',
             life: 1.4
           });
           this.showBanner(
-            `💡 Prawie! „${c.item.word}” oznacza: ${c.item.balloonDefPl}`,
+            `Prawie! „${c.item.word}” oznacza: ${c.item.balloonDefPl}`,
             `Thử lại nhé! "${c.item.word}" có nghĩa là: ${c.item.balloonDefVn}`,
             false
           );
@@ -417,7 +417,7 @@ export class BalloonPopGame {
         this.floatingTexts.push({
           x: Math.max(60, Math.min(this.canvas.width - 60, c.x)),
           y: this.canvas.height - 40,
-          text: '💨 Chybił! Spróbuj jeszcze raz!',
+          text: 'Chybił! Spróbuj jeszcze raz!',
           color: '#ffd166',
           life: 1.0
         });
@@ -466,8 +466,8 @@ export class BalloonPopGame {
     modal.className = 'victory-modal-backdrop';
     modal.innerHTML = `
       <div class="victory-modal-card">
-        <div class="victory-badge">🎈 POZIOM UKOŃCZONY! • HOÀN THÀNH MÀN CHƠI!</div>
-        <h2>Piątka z Gejmerem Kubą! 🤜🤛</h2>
+        <div class="victory-badge">POZIOM UKOŃCZONY! • HOÀN THÀNH MÀN CHƠI!</div>
+        <h2>Piątka z Gejmerem Kubą!</h2>
         <p>Opanowałeś młodzieżowe powitania i pożegnania w grze <strong>Balloon Pop</strong>!</p>
         <p class="vn-sub">Bạn đã nắm vững các từ chào hỏi tuổi teen trong màn Đập Bóng Bay!</p>
         <div class="victory-words-recap">
@@ -480,10 +480,10 @@ export class BalloonPopGame {
           `).join('')}
         </div>
         <div class="victory-reward-box">
-          🎁 Nagroda: <strong>+150 PKT (${this.score} pkt)</strong> • <strong>Odblokowano dalszą ścieżkę w Szatni!</strong>
+Nagroda: <strong>+150 PKT (${this.score} pkt)</strong> • <strong>Odblokowano dalszą ścieżkę w Szatni!</strong>
         </div>
         <button class="btn-primary-large" id="bp-finish-btn">
-          Kontynuuj na planszy (Tiếp tục trên bản đồ) ➡
+Kontynuuj na planszy (Tiếp tục trên bản đồ)
         </button>
       </div>
     `;
@@ -549,7 +549,7 @@ export class BalloonPopGame {
 
       if (t.matched) {
         ctx.font = 'bold 20px "Fredoka", "Segoe UI", sans-serif';
-        ctx.fillText(`✅ ${t.item.emoji} ${t.item.word}`, t.x + t.width / 2, t.y + 38);
+        ctx.fillText(`${t.item.emoji} ${t.item.word}`, t.x + t.width / 2, t.y + 38);
         ctx.font = '13px "Segoe UI", sans-serif';
         ctx.fillText(t.item.balloonDefVn, t.x + t.width / 2, t.y + 68);
       } else {
@@ -557,7 +557,7 @@ export class BalloonPopGame {
         this.wrapText(ctx, t.item.balloonDefPl, t.x + t.width / 2, t.y + 26, t.width - 16, 17);
         ctx.fillStyle = '#ffd166';
         ctx.font = '12.5px "Segoe UI", sans-serif';
-        this.wrapText(ctx, `🇻🇳 ${t.item.balloonDefVn}`, t.x + t.width / 2, t.y + 64, t.width - 16, 16);
+        this.wrapText(ctx, `${t.item.balloonDefVn}`, t.x + t.width / 2, t.y + 64, t.width - 16, 16);
       }
       ctx.restore();
     }

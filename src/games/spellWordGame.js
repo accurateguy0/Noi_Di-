@@ -1,27 +1,31 @@
-// Poziom Wordwall: SPELL THE WORD (Ułóż / przeliteruj zwrot litera po literze)
-// Pole 5 na Planszy 3: Olek – Test Nowych Słów (Rozmowa o grach i profilu)
+// Poziom Wordwall: SPELL THE WORD (Ułóż zwrot z liter)
+// Błąd lub timeout -> cios wroga i przejście do innego pytania
 
 import { BOARD_3_SPELL_QUESTIONS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
+import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
 
 export class SpellWordGame {
-  constructor(container, { player, onPlayerDamaged, onComplete, onClose }) {
+  constructor(container, { player, onPlayerDamaged, onComplete, onClose, opponentName = 'olek', opponentAvatar = './assets/Postacie/Gejmer.png' }) {
     this.container = container;
-    this.player = player || { name: 'Tan', hp: 20, maxHp: 20, bonusTimeSec: 0 };
+    this.player = player || { name: 'Bohater', hp: 20, maxHp: 20, bonusTimeSec: 0, hints: 5 };
+    if (this.player.hints === undefined) this.player.hints = 5;
     this.onPlayerDamaged = onPlayerDamaged;
     this.onComplete = onComplete;
     this.onClose = onClose;
+    this.opponentName = opponentName;
+    this.opponentAvatar = opponentAvatar;
 
-    this.questions = BOARD_3_SPELL_QUESTIONS;
+    this.questions = [...BOARD_3_SPELL_QUESTIONS];
     this.currentQuestionIndex = 0;
 
     this.tanDamage = getPlayerDamage(this.player);
-    this.enemyMaxHp = this.questions.length * this.tanDamage;
-    this.enemyHp = this.enemyMaxHp;
-    this.enemyDamage = 5;
+    this.enemyMaxHp = 30;
+    this.enemyHp = 30;
+    this.enemyDamage = 2;
 
     this.targetChars = [];
-    this.filledCount = 0; // Indeks aktualnie wpisywanej litery w targetChars
+    this.filledCount = 0;
     this.poolTiles = [];
     this.lockInput = false;
     this.introDismissed = false;
@@ -41,9 +45,7 @@ export class SpellWordGame {
       if (!this.introDismissed || this.lockInput) return;
       const key = e.key.toUpperCase();
       if (key.length === 1 && /[A-ZĄĆĘŁŃÓŚŹŻ]/.test(key)) {
-        const availableTile = this.poolTiles.find(
-          (t) => !t.used && t.char === key
-        );
+        const availableTile = this.poolTiles.find((t) => !t.used && t.char === key);
         if (availableTile) {
           this.handleTilePick(availableTile.id);
         }
@@ -52,27 +54,35 @@ export class SpellWordGame {
     window.addEventListener('keydown', this.keyHandler);
   }
 
+  destroy() {
+    this.stopTimer();
+    if (this.keyHandler) {
+      window.removeEventListener('keydown', this.keyHandler);
+      this.keyHandler = null;
+    }
+  }
+
   renderArenaShell() {
-    const playerHpPct = Math.max(
-      0,
-      Math.min(100, (this.player.hp / this.player.maxHp) * 100)
-    );
-    const enemyHpPct = Math.max(
-      0,
-      Math.min(100, (this.enemyHp / this.enemyMaxHp) * 100)
-    );
+    const playerHpPct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
+    const enemyHpPct = Math.max(0, Math.min(100, (this.enemyHp / this.enemyMaxHp) * 100));
 
     this.container.innerHTML = `
       <div class="dd-combat-arena spell-arena">
-        <!-- Warstwa przechwytująca pierwsze kliknięcie -->
         <div class="mp-intro-click-layer" id="mp-intro-click-layer"></div>
-        <h2 class="mp-animated-title is-centered" id="mp-animated-title">Spell the Word</h2>
+        <h2 class="mp-animated-title is-centered" id="mp-animated-title">${this.opponentName}</h2>
 
-        <!-- Prawy górny róg: Gejmer Olek -->
+        <!-- Przycisk Podpowiedzi (?) -->
+        <div class="arena-top-controls" style="position: absolute; top: 18px; left: 24px; z-index: 40;">
+          <button type="button" class="btn-dicey-hud" id="spell-hint-btn" style="background: #3b82f6; color: #fff; font-weight: bold; border-radius: 8px; padding: 6px 14px; border: 2px solid #60a5fa; cursor: pointer;">
+            ❓ Tłumacz (${this.player.hints ?? 5})
+          </button>
+        </div>
+
+        <!-- Prawy górny róg: Przeciwnik -->
         <div class="dd-arena-fighter dd-arena-opponent" id="mp-opponent-box">
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Gejmer Olek</span>
+              <span class="dd-fighter-name">${this.opponentName}</span>
             </div>
             <div class="dd-fighter-hp-bar" id="mp-enemy-hp-bar">
               <div class="dd-fighter-hp-fill" id="mp-enemy-hp-fill" style="width: ${enemyHpPct}%"></div>
@@ -81,11 +91,11 @@ export class SpellWordGame {
           </div>
           <div class="dd-sprite-container opponent-sprite-container olek-sprite-container" id="mp-opponent-sprite-wrap">
             <img
-              src="./assets/Postacie/Gejmer.png"
-              alt="Gejmer Olek"
+              src="${this.opponentAvatar}"
+              alt="${this.opponentName}"
               class="dd-fighter-sprite sprite-olek"
               id="mp-opponent-sprite"
-              onerror="this.src='./public/assets/Postacie/Gejmer.png'"
+              onerror="this.src='./public${this.opponentAvatar?.slice(1)}'"
             />
           </div>
         </div>
@@ -93,20 +103,20 @@ export class SpellWordGame {
         <!-- Środek areny: Plansza Spell the Word -->
         <div class="matching-stage-wrapper spell-stage-wrapper" id="spell-stage"></div>
 
-        <!-- Lewy dolny róg: Tan -->
+        <!-- Lewy dolny róg: Bohater -->
         <div class="dd-arena-fighter dd-arena-player" id="mp-player-box">
           <div class="dd-sprite-container player-sprite-container" id="mp-player-sprite-wrap">
             <img
-              src="./assets/Tan.png"
-              alt="Tan"
+              src="${this.player?.avatar || './assets/Warrior.png'}"
+              alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
               id="mp-player-sprite"
-              onerror="this.src='./public/assets/Tan.png'"
+              onerror="this.src='./assets/Warrior.png'"
             />
           </div>
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Tan</span>
+              <span class="dd-fighter-name">${this.player?.heroName || this.player?.name || 'Bohater'}</span>
             </div>
             <div class="dd-fighter-hp-bar" id="mp-player-hp-bar">
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
@@ -119,25 +129,52 @@ export class SpellWordGame {
 
     const introLayer = this.container.querySelector('#mp-intro-click-layer');
     const animatedTitle = this.container.querySelector('#mp-animated-title');
-
     if (introLayer && animatedTitle) {
       introLayer.addEventListener('pointerdown', () => {
         this.introDismissed = true;
         sound.playStep();
         animatedTitle.classList.remove('is-centered');
+        animatedTitle.classList.add('is-dismissed');
         introLayer.classList.add('intro-dismissed');
-        setTimeout(() => introLayer.remove(), 650);
+        setTimeout(() => {
+          introLayer.remove();
+          if (animatedTitle.parentNode) animatedTitle.remove();
+        }, 650);
 
         const q = this.questions[this.currentQuestionIndex];
-        if (q && q.olekSpeakText) {
-          sound.speakPolish(q.olekSpeakText);
+        if (q && q.olekSpeech) {
+          sound.speakPolish(q.olekSpeech);
         }
-        this.startQuestionTimer();
+        this.startTimer();
       });
+    }
+
+    const hintBtn = this.container.querySelector('#spell-hint-btn');
+    if (hintBtn) {
+      hintBtn.addEventListener('click', () => this.handleHintClick());
     }
   }
 
-  loadQuestion(index, autoStartTimer = true) {
+  handleHintClick() {
+    if (this.lockInput) return;
+    if ((this.player.hints || 0) <= 0) {
+      sound.playMiss();
+      alert('Brak ładunków podpowiedzi (?)! Zdobądź wyższy poziom lub kup itemek w kramiku!');
+      return;
+    }
+
+    this.player.hints -= 1;
+    const hintBtn = this.container.querySelector('#spell-hint-btn');
+    if (hintBtn) {
+      hintBtn.textContent = `❓ Tłumacz (${this.player.hints})`;
+    }
+
+    const q = this.questions[this.currentQuestionIndex];
+    sound.speakPolish(q.targetPhrase);
+    alert(`[Podpowiedź ?] Ułóż słowo: "${q.targetPhrase}"`);
+  }
+
+  loadQuestion(index, autoStart = true) {
     this.stopTimer();
     this.currentQuestionIndex = index;
     this.lockInput = false;
@@ -149,28 +186,29 @@ export class SpellWordGame {
     this.filledCount = 0;
     this.advancePastSpaces();
 
-    const lettersOnly = this.targetChars.filter((ch) => ch !== ' ');
-    const shuffled = [...lettersOnly];
-    for (let i = shuffled.length - 1; i > 0; i--) {
+    const lettersOnly = this.targetChars.filter((c) => c !== ' ');
+    const distractors = (q.distractors || []).map((c) => c.toUpperCase());
+    const combined = [...lettersOnly, ...distractors];
+
+    // Losowe tasowanie płytek (Fisher-Yates)
+    for (let i = combined.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      [combined[i], combined[j]] = [combined[j], combined[i]];
     }
 
-    this.poolTiles = shuffled.map((ch, idx) => ({
-      id: `tile_${idx}`,
-      char: ch,
+    this.poolTiles = combined.map((char, idx) => ({
+      id: `tile_${idx}_${char}`,
+      char,
       used: false
     }));
 
-    const bonusSec = this.player.bonusTimeSec || 0;
-    this.maxTime = (q.baseTimeSec || 10) + bonusSec;
+    this.maxTime = (q.timeSeconds || 16) + (this.player.bonusTimeSec || 0);
     this.timeLeft = this.maxTime;
 
     this.renderSpellBoard();
 
-    if (autoStartTimer && this.introDismissed) {
-      if (q.olekSpeakText) sound.speakPolish(q.olekSpeakText);
-      this.startQuestionTimer();
+    if (autoStart && this.introDismissed) {
+      this.startTimer();
     }
   }
 
@@ -183,15 +221,18 @@ export class SpellWordGame {
     }
   }
 
-  startQuestionTimer() {
+  startTimer() {
     this.stopTimer();
     this.timerInterval = setInterval(() => {
-      if (this.lockInput) return;
-      this.timeLeft = Math.max(0, this.timeLeft - 1);
-      this.updateTimerBarUI();
+      this.timeLeft -= 1;
+      const fillEl = this.container.querySelector('#spell-timer-fill');
+      const textEl = this.container.querySelector('#spell-timer-text');
+      const pct = Math.max(0, Math.min(100, (this.timeLeft / this.maxTime) * 100));
+      if (fillEl) fillEl.style.width = `${pct}%`;
+      if (textEl) textEl.textContent = `${this.timeLeft}s`;
 
       if (this.timeLeft <= 0) {
-        this.handleTimeoutDamage();
+        this.handleTimeout();
       }
     }, 1000);
   }
@@ -200,16 +241,6 @@ export class SpellWordGame {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
-    }
-  }
-
-  updateTimerBarUI() {
-    const timerTxt = this.container.querySelector('#spell-timer-text');
-    const timerFill = this.container.querySelector('#spell-timer-fill');
-    if (timerTxt) timerTxt.textContent = `⏱️ ${this.timeLeft}s`;
-    if (timerFill) {
-      const pct = Math.max(0, Math.min(100, (this.timeLeft / this.maxTime) * 100));
-      timerFill.style.width = `${pct}%`;
     }
   }
 
@@ -222,14 +253,15 @@ export class SpellWordGame {
     return nextIdx;
   }
 
-  handleTimeoutDamage() {
+  handleTimeout() {
     this.stopTimer();
     this.lockInput = true;
-    sound.playEnemyHit();
+    sound.playEnemyHit(this.opponentName);
 
-    this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
     if (this.onPlayerDamaged) {
       this.onPlayerDamaged(this.enemyDamage);
+    } else {
+      this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
     }
 
     this.updatePlayerHud();
@@ -237,17 +269,12 @@ export class SpellWordGame {
 
     if (this.player.hp <= 0) {
       setTimeout(() => {
-        const arenaEl = this.container.querySelector('.dd-combat-arena');
-        if (arenaEl) arenaEl.classList.add('arena-defeat-exit');
-        setTimeout(() => {
-          if (this.onClose) this.onClose();
-        }, 580);
-      }, 650);
+        playHeroDefeatAnimation(this.container, this.player, this.onClose);
+      }, 500);
       return;
     }
 
     setTimeout(() => {
-      // Czas minął -> losuj inne pytanie, walka trwa dalej!
       const nextIdx = this.getRandomDifferentIndex(this.currentQuestionIndex);
       this.loadQuestion(nextIdx, true);
     }, 650);
@@ -258,26 +285,24 @@ export class SpellWordGame {
     const q = this.questions[this.currentQuestionIndex];
     if (!stage || !q) return;
 
-    const bonusSec = this.player.bonusTimeSec || 0;
     const timerPct = Math.max(0, Math.min(100, (this.timeLeft / this.maxTime) * 100));
 
     stage.innerHTML = `
       <div class="ww-spell-card">
         <div class="ww-quiz-speech-row">
           <div class="ww-olek-bubble">
-            <span class="ww-bubble-speaker">📱 Olek:</span>
+            <span class="ww-bubble-speaker">${this.opponentName}:</span>
             <strong class="ww-bubble-quote">„${q.olekSpeech}”</strong>
-            <button class="ww-quiz-speak-btn" id="spell-olek-speak" title="Posłuchaj Olka">🔊</button>
+            <button class="ww-quiz-speak-btn" id="spell-olek-speak" title="Posłuchaj"></button>
           </div>
           <div class="ww-spell-meta-right">
-            ${bonusSec > 0 ? `<span class="ww-energy-bonus-pill">⚡ +${bonusSec}s z energetyka</span>` : ''}
             <span class="ww-quiz-step-pill">Zwrot ${this.currentQuestionIndex + 1} / ${this.questions.length}</span>
           </div>
         </div>
 
         <div class="ww-spell-timer-bar">
           <div class="ww-spell-timer-fill" id="spell-timer-fill" style="width: ${timerPct}%"></div>
-          <span class="ww-spell-timer-text" id="spell-timer-text">⏱️ ${this.timeLeft}s</span>
+          <span class="ww-spell-timer-text" id="spell-timer-text">${this.timeLeft}s</span>
         </div>
 
         <p class="ww-spell-context-pl">${q.contextPl}</p>
@@ -298,22 +323,18 @@ export class SpellWordGame {
           }).join('')}
         </div>
 
-        <!-- Rozsypane kafelki liter do klikania po kolei -->
-        <div class="ww-spell-pool-row">
-          ${this.poolTiles.map((tile) => `
+        <!-- Pula dostępnych płytek liter do kliknięcia -->
+        <div class="ww-spell-pool-grid" id="spell-pool-grid">
+          ${this.poolTiles.map((t) => `
             <button
               type="button"
-              class="ww-spell-tile-btn ${tile.used ? 'is-used' : ''}"
-              data-tile-id="${tile.id}"
-              ${tile.used ? 'disabled' : ''}
+              class="ww-spell-tile-btn ${t.used ? 'is-used' : ''}"
+              data-tile-id="${t.id}"
+              ${t.used ? 'disabled' : ''}
             >
-              ${tile.char}
+              <span>${t.char}</span>
             </button>
           `).join('')}
-        </div>
-
-        <div class="ww-anagram-subhint">
-          Klikaj kolejne litery zwrotu (lub wpisuj je na klawiaturze)!
         </div>
       </div>
     `;
@@ -321,18 +342,19 @@ export class SpellWordGame {
     const speakBtn = stage.querySelector('#spell-olek-speak');
     if (speakBtn) {
       speakBtn.addEventListener('click', () => {
-        if (q.olekSpeakText) sound.speakPolish(q.olekSpeakText);
+        if (q.olekSpeech) sound.speakPolish(q.olekSpeech);
       });
     }
 
     stage.querySelectorAll('.ww-spell-tile-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        this.handleTilePick(btn.dataset.tileId, btn);
+        const tileId = btn.dataset.tileId;
+        this.handleTilePick(tileId, btn);
       });
     });
   }
 
-  handleTilePick(tileId, btnEl) {
+  handleTilePick(tileId, btnEl = null) {
     if (this.lockInput) return;
     const tile = this.poolTiles.find((t) => t.id === tileId);
     if (!tile || tile.used) return;
@@ -349,35 +371,38 @@ export class SpellWordGame {
         this.handlePhraseSolved();
       }
     } else {
-      // Błędna litera -> Olek atakuje za 5 HP!
+      // Błędna litera -> wróg bije bohatera, resetuje zegar i przechodzimy do innego pytania!
+      this.stopTimer();
       this.lockInput = true;
-      sound.playEnemyHit();
+      this.timeLeft = this.maxTime;
+      const fillEl = this.container.querySelector('#spell-timer-fill');
+      const textEl = this.container.querySelector('#spell-timer-text');
+      if (fillEl) fillEl.style.width = '100%';
+      if (textEl) textEl.textContent = `${this.timeLeft}s`;
+      sound.playEnemyHit(this.opponentName);
       if (btnEl) btnEl.classList.add('is-wrong');
 
-      this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
       if (this.onPlayerDamaged) {
         this.onPlayerDamaged(this.enemyDamage);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
       }
 
       this.updatePlayerHud();
       this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
       if (this.player.hp <= 0) {
-        this.stopTimer();
         setTimeout(() => {
-          const arenaEl = this.container.querySelector('.dd-combat-arena');
-          if (arenaEl) arenaEl.classList.add('arena-defeat-exit');
-          setTimeout(() => {
-            if (this.onClose) this.onClose();
-          }, 580);
-        }, 650);
+          playHeroDefeatAnimation(this.container, this.player, this.onClose);
+        }, 500);
         return;
       }
 
       setTimeout(() => {
-        if (btnEl) btnEl.classList.remove('is-wrong');
-        this.lockInput = false;
-      }, 420);
+        // Przejście do innego pytania po błędnej literze!
+        const nextIdx = this.getRandomDifferentIndex(this.currentQuestionIndex);
+        this.loadQuestion(nextIdx, true);
+      }, 700);
     }
   }
 
@@ -386,7 +411,7 @@ export class SpellWordGame {
     this.lockInput = true;
     const q = this.questions[this.currentQuestionIndex];
 
-    sound.playAttackHit();
+    sound.playAttackHit(this.opponentName);
     if (q && q.speakOnSolve) {
       sound.speakPolish(q.speakOnSolve);
     }
@@ -406,77 +431,57 @@ export class SpellWordGame {
         const nextIdx = this.getRandomDifferentIndex(this.currentQuestionIndex);
         this.loadQuestion(nextIdx, true);
       }
-    }, 950);
+    }, 900);
   }
 
-  triggerFighterHit(target = 'opponent', dmgText = '-5') {
-    const spriteWrap = this.container.querySelector(
-      target === 'opponent' ? '#mp-opponent-sprite-wrap' : '#mp-player-sprite-wrap'
-    );
-
+  finishBattle() {
+    this.stopTimer();
     const arenaEl = this.container.querySelector('.dd-combat-arena');
-    if (arenaEl) {
-      arenaEl.classList.remove('dd-screen-shake');
-      void arenaEl.offsetWidth;
-      arenaEl.classList.add('dd-screen-shake');
-    }
-
-    if (!spriteWrap) return;
-
-    const fx = document.createElement('div');
-    fx.className = 'dd-white-slash-fx';
-    fx.innerHTML = `
-      <svg class="dd-slash-svg" viewBox="0 0 160 160" aria-hidden="true">
-        <path
-          class="dd-slash-arc"
-          d="M 22 136 C 48 64, 92 28, 146 14 C 114 58, 78 100, 34 146 Z"
-        />
-        <path
-          class="dd-slash-trail"
-          d="M 46 142 C 68 88, 102 52, 148 32 C 122 68, 92 106, 56 148 Z"
-        />
-      </svg>
-      <span class="dd-slash-dmg">${dmgText}</span>
-    `;
-    spriteWrap.appendChild(fx);
-    setTimeout(() => fx.remove(), 520);
+    if (arenaEl) arenaEl.classList.add('arena-victory-exit');
+    setTimeout(() => {
+      this.destroy();
+      if (this.onComplete) this.onComplete({ score: this.score });
+    }, 600);
   }
 
   updateEnemyHud() {
-    const fill = this.container.querySelector('#mp-enemy-hp-fill');
+    const bar = this.container.querySelector('#mp-enemy-hp-fill');
     const txt = this.container.querySelector('#mp-enemy-hp-text');
     const pct = Math.max(0, Math.min(100, (this.enemyHp / this.enemyMaxHp) * 100));
-    if (fill) fill.style.width = `${pct}%`;
+    if (bar) bar.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.enemyHp}/${this.enemyMaxHp}`;
   }
 
   updatePlayerHud() {
-    const fill = this.container.querySelector('#mp-player-hp-fill');
+    const bar = this.container.querySelector('#mp-player-hp-fill');
     const txt = this.container.querySelector('#mp-player-hp-text');
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
-    if (fill) fill.style.width = `${pct}%`;
+    if (bar) bar.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
   }
 
-  finishBattle() {
-    sound.playFanfare();
+  triggerFighterHit(target = 'opponent', dmgText = '-5') {
+    const wrap = this.container.querySelector(
+      target === 'opponent' ? '#mp-opponent-sprite-wrap' : '#mp-player-sprite-wrap'
+    );
     const arenaEl = this.container.querySelector('.dd-combat-arena');
+    if (!wrap) return;
+
+    wrap.classList.remove('fighter-shake');
+    void wrap.offsetWidth;
+    wrap.classList.add('fighter-shake');
+
     if (arenaEl) {
-      arenaEl.classList.add('arena-victory-exit');
+      arenaEl.classList.remove('arena-shake');
+      void arenaEl.offsetWidth;
+      arenaEl.classList.add('arena-shake');
     }
 
-    setTimeout(() => {
-      if (this.onComplete) {
-        this.onComplete({ score: this.score });
-      }
-    }, 600);
-  }
-
-  destroy() {
-    this.stopTimer();
-    if (this.keyHandler) {
-      window.removeEventListener('keydown', this.keyHandler);
-      this.keyHandler = null;
-    }
+    const floatEl = document.createElement('div');
+    floatEl.className = 'dd-damage-float';
+    floatEl.textContent = dmgText;
+    floatEl.style.color = target === 'opponent' ? '#22c55e' : '#ef4444';
+    wrap.appendChild(floatEl);
+    setTimeout(() => floatEl.remove(), 750);
   }
 }

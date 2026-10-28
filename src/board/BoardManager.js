@@ -28,10 +28,15 @@ export class BoardManager {
     );
   }
 
+  formatCleanNodeTitle(rawTitle) {
+    return String(rawTitle || '')
+      .replace(/\s*\([^)]*\)/g, '')
+      .replace(/\s*\[[^\]]*\]/g, '')
+      .trim();
+  }
+
   isCompletableFighterType(type, node = null) {
     if (!type) return false;
-    if (node && this.isCatNode(node)) return false;
-    if (type.includes('cat')) return false;
     if (['shop', 'next_board', 'start', 'waypoint', 'chest', 'step', 'apple'].includes(type)) {
       return false;
     }
@@ -40,7 +45,8 @@ export class BoardManager {
 
   shouldHideSpriteWhenCompleted(node) {
     if (!node) return false;
-    if (this.isCatNode(node)) return false;
+    // Kot pomocnik znika po wygranej, odblokowując dalszą drogę!
+    if (this.isCatNode(node)) return true;
     if (node.type === 'apple') return true;
     return this.isCompletableFighterType(node.type, node);
   }
@@ -52,7 +58,8 @@ export class BoardManager {
   isEdgeBlocked(fromId, toId) {
     const fromNode = this.getNode(fromId);
     if (!fromNode) return true;
-    if (fromNode.type === 'shop' || fromNode.type === 'step') return false;
+    // Sklepy, jabłka, skrzynie, punkty orientacyjne NIGDY nie blokują ruchu gracza
+    if (['shop', 'step', 'apple', 'chest', 'waypoint', 'start'].includes(fromNode.type)) return false;
     if (
       !fromNode.completed &&
       fromNode.blocksEdgesTo &&
@@ -88,7 +95,12 @@ export class BoardManager {
 
         const nextNode = this.getNode(next);
         visited.add(next);
-        if (nextNode && !nextNode.completed && nextNode.blocksEdgesTo) {
+        if (
+          nextNode &&
+          !nextNode.completed &&
+          nextNode.blocksEdgesTo &&
+          !['shop', 'step', 'apple', 'chest', 'waypoint', 'start'].includes(nextNode.type)
+        ) {
           continue;
         }
         queue.push(newPath);
@@ -119,12 +131,23 @@ export class BoardManager {
     }).join('');
 
     // 2. Rysuj lub aktualizuj owalne pola i obiekty na planszy bez niszczenia DOM (aby nie resetować animacji floatIdle)
+    const activeIds = new Set(this.nodes.map(n => n.id));
+    nodesLayer.querySelectorAll('.board-node').forEach(el => {
+      if (!activeIds.has(el.dataset.nodeId)) {
+        el.remove();
+      }
+    });
+
     this.nodes.forEach((node) => {
       const isCurrent = node.id === this.app.currentNodeId;
       const path = this.findPath(this.app.currentNodeId, node.id);
       const isReachable = Boolean(path);
       const isHidden = Boolean(node.completed && this.shouldHideSpriteWhenCompleted(node));
-      const showLabel = !isHidden && !(node.type === 'apple' && node.completed);
+      const cleanTitle = this.formatCleanNodeTitle(node.titlePl);
+      const isObjectNode = ['shop', 'apple', 'chest', 'next_board', 'stairs', 'start', 'waypoint', 'step'].includes(node.type) ||
+        /kramik|sklep|jabłk|jablk|drugie śniadanie/i.test(String(node.titlePl || '')) ||
+        /kramik|apple/i.test(String(node.icon || ''));
+      const showLabel = Boolean(node.icon) && Boolean(cleanTitle) && !isHidden && !isObjectNode;
 
       let nodeEl = nodesLayer.querySelector(`.board-node[data-node-id="${node.id}"]`);
       if (!nodeEl) {
@@ -144,12 +167,13 @@ export class BoardManager {
         nodesLayer.appendChild(nodeEl);
       }
 
+      nodeEl.dataset.nodeType = node.type || '';
       nodeEl.style.left = `${node.x}%`;
       nodeEl.style.top = `${node.y}%`;
       nodeEl.classList.toggle('node-current', isCurrent);
       nodeEl.classList.toggle('node-reachable', isReachable);
       nodeEl.classList.toggle('node-locked', !isReachable);
-      nodeEl.classList.toggle('node-done', Boolean(node.completed && !this.isCatNode(node) && node.type !== 'shop'));
+      nodeEl.classList.toggle('node-done', Boolean(node.completed && node.type !== 'shop'));
 
       // Aktualizacja duszka/obiektu bez przebudowywania elementu z animacją floatIdle
       const spriteSlot = nodeEl.querySelector('.node-sprite-slot');
@@ -159,7 +183,7 @@ export class BoardManager {
         const cleanPath = node.icon.startsWith('./') ? node.icon.slice(1) : (node.icon.startsWith('/') ? node.icon : '/' + node.icon);
         const fallback = `/public${cleanPath}`;
         const itemkiFallback = cleanPath.includes('/itemki/') ? cleanPath : cleanPath.replace('/assets/', '/assets/itemki/');
-        const sharedSideClass = isCurrent && node.type !== 'apple'
+        const sharedSideClass = isCurrent && node.type !== 'apple' && !isHidden
           ? (this.app.lastApproachFromRight ? 'shared-pad-left' : 'shared-pad-right')
           : '';
 
@@ -174,41 +198,41 @@ export class BoardManager {
           };
         };
 
-        if (!spriteWrap) {
-          spriteWrap = document.createElement('div');
-          spriteWrap.className = `node-sprite-wrap ${node.type} ${sharedSideClass}`.trim();
-          const img = document.createElement('img');
-          img.className = 'node-sprite-img';
-          img.alt = node.titlePl;
-          img.src = cleanPath;
-          setupImgFallback(img);
-          spriteWrap.appendChild(img);
-          spriteSlot.appendChild(spriteWrap);
+        if (isHidden) {
+          if (spriteSlot) spriteSlot.innerHTML = '';
+          if (spriteWrap) spriteWrap.remove();
         } else {
-          spriteWrap.className = `node-sprite-wrap ${node.type} ${node.completed ? 'sprite-completed' : ''} ${sharedSideClass}`.trim();
-          const img = spriteWrap.querySelector('.node-sprite-img');
-          if (img && img.getAttribute('src') !== cleanPath && img.getAttribute('src') !== fallback) {
-            img.setAttribute('src', cleanPath);
+          if (!spriteWrap) {
+            spriteWrap = document.createElement('div');
+            spriteWrap.className = `node-sprite-wrap ${node.type} ${sharedSideClass}`.trim();
+            const img = document.createElement('img');
+            img.className = 'node-sprite-img';
+            img.alt = cleanTitle;
+            img.src = cleanPath;
             setupImgFallback(img);
+            spriteWrap.appendChild(img);
+            spriteSlot.appendChild(spriteWrap);
+          } else {
+            spriteWrap.className = `node-sprite-wrap ${node.type} ${node.completed ? 'sprite-completed' : ''} ${sharedSideClass}`.trim();
+            const img = spriteWrap.querySelector('.node-sprite-img');
+            if (img && img.getAttribute('src') !== cleanPath && img.getAttribute('src') !== fallback) {
+              img.setAttribute('src', cleanPath);
+              setupImgFallback(img);
+            }
+            spriteWrap.style.display = '';
           }
-        }
-
-        if (node.completed && this.shouldHideSpriteWhenCompleted(node)) {
-          spriteWrap.style.display = 'none';
-        } else {
-          spriteWrap.style.display = '';
         }
       } else if (spriteWrap) {
         spriteWrap.remove();
       }
 
-      // Aktualizacja etykiety pola
+      // Aktualizacja etykiety pola (widocznej po najechaniu kursorem nad postacią, bez nawiasów)
       const labelEl = nodeEl.querySelector('.node-label-tag');
       if (labelEl) {
         labelEl.style.display = showLabel ? '' : 'none';
         const spanPl = labelEl.querySelector('.n-pl');
-        if (spanPl && spanPl.textContent !== node.titlePl) {
-          spanPl.textContent = node.titlePl;
+        if (spanPl && spanPl.textContent !== cleanTitle) {
+          spanPl.textContent = cleanTitle;
         }
       }
     });
@@ -247,7 +271,7 @@ export class BoardManager {
     if (!path) {
       sound.playMiss();
       this.app.setBoardHint(
-        '🔒 Ścieżka zablokowana! Najpierw zalicz poprzednie spotkanie na korytarzu!'
+        'Ścieżka zablokowana! Najpierw zalicz poprzednie spotkanie na korytarzu!'
       );
       return;
     }
@@ -266,8 +290,8 @@ export class BoardManager {
       sound.playStep();
       this.positionPlayerToken(stepId, true);
 
-      // Jeśli po drodze lub docelowo wchodzimy na pole z jabłkiem, zbierz je automatycznie
-      if (stepNode && stepNode.type === 'apple' && !stepNode.completed && stepNode.icon) {
+      // Jabłko jest zbierane WYŁĄCZNIE wtedy, gdy gracz bezpośrednio wybrał to pole jako cel (nie przy przechodzeniu obok)
+      if (stepNode && stepNode.id === targetNode.id && stepNode.type === 'apple' && !stepNode.completed && stepNode.icon) {
         this.app.collectApple(stepNode);
       }
 
@@ -304,7 +328,7 @@ export class BoardManager {
       opponentSprite.classList.add(opponentClass);
     }
 
-    // Dźwięk w momencie zderzenia
+    // Dźwięk w momencie zderzenia postaci na planszy
     setTimeout(() => {
       sound.playStep();
     }, 120);

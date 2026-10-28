@@ -1,6 +1,7 @@
 // Zarządzanie interfejsem gracza (HUD), dymkami postaci i wskazówkami na planszy
 
 import { getPlayerDamage } from '../data/vocabulary.js';
+import { musicManager } from '../audio/musicManager.js';
 
 export const MAX_PLAYER_LEVEL = 6;
 
@@ -26,8 +27,11 @@ export class HUDManager {
     const hpFill = document.getElementById('hud-hp-fill');
     const hpText = document.getElementById('hud-hp-text');
     const coinsEl = document.getElementById('hud-coins');
+    const dmgEl = document.getElementById('hud-damage-val');
+    const hintsEl = document.getElementById('hud-hints');
     const lvlTitle = document.getElementById('hud-level-title');
     const xpSub = document.getElementById('hud-xp-sub');
+    const floorTitle = document.getElementById('hud-floor-title');
     const wordsCountEl = document.getElementById('hud-words-count');
     const sneakerPill = document.getElementById('hud-sneaker-pill');
     const energyPill = document.getElementById('hud-energy-pill');
@@ -38,7 +42,13 @@ export class HUDManager {
     const pct = Math.max(0, Math.min(100, (player.hp / player.maxHp) * 100));
     if (hpFill) hpFill.style.width = `${pct}%`;
     if (hpText) hpText.textContent = `${player.hp}/${player.maxHp}`;
-    if (coinsEl) coinsEl.textContent = player.coins;
+    if (coinsEl) coinsEl.textContent = player.coins ?? 0;
+    const totalDmg = getPlayerDamage(player);
+    if (dmgEl) dmgEl.textContent = totalDmg;
+    if (hintsEl) hintsEl.textContent = player.hints ?? 5;
+
+    // Sprawdzanie poziomu zdrowia gracza (<= 1/6 HP) -> soundtrack "Chipzel - 08 Prepare To Dice"
+    musicManager.checkLowHealthMusic(player);
 
     if (sneakerPill) {
       sneakerPill.classList.toggle('hidden', !player.boughtSneakers);
@@ -56,10 +66,8 @@ export class HUDManager {
       damageSec.textContent = totalDmg;
     }
     const flawlessPill = document.getElementById('hud-flawless-pill');
-    const flawlessSec = document.getElementById('hud-flawless-sec');
-    if (flawlessPill && flawlessSec) {
-      flawlessPill.classList.toggle('hidden', !(player.flawlessCoinBonus > 0));
-      flawlessSec.textContent = player.flawlessCoinBonus;
+    if (flawlessPill) {
+      flawlessPill.classList.add('hidden');
     }
     if (kebabBtn && kebabCount) {
       kebabBtn.classList.toggle('hidden', !(player.kebabs > 0));
@@ -69,17 +77,33 @@ export class HUDManager {
     if (lvlTitle) {
       lvlTitle.textContent =
         player.level >= MAX_PLAYER_LEVEL
-          ? `POZIOM ${player.level} (MAX)`
-          : `POZIOM ${player.level}`;
+          ? `LEVEL ${player.level} (MAX)`
+          : `LEVEL ${player.level}`;
     }
 
     if (xpSub) {
       if (player.level >= MAX_PLAYER_LEVEL) {
-        xpSub.textContent = 'Maksymalny poziom!';
+        xpSub.textContent = 'Max Level';
       } else {
         const remainingXp = Math.max(1, player.xpToNext - player.xp);
-        xpSub.textContent = `Pozostało: ${remainingXp} EXP`;
+        xpSub.textContent = `Level up in ★ ${remainingXp}`;
       }
+    }
+
+    if (floorTitle) {
+      const curFloor = this.app.currentFloor === 0 ? 1 : this.app.currentFloor;
+      floorTitle.textContent = `Floor ${curFloor}`;
+    }
+
+    const skullsWrap = document.getElementById('hud-floor-skulls');
+    if (skullsWrap) {
+      const curFloor = this.app.currentFloor === 0 ? 1 : this.app.currentFloor;
+      const items = skullsWrap.querySelectorAll('.hud-skull, .hud-boss-hood');
+      items.forEach((item) => {
+        const f = parseInt(item.dataset.floor, 10);
+        item.classList.toggle('is-current', f === curFloor);
+        item.classList.toggle('is-cleared', f < curFloor);
+      });
     }
 
     if (wordsCountEl) {

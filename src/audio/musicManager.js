@@ -33,10 +33,10 @@ class MusicManager {
       }
     };
 
-    const events = ['pointerdown', 'mousedown', 'touchstart', 'keydown', 'click'];
+    const events = ['pointerdown', 'mousedown', 'touchstart', 'keydown', 'click', 'pointermove'];
     events.forEach((ev) => {
-      if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener(ev, unlock, { capture: true });
-      if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener(ev, unlock, { capture: true });
+      if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener(ev, unlock, { capture: true, passive: true });
+      if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener(ev, unlock, { capture: true, passive: true });
     });
   }
 
@@ -56,7 +56,33 @@ class MusicManager {
   }
 
   getAudioUrl(filename) {
-    return `/assets/music/${encodeURIComponent(filename)}`;
+    const encoded = encodeURIComponent(filename);
+    return `./assets/music/${encoded}`;
+  }
+
+  setVolume(vol) {
+    this.volume = Math.max(0, Math.min(1, Number(vol) || 0));
+    if (this.currentTrack && !this.muted) {
+      this.currentTrack.volume = this.volume;
+    }
+  }
+
+  getVolume() {
+    return this.volume;
+  }
+
+  // Krótkie ściszenie muzyki tła (ducking) podczas zadawania/otrzymywania ciosu, aby efekty uderzeń były wyraźnie słyszalne
+  duck(durationMs = 650) {
+    if (this.muted || !this.currentTrack || this.currentTrack.paused) return;
+    try {
+      this.currentTrack.volume = Math.max(0.08, this.volume * 0.32);
+      if (this.duckTimeout) clearTimeout(this.duckTimeout);
+      this.duckTimeout = setTimeout(() => {
+        if (this.currentTrack && !this.muted) {
+          this.currentTrack.volume = this.volume;
+        }
+      }, durationMs);
+    } catch (e) {}
   }
 
   playTrack(filename, loop = true) {
@@ -70,41 +96,50 @@ class MusicManager {
         return;
       }
 
-      // Płynne wyciszenie i zatrzymanie poprzedniego utworu
+      // Wyczyść ewentualny trwający interwał wyciszania
+      if (this.fadeInterval) {
+        clearInterval(this.fadeInterval);
+        this.fadeInterval = null;
+      }
+
+      // Płynne i definitywne zatrzymanie poprzedniego utworu
       const oldTrack = this.currentTrack;
       if (oldTrack) {
         try {
-          const fadeInterval = setInterval(() => {
-            if (oldTrack.volume > 0.05) {
-              oldTrack.volume = Math.max(0, oldTrack.volume - 0.08);
-            } else {
-              clearInterval(fadeInterval);
-              oldTrack.pause();
-              oldTrack.src = '';
-            }
-          }, 35);
-        } catch (e) {
+          oldTrack._cancelled = true;
           oldTrack.pause();
-        }
+          oldTrack.currentTime = 0;
+          oldTrack.removeAttribute('src');
+          oldTrack.load();
+        } catch (e) {}
       }
 
       try {
-        const audio = new Audio(this.getAudioUrl(filename));
+        const encoded = encodeURIComponent(filename);
+        const candidates = [
+          `./assets/music/${encoded}`,
+          `/assets/music/${encoded}`,
+          `assets/music/${encoded}`,
+          `./public/assets/music/${encoded}`
+        ];
+        let candidateIdx = 0;
+        const audio = new Audio(candidates[0]);
         audio.loop = loop;
-        audio.volume = this.volume;
+        audio.volume = this.muted ? 0 : this.volume;
+        audio._cancelled = false;
 
         audio.addEventListener('error', () => {
-          // Fallback w przypadku innej ścieżki bazowej serwera deweloperskiego
-          if (!audio.src.includes('./assets/')) {
-            audio.src = `./assets/music/${encodeURIComponent(filename)}`;
+          if (audio._cancelled) return;
+          candidateIdx++;
+          if (candidateIdx < candidates.length) {
+            audio.src = candidates[candidateIdx];
             audio.play().catch(() => {});
           }
         });
 
         const playPromise = audio.play();
         if (playPromise !== undefined) {
-          playPromise.catch((err) => {
-            // Przeglądarka zablokowała autoplay przed pierwszym klikiem użytkownika
+          playPromise.catch(() => {
             this.pendingPlay = () => this.playTrack(filename, loop);
           });
         }
@@ -116,20 +151,17 @@ class MusicManager {
       }
     };
 
-    if (!this.interactionUnlocked) {
-      this.currentTrackName = filename;
-      this.pendingPlay = startPlaying;
-      return;
-    }
-
     startPlaying();
   }
 
   stopTrack() {
     if (this.currentTrack) {
       try {
+        this.currentTrack._cancelled = true;
         this.currentTrack.pause();
-        this.currentTrack.src = '';
+        this.currentTrack.currentTime = 0;
+        this.currentTrack.removeAttribute('src');
+        this.currentTrack.load();
       } catch (e) {}
       this.currentTrack = null;
     }
@@ -163,99 +195,145 @@ class MusicManager {
   }
 
   // ==================== MUZYKA PLANSZY (AMBIENT MODUŁU) ====================
-  // Moduł 1: Chipzel - 24 Szatnia
-  // Moduł 2: Chipzel - 18 Miasto
-  // Moduł 3: Chipzel - 23 Klasa
-  // Moduł 4: Chipzel - 20 Gabinet
-  // Moduł 5: Chipzel - 19 Pokój
-  playBoardMusic(floor = this.currentFloor) {
+  playBoardMusic(floor = this.currentFloor, player = null) {
     this.currentFloor = floor;
-    const mod = this.getModuleNumber(floor);
-
-    let track;
-    if (mod === 1) {
-      track = 'Chipzel - 24 Szatnia.mp3';
-    } else if (mod === 2) {
-      track = 'Chipzel - 18 Miasto.mp3';
-    } else if (mod === 3) {
-      track = 'Chipzel - 23 Klasa.mp3';
-    } else if (mod === 4) {
-      track = 'Chipzel - 20 Gabinet.mp3';
-    } else {
-      track = 'Chipzel - 19 Pokój.mp3';
+    if (player && player.hp > 0 && player.hp <= Math.ceil(player.maxHp / 6)) {
+      this.playTrack('Chipzel - 08 Prepare To Dice.mp3', true);
+      return;
     }
+    const f = Math.max(0, Math.min(6, isNaN(Number(floor)) ? 1 : Number(floor)));
 
+    // Dopasowana ścieżka muzyczna tła do klimatu każdego piętra:
+    // Plansza 0 (Szatnia): Szatnia
+    // Plansza 1 (Korytarz i Klasa): Klasa
+    // Plansza 2 (Klasa i Ławka): Klasa
+    // Plansza 3 (Gabinet i Kryzys): Gabinet
+    // Plansza 4 (Korytarz i Aula): Klasa (szkolny ambient korytarza)
+    // Plansza 5 (Boisko i Hala sportowa): Chipzel - 19 Pokoj_lub_Boisko
+    // Plansza 6 (Finał - Boss Piłkarz): Chipzel - 24 Szatnia_lub_Boss
+    const boardTracks = {
+      0: 'Chipzel - 24 Szatnia_lub_Boss.mp3',
+      1: 'Chipzel - 23 Klasa.mp3',
+      2: 'Chipzel - 23 Klasa.mp3',
+      3: 'Chipzel - 20 Gabinet.mp3',
+      4: 'Chipzel - 23 Klasa.mp3',
+      5: 'Chipzel - 19 Pokoj_lub_Boisko.mp3',
+      6: 'Chipzel - 24 Szatnia_lub_Boss.mp3'
+    };
+
+    const track = boardTracks[f] || 'Chipzel - 23 Klasa.mp3';
     this.playTrack(track, true);
   }
 
-  resumeBoardMusic() {
-    this.playBoardMusic(this.currentFloor);
+  resumeBoardMusic(player = null) {
+    this.playBoardMusic(this.currentFloor, player);
+  }
+
+  // ==================== SPRAWDZANIE NISKIEGO ZDROWIA (<= 1/6 HP) ====================
+  // "kiedy user ma tylko 1/6 życia to gra w soundtrack Chipzel - 08 Prepare To Dice"
+  checkLowHealthMusic(player) {
+    if (this.muted) return;
+    if (!player || player.hp <= 0) return;
+
+    const isLow = player.hp <= Math.ceil(player.maxHp / 6);
+    if (isLow) {
+      if (this.currentTrackName !== 'Chipzel - 08 Prepare To Dice.mp3') {
+        this.playTrack('Chipzel - 08 Prepare To Dice.mp3', true);
+      }
+    } else if (this.currentTrackName === 'Chipzel - 08 Prepare To Dice.mp3') {
+      const inArena = typeof document !== 'undefined' && document.querySelector('.in-arena');
+      if (inArena) {
+        this.playCombatMusic(this.currentFloor, player);
+      } else {
+        this.resumeBoardMusic(player);
+      }
+    }
   }
 
   // ==================== MUZYKA WALKI / MINIGRY ====================
-  // W module 1,2 naprzemiennie: Chipzel - 03 Beginners Luck i Chipzel - 04 Fighting Chance
-  // W module 3,4 naprzemiennie: Chipzel - 06 Step Right Up i Chipzel - 07 Tempting Fate
-  // W module 5: Chipzel - 05 Swing Me Another 6
-  playCombatMusic(floor = this.currentFloor) {
-    const mod = this.getModuleNumber(floor);
+  // • Piętra 1 & 2: Beginner's Luck & Fighting Chance (naprzemiennie)
+  // • Piętra 3 & 4: Step Right Up & Tempting Fate (naprzemiennie)
+  // • Piętro 5: Swing Me Another 6
+  // • Kiedy user ma <= 1/6 HP: Prepare to Dice (Chipzel - 08 Prepare To Dice)
+  playCombatMusic(floor = this.currentFloor, player = null) {
+    const fStr = String(floor);
+
+    // Kiedy user ma tylko 1/6 życia (<= 1/6 HP) -> soundtrack Prepare To Dice!
+    if (player && player.hp > 0 && player.hp <= Math.ceil(player.maxHp / 6)) {
+      this.playTrack('Chipzel - 08 Prepare To Dice.mp3', true);
+      return;
+    }
 
     let track;
-    if (mod === 1 || mod === 2) {
+    if (['1', '2'].includes(fStr)) {
       const tracks = [
         'Chipzel - 03 Beginners Luck.mp3',
         'Chipzel - 04 Fighting Chance.mp3'
       ];
       track = tracks[this.m1_2_combatIndex % tracks.length];
       this.m1_2_combatIndex += 1;
-    } else if (mod === 3 || mod === 4) {
+    } else if (['3', '4'].includes(fStr)) {
       const tracks = [
         'Chipzel - 06 Step Right Up.mp3',
         'Chipzel - 07 Tempting Fate.mp3'
       ];
       track = tracks[this.m3_4_combatIndex % tracks.length];
       this.m3_4_combatIndex += 1;
-    } else {
+    } else if (fStr === '5') {
       track = 'Chipzel - 05 Swing Me Another 6.mp3';
+    } else {
+      const mod = this.getModuleNumber(floor);
+      if (mod === 1 || mod === 2) {
+        track = 'Chipzel - 03 Beginners Luck.mp3';
+      } else if (mod === 3 || mod === 4) {
+        track = 'Chipzel - 06 Step Right Up.mp3';
+      } else {
+        track = 'Chipzel - 05 Swing Me Another 6.mp3';
+      }
     }
 
     this.playTrack(track, true);
   }
 
   // ==================== MUZYKA BOSS FIGHTÓW ====================
-  // Moduł 1 Boss (Piłkarz): Chipzel - 09 Against All Odds
-  // Moduł 2 Boss (Cwaniak): Chipzel - 10 Elimination Round
-  // Moduł 3 Boss (Nauczycielka): Chipzel - 11 Lifeline
-  // Moduł 4 Boss (Lekarz): Chipzel - 12 Bonus Round
-  // Moduł 5 Boss (Instagramerka): Chipzel - 14 Fortune Favours The Bold
+  // Muzyki boss podczas walki: Elimination Round, Lifeline, Bonus Round, Fortune Favours The Bold
   playBossFightMusic(modNumber = null) {
-    const mod = modNumber !== null ? modNumber : this.getModuleNumber(this.currentFloor);
+    const bossTracks = [
+      'Chipzel - 10 Elimination Round.mp3',
+      'Chipzel - 11 Lifeline.mp3',
+      'Chipzel - 12 Bonus Round.mp3',
+      'Chipzel - 14 Fortune Favours The Bold.mp3'
+    ];
 
     let track;
-    if (mod === 1) {
-      track = 'Chipzel - 09 Against All Odds.mp3';
-    } else if (mod === 2) {
-      track = 'Chipzel - 10 Elimination Round.mp3';
-    } else if (mod === 3) {
-      track = 'Chipzel - 11 Lifeline.mp3';
-    } else if (mod === 4) {
-      track = 'Chipzel - 12 Bonus Round.mp3';
+    if (typeof modNumber === 'number' && modNumber >= 1 && modNumber <= 4) {
+      track = bossTracks[modNumber - 1];
     } else {
-      track = 'Chipzel - 14 Fortune Favours The Bold.mp3';
+      track = bossTracks[this.bossCombatIndex % bossTracks.length];
+      this.bossCombatIndex += 1;
     }
 
     this.playTrack(track, true);
   }
 
+  // ==================== MUZYKA STARTOWA / MENU (Your Host For Tonight) ====================
+  playTitleMusic() {
+    this.playTrack('Chipzel - 01 Your Host For Tonight (Title).mp3', true);
+  }
+
+  // ==================== MUZYKA WYBORU POSTACI (Come On Down) ====================
+  playCharacterSelectMusic() {
+    this.playTrack('Chipzel - 02 Come on Down.mp3', true);
+  }
+
   // ==================== MUZYKA WYGRANEJ ====================
-  // Interfejs wygranej: Chipzel - 15 A Brand New Washing Machine!
   playVictoryMusic() {
     this.playTrack('Chipzel - 15 A Brand New Washing Machine!.mp3', true);
   }
 
-  // ==================== MUZYKA SKRZYNI / KSIĘGI SŁÓW / EKWIPUNKU ====================
-  // Interfejs skrzyni / nagrody / książki: Chipzel - 28 Play To Win
+  // ==================== MUZYKA SKRZYNI (What's in the Box?) ====================
   playChestMusic() {
-    this.playTrack('Chipzel - 28 Play To Win.mp3', true);
+    this.playTrack('Whats in the Box.mp3', true);
   }
 
   playBookMusic() {

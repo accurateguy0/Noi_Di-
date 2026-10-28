@@ -6,11 +6,13 @@
 
 import { BOSS_FOOTBALLER_QUESTIONS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
+import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import { renderLimitBreakBar, getLimitBreakLabels, bindClassMechanicEvents } from './bossClassMechanics.js';
 
 export class BossFootballerGame {
   constructor(container, { player, onPlayerDamaged, onComplete, onClose, enemyMaxHp = 66 }) {
     this.container = container;
-    this.player = player || { name: 'Tan', hp: 20, maxHp: 20 };
+    this.player = player || { name: 'Bohater', hp: 20, maxHp: 20 };
     this.onPlayerDamaged = onPlayerDamaged;
     this.onComplete = onComplete;
     this.onClose = onClose;
@@ -19,6 +21,13 @@ export class BossFootballerGame {
     this.enemyHp = enemyMaxHp;
     this.enemyDamage = 5;
     this.tanDamage = getPlayerDamage(this.player);
+
+    this.heroClass = (this.player?.characterClass || this.player?.heroId || 'warrior').toLowerCase();
+    this.limitBreakMax = this.player?.limitBreakHp || 8;
+    this.warriorFuryDamage = 0;
+    this.warriorDoubleReady = false;
+    this.warriorDoubleActive = false;
+    this.jesterDodgeTurns = 0;
 
     this.maxTime = 10;
     this.timeLeft = 10;
@@ -29,13 +38,14 @@ export class BossFootballerGame {
     this.phase = 'quiz'; // 'quiz' | 'anagram' | 'matchup'
     this.lockInput = false;
 
-    // Słowa do anagramów
+    // Słowa do anagramów z pełnego materiału A0
     this.anagramWords = [
-      { word: 'MEGA', hint: 'Coś ekstra na wyższym poziomie!' },
-      { word: 'SZTOS', hint: 'Genialna rzecz, mistrzostwo!' },
-      { word: 'DZIĘKI', hint: 'Koleżeńskie podziękowanie' },
-      { word: 'FAJNE', hint: 'Dobre, przyjemne, warte uwagi' },
-      { word: 'SŁABE', hint: 'Poniżej oczekiwań' }
+      { word: 'DŁUGOPIS', hint: 'Podstawowy przybór do pisania w zeszycie' },
+      { word: 'SZKOŁA', hint: 'Budynek z salami lekcyjnymi i szatnią' },
+      { word: 'MISTRZ', hint: 'Zwycięzca turnieju językowego A0!' },
+      { word: 'PIŁKA', hint: 'Niezbędna do gry w meczu na WF-ie' },
+      { word: 'BOISKO', hint: 'Plac sportowy do gry w piłkę' },
+      { word: 'DZWONEK', hint: 'Głośny sygnał początku lub końca lekcji' }
     ];
     this.anagramIndex = 0;
     this.anagramSlots = [];
@@ -43,7 +53,11 @@ export class BossFootballerGame {
   }
 
   mount() {
+    sound.setPlayerClass(this.player?.characterClass || this.player?.heroId || 'Warrior');
     this.renderArena();
+    try {
+      sound.playRefereeWhistle();
+    } catch (e) {}
     this.startRound();
   }
 
@@ -53,11 +67,11 @@ export class BossFootballerGame {
 
     this.container.innerHTML = `
       <div class="dd-combat-arena boss-arena">
-        <h2 class="mp-animated-title" id="boss-title" style="top: 22px;">⚽ BOSS: PIŁKARZ ⚽</h2>
+        <h2 class="mp-animated-title" id="boss-title" style="top: 22px;">BOSS: PIŁKARZ</h2>
 
         <!-- Górny licznik czasu (10s + 5s za poprawną) -->
         <div class="boss-timer-badge" id="boss-timer-badge">
-          <span class="boss-timer-icon">⏱️</span>
+          <span class="boss-timer-icon"></span>
           <span class="boss-timer-text" id="boss-timer-num">10s</span>
           <div class="boss-timer-bar">
             <div class="boss-timer-fill" id="boss-timer-fill" style="width: 100%"></div>
@@ -68,7 +82,7 @@ export class BossFootballerGame {
         <div class="dd-arena-fighter dd-arena-opponent" id="boss-opponent-box">
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Boss Piłkarz ⚽</span>
+              <span class="dd-fighter-name">Boss Piłkarz</span>
             </div>
             <div class="dd-fighter-hp-bar" id="boss-enemy-hp-bar">
               <div class="dd-fighter-hp-fill" id="boss-enemy-hp-fill" style="width: ${enemyHpPct}%; background: #e63946;"></div>
@@ -91,28 +105,31 @@ export class BossFootballerGame {
           <!-- Dynamiczna treść minigry -->
         </div>
 
-        <!-- Lewy dolny róg: Tan -->
+        <!-- Lewy dolny róg: Bohater -->
         <div class="dd-arena-fighter dd-arena-player" id="boss-player-box">
           <div class="dd-sprite-container player-sprite-container" id="boss-player-sprite-wrap">
             <img
-              src="./assets/Tan.png"
-              alt="Tan"
+              src="${this.player?.avatar || './assets/Warrior.png'}"
+              alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
-              onerror="this.src='./public/assets/Tan.png'"
+              onerror="this.src='./assets/Warrior.png'"
             />
           </div>
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">${this.player.name || 'Tan'}</span>
+              <span class="dd-fighter-name">${this.player?.heroName || this.player?.name || 'Bohater'}</span>
             </div>
             <div class="dd-fighter-hp-bar" id="boss-player-hp-bar">
               <div class="dd-fighter-hp-fill" id="boss-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="boss-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const bossTitle = this.container.querySelector('#boss-title');
     if (bossTitle) {
@@ -176,7 +193,7 @@ export class BossFootballerGame {
 
     stageEl.innerHTML = `
       <div class="boss-card-challenge">
-        <div class="boss-challenge-badge">MATCHING PAIRS ⚽ (Znajdź pasujące pary!)</div>
+        <div class="boss-challenge-badge">MATCHING PAIRS(Znajdź pasujące pary!)</div>
         <div class="boss-pairs-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
           ${cards.map((c, idx) => `
             <button type="button" class="btn-boss-pair-card" data-idx="${idx}" data-pair="${c.pairId}" style="min-height: 54px; font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 700; border-radius: 12px; background: #1e293b; color: #fff; border: 2.5px solid #3b82f6; cursor: pointer; transition: transform 0.15s;">
@@ -254,7 +271,7 @@ export class BossFootballerGame {
 
     stageEl.innerHTML = `
       <div class="boss-card-challenge">
-        <div class="boss-challenge-badge">MATCH UP ⚽ (Połącz słowo z definicją!)</div>
+        <div class="boss-challenge-badge">MATCH UP(Połącz słowo z definicją!)</div>
         <div class="boss-mu-columns" style="display: flex; gap: 16px; margin-top: 10px;">
           <div class="boss-mu-col left" style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
             ${leftItems.map(txt => `<button type="button" class="btn-boss-mu-tile left-tile" data-val="${txt}" style="padding: 10px; font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 800; border-radius: 12px; background: #1e293b; color: #fff; border: 2px solid #8b5cf6; cursor: pointer;">${txt}</button>`).join('')}
@@ -367,12 +384,31 @@ export class BossFootballerGame {
 
   handleTimeout() {
     this.stopTimer();
-    sound.playHurt();
-    this.triggerFighterHit('player', `-${this.enemyDamage}`);
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    if (this.player.classId === 'jester' && this.jesterDodgeTurns > 0) {
+      this.jesterDodgeTurns -= 1;
+      if (this.jesterDodgeTurns <= 0) {
+        this.warriorDoubleActive = false;
+        this.warriorFuryDamage = 0;
+      }
+      sound.playSuccess();
+      this.triggerFighterHit('player', 'UNIK!');
+      this.updatePlayerHud();
+    } else {
+      sound.playHurt('pilkarz');
+      this.triggerFighterHit('player', `-${this.enemyDamage}`);
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(this.enemyDamage);
+      }
+      if (!this.warriorDoubleActive) {
+        const wasReady = this.warriorDoubleReady;
+        this.warriorFuryDamage = Math.min(this.limitBreakMax, this.warriorFuryDamage + this.enemyDamage);
+        if (this.warriorFuryDamage >= this.limitBreakMax) {
+          this.warriorDoubleReady = true;
+          if (!wasReady) sound.playLimitReady();
+        }
+      }
+      this.updatePlayerHud();
     }
-    this.updatePlayerHud();
 
     this.timeLeft = this.maxTime;
 
@@ -380,19 +416,31 @@ export class BossFootballerGame {
       if (this.player.hp > 0) {
         this.currentQIndex++;
         this.startRound();
+      } else {
+        playHeroDefeatAnimation(this.container, this.player, this.onClose);
       }
-    }, 800);
+    }, 650);
   }
 
   renderQuizChallenge(stageEl) {
     const q = this.questions[this.currentQIndex % this.questions.length];
+    sound.triggerContextualSFX(q.promptPl);
+
+    // Losowe tasowanie opcji
+    const shuffled = q.options.map((opt, i) => ({ ...opt, origIdx: i }));
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
     stageEl.innerHTML = `
       <div class="boss-card-challenge">
-        <div class="boss-challenge-badge">PYTANIE QUIZOWE ⚽ (Odpowiedz w 10s!)</div>
+        <div class="boss-challenge-badge">PYTANIE QUIZOWE (Odpowiedz w 10s!)</div>
         <h3 class="boss-question-prompt">${q.promptPl}</h3>
         <div class="boss-options-grid">
-          ${q.options.map((opt, idx) => `
+          ${shuffled.map((opt, idx) => `
             <button type="button" class="boss-option-btn" data-idx="${idx}">
+              <span class="boss-opt-letter">${['A', 'B', 'C', 'D'][idx] || ''}</span>
               ${opt.text}
             </button>
           `).join('')}
@@ -405,7 +453,7 @@ export class BossFootballerGame {
         if (this.lockInput) return;
         this.lockInput = true;
         const idx = parseInt(btn.dataset.idx, 10);
-        const opt = q.options[idx];
+        const opt = shuffled[idx];
 
         if (opt.correct) {
           btn.classList.add('is-correct');
@@ -425,7 +473,7 @@ export class BossFootballerGame {
     let placed = [];
     stageEl.innerHTML = `
       <div class="boss-card-challenge">
-        <div class="boss-challenge-badge">ANAGRAM ⚽ (Ułóż litery w słowo!)</div>
+        <div class="boss-challenge-badge">ANAGRAM(Ułóż litery w słowo!)</div>
         <h3 class="boss-question-prompt">Podpowiedź: ${anItem.hint}</h3>
         <div class="boss-anagram-slots" id="boss-an-slots">
           ${anItem.word.split('').map(() => `<div class="boss-an-slot">_</div>`).join('')}
@@ -478,9 +526,24 @@ export class BossFootballerGame {
 
   handleCorrectAnswer(dmg) {
     this.stopTimer();
+    let finalDmg = dmg;
+    if (this.warriorDoubleActive && this.player.classId !== 'jester') {
+      finalDmg *= 2;
+      if (this.player.classId === 'thief' && typeof this.player.heal === 'function') {
+        this.player.heal(2);
+        this.triggerFighterHit('player', '+2 HP');
+      }
+      sound.playWarriorHeavyHit();
+      this.warriorDoubleActive = false;
+      this.warriorFuryDamage = 0;
+      this.updatePlayerHud();
+    }
+    try {
+      sound.playBallKick();
+    } catch (e) {}
     sound.playAttack('pilkarz');
-    this.enemyHp = Math.max(0, this.enemyHp - dmg);
-    this.triggerFighterHit('opponent', `-${dmg}`);
+    this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
+    this.triggerFighterHit('opponent', `-${finalDmg}`);
     this.updateEnemyHud();
     this.addBonusTime(5);
 
@@ -497,12 +560,33 @@ export class BossFootballerGame {
 
   handleWrongAnswer() {
     this.stopTimer();
-    sound.playHurt('pilkarz');
-    this.triggerFighterHit('player', `-${this.enemyDamage}`);
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    this.timeLeft = this.maxTime;
+    this.updateTimerDisplay();
+    if (this.player.classId === 'jester' && this.jesterDodgeTurns > 0) {
+      this.jesterDodgeTurns -= 1;
+      if (this.jesterDodgeTurns <= 0) {
+        this.warriorDoubleActive = false;
+        this.warriorFuryDamage = 0;
+      }
+      sound.playSuccess();
+      this.triggerFighterHit('player', 'UNIK!');
+      this.updatePlayerHud();
+    } else {
+      sound.playHurt('pilkarz');
+      this.triggerFighterHit('player', `-${this.enemyDamage}`);
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(this.enemyDamage);
+      }
+      if (!this.warriorDoubleActive) {
+        const wasReady = this.warriorDoubleReady;
+        this.warriorFuryDamage = Math.min(this.limitBreakMax, this.warriorFuryDamage + this.enemyDamage);
+        if (this.warriorFuryDamage >= this.limitBreakMax) {
+          this.warriorDoubleReady = true;
+          if (!wasReady) sound.playLimitReady();
+        }
+      }
+      this.updatePlayerHud();
     }
-    this.updatePlayerHud();
 
     setTimeout(() => {
       if (this.player.hp > 0) {
@@ -510,8 +594,10 @@ export class BossFootballerGame {
         this.currentQIndex++;
         this.anagramIndex++;
         this.startRound();
+      } else {
+        playHeroDefeatAnimation(this.container, this.player, this.onClose);
       }
-    }, 800);
+    }, 650);
   }
 
   triggerFighterHit(target = 'opponent', dmgText = '-25') {
@@ -553,6 +639,17 @@ export class BossFootballerGame {
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     if (fill) fill.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+
+    const lbBar = this.container.querySelector('#dd-limit-break-bar');
+    const lbFill = this.container.querySelector('#dd-limit-break-fill');
+    const lbTxt = this.container.querySelector('#dd-limit-break-text');
+    if (lbBar && lbFill && lbTxt) {
+      const { isReady, isActive, pct, label } = getLimitBreakLabels(this);
+      lbFill.style.width = `${pct}%`;
+      lbBar.classList.toggle('is-ready', isReady);
+      lbBar.classList.toggle('is-active', isActive);
+      lbTxt.textContent = label;
+    }
   }
 
   finishBattle() {

@@ -18,11 +18,11 @@ export class CityEncounterManager {
     const arenaMount = this.app.openArena();
 
     const productsList = [
-      { id: 'bulka', name: 'Bułka', icon: '🥖', image: './assets/slowka/bulka.jpg', fallback: './public/assets/slowka/bulka.jpg', phrase: 'Poproszę bułkę.', sub: 'Świeże pieczywo' },
-      { id: 'woda', name: 'Woda', icon: '💧', image: './assets/slowka/woda.jpg', fallback: './public/assets/slowka/woda.jpg', phrase: 'Poproszę butelkę wody.', sub: 'Woda mineralna' },
-      { id: 'czipsy', name: 'Czipsy', icon: '🥔', image: './assets/slowka/czipsy.jpg', fallback: './public/assets/slowka/czipsy.jpg', phrase: 'Poproszę czipsy.', sub: 'Przekąska' },
-      { id: 'drozdzowka', name: 'Drożdżówka', icon: '🥐', image: './assets/drozdzowka.png', fallback: './public/assets/drozdzowka.png', phrase: 'Poproszę drożdżówkę.', sub: 'Słodka bułka' },
-      { id: 'jablko', name: 'Jabłko', icon: '🍎', image: './assets/apple.png', fallback: './public/assets/apple.png', phrase: 'Poproszę świeże jabłko.', sub: 'Owoc' }
+      { id: 'bulka', name: 'Bułka', icon: '', image: './assets/slowka/bulka.jpg', fallback: './public/assets/slowka/bulka.jpg', phrase: 'Poproszę bułkę.', sub: 'Świeże pieczywo' },
+      { id: 'woda', name: 'Woda', icon: '', image: './assets/slowka/woda.jpg', fallback: './public/assets/slowka/woda.jpg', phrase: 'Poproszę butelkę wody.', sub: 'Woda mineralna' },
+      { id: 'czipsy', name: 'Czipsy', icon: '', image: './assets/slowka/czipsy.jpg', fallback: './public/assets/slowka/czipsy.jpg', phrase: 'Poproszę czipsy.', sub: 'Przekąska' },
+      { id: 'drozdzowka', name: 'Drożdżówka', icon: '', image: './assets/drozdzowka.png', fallback: './public/assets/drozdzowka.png', phrase: 'Poproszę drożdżówkę.', sub: 'Słodka bułka' },
+      { id: 'jablko', name: 'Jabłko', icon: '', image: './assets/apple.png', fallback: './public/assets/apple.png', phrase: 'Poproszę świeże jabłko.', sub: 'Owoc' }
     ];
 
     let currentStepIdx = 0; // 0: Produkty, 1: Reklamówka, 2: Płatność, 3: Podsumowanie
@@ -38,7 +38,7 @@ export class CityEncounterManager {
           <div class="city-thoughts-card">
             <div class="ctc-header">
               <span class="ctc-step-badge">KROK 1 / 3: PRODUKTY</span>
-              <h3 class="ctc-title">Co wrzucasz do koszyka? 🛒</h3>
+              <h3 class="ctc-title">Co wrzucasz do koszyka?</h3>
               <p class="ctc-subtitle">Zaznacz produkty, które kupujesz (wybór wielokrotny):</p>
             </div>
 
@@ -47,7 +47,7 @@ export class CityEncounterManager {
                 const isSelected = selectedProductIds.has(p.id);
                 return `
                   <div class="btn-product-tile ${isSelected ? 'is-selected' : ''}" data-id="${p.id}" data-phrase="${p.phrase}">
-                    <div class="pt-checkbox">✔</div>
+                    <div class="pt-checkbox"></div>
                     ${p.image ? `
                       <img
                         src="${p.image}"
@@ -67,7 +67,7 @@ export class CityEncounterManager {
             </div>
 
             <button type="button" class="btn-ctc-confirm" id="ctc-confirm-products-btn" ${selectedProductIds.size === 0 ? 'disabled' : ''}>
-              ZATWIERDŹ KOSZYK (${selectedProductIds.size}) ✔
+ZATWIERDŹ KOSZYK (${selectedProductIds.size})
             </button>
           </div>
         `;
@@ -77,19 +77,19 @@ export class CityEncounterManager {
           <div class="city-thoughts-card">
             <div class="ctc-header">
               <span class="ctc-step-badge">KROK 2 / 3: REKLAMÓWKA</span>
-              <h3 class="ctc-title">Czy potrzebujesz reklamówki? 🛍️</h3>
+              <h3 class="ctc-title">Czy potrzebujesz reklamówki?</h3>
               <p class="ctc-subtitle">Odpowiedz kasjerce krótko i na temat:</p>
             </div>
 
             <div class="ctc-simple-choice-grid">
               <button type="button" class="btn-simple-choice choice-yes" data-val="yes_bag" data-phrase="Tak, poproszę reklamówkę.">
-                <span class="sc-icon">🛍️</span>
+                <span class="sc-icon"></span>
                 <span class="sc-title">TAK</span>
                 <span class="sc-desc">„Tak, poproszę reklamówkę.”</span>
               </button>
 
               <button type="button" class="btn-simple-choice choice-no" data-val="no_bag" data-phrase="Nie dziękuję, mam swoją torbę.">
-                <span class="sc-icon">🎒</span>
+                <span class="sc-icon"></span>
                 <span class="sc-title">NIE</span>
                 <span class="sc-desc">„Nie dziękuję, mam torbę.”</span>
               </button>
@@ -102,7 +102,7 @@ export class CityEncounterManager {
           <div class="city-thoughts-card">
             <div class="ctc-header">
               <span class="ctc-step-badge">KROK 3 / 3: PŁATNOŚĆ</span>
-              <h3 class="ctc-title">Jak płacisz przy kasie? 💰</h3>
+              <h3 class="ctc-title">Jak płacisz przy kasie?</h3>
               <p class="ctc-subtitle">Wybierz sposób uregulowania rachunku:</p>
             </div>
 
@@ -114,7 +114,7 @@ export class CityEncounterManager {
                   class="sc-img"
                   onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.src='./public/assets/slowka/karta_kredytowa.jpg';}else{this.style.display='none'; this.nextElementSibling.style.display='inline-block';}"
                 />
-                <span class="sc-icon" style="display: none;">💳</span>
+                <span class="sc-icon" style="display: none;"></span>
                 <span class="sc-title">KARTA</span>
                 <span class="sc-desc">„Zapłacę kartą zbliżeniowo.”</span>
               </button>
@@ -126,7 +126,7 @@ export class CityEncounterManager {
                   class="sc-img"
                   onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.src='./public/assets/slowka/gotowka.jpg';}else{this.style.display='none'; this.nextElementSibling.style.display='inline-block';}"
                 />
-                <span class="sc-icon" style="display: none;">💵</span>
+                <span class="sc-icon" style="display: none;"></span>
                 <span class="sc-title">GOTÓWKA</span>
                 <span class="sc-desc">„Zapłacę gotówką.”</span>
               </button>
@@ -137,34 +137,34 @@ export class CityEncounterManager {
         // KROK 4: Podsumowanie (Plan gotowy)
         const chosenProducts = productsList.filter(p => selectedProductIds.has(p.id));
         const itemsSummary = chosenProducts.map(p => `${p.icon} ${p.name}`).join(', ');
-        const bagSummary = this.app.cityShoppingChoices.bag === 'no_bag' ? '🎒 Własna torba (Nie)' : '🛍️ Reklamówka (Tak)';
-        const paySummary = this.app.cityShoppingChoices.payment === 'cash' ? '💵 Gotówka' : '💳 Karta zbliżeniowo';
+        const bagSummary = this.app.cityShoppingChoices.bag === 'no_bag' ? 'Własna torba (Nie)' : 'Reklamówka (Tak)';
+        const paySummary = this.app.cityShoppingChoices.payment === 'cash' ? 'Gotówka' : 'Karta zbliżeniowo';
 
         stageContentHtml = `
           <div class="city-thoughts-card">
             <div class="ctc-header">
               <span class="ctc-step-badge" style="background:#10b981;">PLAN GOTOWY!</span>
-              <h3 class="ctc-title">Twoje myśli są uporządkowane! 🛒✨</h3>
+              <h3 class="ctc-title">Twoje myśli są uporządkowane!</h3>
               <p class="ctc-subtitle">Pamiętaj swoje wybory podczas rozmowy z kasjerką:</p>
             </div>
 
             <div class="dd-shopping-recap-card" style="width:100%; max-width:540px; margin-bottom:18px;">
               <div class="recap-row">
-                <span class="recap-label">📦 Produkty:</span>
+                <span class="recap-label">Produkty:</span>
                 <strong class="recap-val">${itemsSummary}</strong>
               </div>
               <div class="recap-row">
-                <span class="recap-label">🛍️ Reklamówka:</span>
+                <span class="recap-label">Reklamówka:</span>
                 <strong class="recap-val">${bagSummary}</strong>
               </div>
               <div class="recap-row">
-                <span class="recap-label">💰 Płatność:</span>
+                <span class="recap-label">Płatność:</span>
                 <strong class="recap-val">${paySummary}</strong>
               </div>
             </div>
 
             <button type="button" class="btn-ctc-confirm" id="ctc-go-to-cashier-btn" style="background: #10b981;">
-              IDĘ DO KASY! 🛒
+IDĘ DO KASY!
             </button>
           </div>
         `;
@@ -176,7 +176,7 @@ export class CityEncounterManager {
           <div class="dd-arena-fighter dd-arena-opponent" id="thoughts-opponent-box">
             <div class="dd-fighter-hud">
               <div class="dd-fighter-top-row">
-                <span class="dd-fighter-name">Widmo 👻</span>
+                <span class="dd-fighter-name">Widmo</span>
               </div>
               <div class="dd-fighter-hp-bar">
                 <div class="dd-fighter-hp-fill" style="width: 100%; background: #a855f7;"></div>
@@ -198,19 +198,19 @@ export class CityEncounterManager {
             ${stageContentHtml}
           </div>
 
-          <!-- Lewy dolny róg: Tan -->
+          <!-- Lewy dolny róg: Bohater -->
           <div class="dd-arena-fighter dd-arena-player">
             <div class="dd-sprite-container player-sprite-container">
               <img
-                src="./assets/Tan.png"
-                alt="Tan"
+                src="${this.app.player.avatar || './assets/Warrior.png'}"
+                alt="${this.app.player.heroName || this.app.player.name || 'Bohater'}"
                 class="dd-fighter-sprite sprite-tan"
-                onerror="this.src='./public/assets/Tan.png'"
+                onerror="this.src='./assets/Warrior.png'"
               />
             </div>
             <div class="dd-fighter-hud">
               <div class="dd-fighter-top-row">
-                <span class="dd-fighter-name">${this.app.player.name || 'Tan'}</span>
+                <span class="dd-fighter-name">${this.app.player.heroName || this.app.player.name || 'Bohater'}</span>
               </div>
               <div class="dd-fighter-hp-bar">
                 <div class="dd-fighter-hp-fill" style="width: ${playerHpPct}%;"></div>
@@ -241,7 +241,7 @@ export class CityEncounterManager {
             sound.playStep();
             if (confirmBtn) {
               confirmBtn.disabled = selectedProductIds.size === 0;
-              confirmBtn.textContent = `ZATWIERDŹ KOSZYK (${selectedProductIds.size}) ✔`;
+              confirmBtn.textContent = `ZATWIERDŹ KOSZYK (${selectedProductIds.size})`;
             }
           });
         });
@@ -285,13 +285,13 @@ export class CityEncounterManager {
             sound.playFanfare();
             const node = this.app.getNode(nodeId);
             if (node) node.completed = true;
-            this.awardProgress(1, 1, 150);
+            this.app.awardProgress(1, 1, 150);
             this.app.updateHUD();
 
             playJaggedCurtainWipe(() => {
               arenaMount.classList.add('hidden');
               this.app.renderBoard();
-              this.app.showTemporaryPlayerBubble('Plan gotowy! Czas podejść do kasy! 🛒✨', 2500);
+              this.app.showTemporaryPlayerBubble('Plan gotowy! Czas podejść do kasy!', 2500);
             });
           });
         }
@@ -308,7 +308,7 @@ export class CityEncounterManager {
       player: this.app.player,
       shoppingChoices: this.app.cityShoppingChoices,
       onPlayerDamaged: (dmg) => {
-        this.app.player.hp = Math.max(1, this.app.player.hp - dmg);
+        this.app.player.hp = Math.max(0, this.app.player.hp - dmg);
         this.app.updateHUD();
       },
       onClose: () => {
@@ -323,7 +323,7 @@ export class CityEncounterManager {
         });
       },
       onComplete: ({ score } = {}) => {
-        this.app.handleFighterVictory(arenaMount, nodeId, score || 200, 'Świetny refleks! Kasjerka skanuje produkty! 📦🛒');
+        this.app.handleFighterVictory(arenaMount, nodeId, score || 200, 'Świetny refleks! Kasjerka skanuje produkty!');
       }
     });
 
@@ -335,9 +335,16 @@ export class CityEncounterManager {
 
     this.app.activeMinigame = new RankOrderGame(arenaMount, {
       player: this.app.player,
+      enemyName: 'Kasjerka (Żabka)',
+      opponentAvatar: './assets/Postacie/Mistrzynia_Zabki.png',
+      enemyMaxHp: 20,
+      enemyDamage: 2,
+      arenaTheme: 'city',
+      title: 'RANK ORDER: DIALOG PRZY KASIE',
+      instruction: 'Przeciągnij i upuść (trzymaj myszką), aby ułożyć etapy rozmowy przy kasie:',
       shoppingChoices: this.app.cityShoppingChoices,
-      onPlayerDamaged: (dmg) => {
-        this.app.player.hp = Math.max(1, this.app.player.hp - dmg);
+      onPlayerDamaged: (dmg = 2) => {
+        this.app.player.hp = Math.max(0, this.app.player.hp - dmg);
         this.app.updateHUD();
       },
       onClose: () => {
@@ -352,7 +359,7 @@ export class CityEncounterManager {
         });
       },
       onComplete: ({ score } = {}) => {
-        this.app.handleFighterVictory(arenaMount, nodeId, score || 200, 'Dialog przy kasie zakończony sukcesem! 🛒✨');
+        this.app.handleFighterVictory(arenaMount, nodeId, score || 200, 'Dialog przy kasie zakończony sukcesem!');
       }
     });
 
@@ -368,25 +375,25 @@ export class CityEncounterManager {
       {
         key: 'dish',
         title: 'KROK 1: CO MASZ OCHOTĘ ZJEŚĆ?',
-        hint: 'Wybierz swoje danie — Tan odpowiada obrazkowo:',
+        hint: 'Wybierz swoje danie — odpowiedz obrazkowo:',
         options: [
           {
             val: 'kebab',
-            icon: '🥙',
-            image: './assets/kebab.jpg',
-            fallback: './public/assets/kebab.jpg',
+            icon: '',
+            image: './assets/itemki/kebab.png',
+            fallback: './public/assets/itemki/kebab.png',
             title: 'Kebab',
             sub: 'Pieczone mięso z warzywami i sosem'
           },
           {
             val: 'burger',
-            icon: '🍔',
+            icon: '',
             title: 'Burger',
             sub: 'Soczysty burger w puszystej bułce'
           },
           {
             val: 'pizza',
-            icon: '🍕',
+            icon: '',
             title: 'Pizza',
             sub: 'Chrupiąca pizza z sosem i serem'
           }
@@ -399,7 +406,7 @@ export class CityEncounterManager {
         options: [
           {
             val: 'czosnkowy',
-            icon: '🧄',
+            icon: '',
             image: './assets/slowka/czosnkowy.jpg',
             fallback: './public/assets/slowka/czosnkowy.jpg',
             title: 'Sos czosnkowy',
@@ -407,7 +414,7 @@ export class CityEncounterManager {
           },
           {
             val: 'ostry',
-            icon: '🌶️',
+            icon: '',
             image: './assets/slowka/ostry.jpg',
             fallback: './public/assets/slowka/ostry.jpg',
             title: 'Sos ostry',
@@ -415,7 +422,7 @@ export class CityEncounterManager {
           },
           {
             val: 'mieszany',
-            icon: '🧄🌶️',
+            icon: '',
             title: 'Sos mieszany',
             sub: 'Pół na pół: czosnkowy i ostry!'
           }
@@ -441,7 +448,7 @@ export class CityEncounterManager {
         options: [
           {
             val: 'na_miejscu',
-            icon: '🍽️',
+            icon: '',
             image: './assets/slowka/na_miejscu.jpg',
             fallback: './public/assets/slowka/na_miejscu.jpg',
             title: 'Na miejscu',
@@ -449,7 +456,7 @@ export class CityEncounterManager {
           },
           {
             val: 'na_wynos',
-            icon: '🥡',
+            icon: '',
             image: './assets/slowka/na_wynos.jpg',
             fallback: './public/assets/slowka/na_wynos.jpg',
             title: 'Na wynos',
@@ -463,10 +470,10 @@ export class CityEncounterManager {
 
     const renderStep = () => {
       if (currentStepIdx >= steps.length) {
-        // Podsumowanie wyborów Tana
-        const dishMap = { kebab: '🥙 Kebab', burger: '🍔 Burger', pizza: '🍕 Pizza' };
-        const sauceMap = { czosnkowy: '🧄 Sos czosnkowy', ostry: '🌶️ Sos ostry', mieszany: '🧄🌶️ Sos mieszany' };
-        const diningMap = { na_miejscu: '🍽️ Na miejscu (przy stoliku)', na_wynos: '🥡 Na wynos (do torby)' };
+        // Podsumowanie wyborów bohatera
+        const dishMap = { kebab: 'Kebab', burger: 'Burger', pizza: 'Pizza' };
+        const sauceMap = { czosnkowy: 'Sos czosnkowy', ostry: 'Sos ostry', mieszany: 'Sos mieszany' };
+        const diningMap = { na_miejscu: 'Na miejscu (przy stoliku)', na_wynos: 'Na wynos (do torby)' };
 
         modalMount.innerHTML = `
           <div class="dicey-modal-backdrop dd-thoughts-backdrop">
@@ -474,7 +481,7 @@ export class CityEncounterManager {
               <div class="dd-thoughts-header">
                 <div class="dd-thoughts-title-badge">
                   <img src="./assets/Postacie/Mysli.png" class="dd-thoughts-icon" alt="Myśli" onerror="this.src='./public/assets/Postacie/Mysli.png'" />
-                  <h2>PREFERENCJE ZAPAMIĘTANE! 🥙✨</h2>
+                  <h2>PREFERENCJE ZAPAMIĘTANE!</h2>
                 </div>
                 <div class="dd-thoughts-hint">Twoje zamówienie jest gotowe w myślach. Powiedz to Mistrzowi Kebaba!</div>
               </div>
@@ -482,25 +489,25 @@ export class CityEncounterManager {
               <div class="dd-thoughts-body">
                 <div class="dd-shopping-recap-card">
                   <div class="recap-row">
-                    <span class="recap-label">🍽️ Danie:</span>
+                    <span class="recap-label">Danie:</span>
                     <strong class="recap-val">${dishMap[this.app.cityFoodChoices.dish] || this.app.cityFoodChoices.dish}</strong>
                   </div>
                   <div class="recap-row">
-                    <span class="recap-label">📏 Rozmiar:</span>
+                    <span class="recap-label">Rozmiar:</span>
                     <strong class="recap-val">Rozmiar ${this.app.cityFoodChoices.size}</strong>
                   </div>
                   <div class="recap-row">
-                    <span class="recap-label">🧄 Sos:</span>
+                    <span class="recap-label">Sos:</span>
                     <strong class="recap-val">${sauceMap[this.app.cityFoodChoices.sauce] || this.app.cityFoodChoices.sauce}</strong>
                   </div>
                   <div class="recap-row">
-                    <span class="recap-label">🥡 Sposób podania:</span>
+                    <span class="recap-label">Sposób podania:</span>
                     <strong class="recap-val">${diningMap[this.app.cityFoodChoices.dining] || this.app.cityFoodChoices.dining}</strong>
                   </div>
                 </div>
 
                 <button type="button" class="btn-dicey-take btn-city-continue" id="food-thoughts-confirm-btn" style="background: #f77f00; color: #fff; font-weight: 800; margin-top: 15px;">
-                  IDĘ DO MISTRZA KEBABA! 👨‍🍳
+IDĘ DO MISTRZA KEBABA!
                 </button>
               </div>
             </div>
@@ -513,12 +520,12 @@ export class CityEncounterManager {
             sound.playFanfare();
             const node = this.app.getNode(nodeId);
             if (node) node.completed = true;
-            this.awardProgress(1, 1, 150);
+            this.app.awardProgress(1, 1, 150);
             this.app.updateHUD();
             playJaggedCurtainWipe(() => {
               this.app.closeModal();
               this.app.renderBoard();
-              this.app.showTemporaryPlayerBubble('Decyzje podjęte! Czas złożyć zamówienie! 🥙✨', 2500);
+              this.app.showTemporaryPlayerBubble('Decyzje podjęte! Czas złożyć zamówienie!', 2500);
             });
           });
         }
@@ -620,7 +627,7 @@ export class CityEncounterManager {
       player: this.app.player,
       foodChoices: this.app.cityFoodChoices,
       onPlayerDamaged: (dmg) => {
-        this.app.player.hp = Math.max(1, this.app.player.hp - dmg);
+        this.app.player.hp = Math.max(0, this.app.player.hp - dmg);
         this.app.updateHUD();
       },
       onClose: () => {
@@ -635,7 +642,7 @@ export class CityEncounterManager {
         });
       },
       onComplete: ({ score } = {}) => {
-        this.app.handleFighterVictory(arenaMount, nodeId, score || 300, 'Mistrz Kebaba przygotował pyszny posiłek! 🥙✨');
+        this.app.handleFighterVictory(arenaMount, nodeId, score || 300, 'Mistrz Kebaba przygotował pyszny posiłek!');
       }
     });
 
@@ -647,20 +654,73 @@ export class CityEncounterManager {
     const modalMount = document.getElementById('modal-mount');
     modalMount.classList.remove('hidden');
 
-    let currentStep = 'language'; // 'language' | 'type' | 'duration' | 'success'
-    let selectedLang = 'pl';
-    let selectedType = 'ulgowy'; // 'ulgowy' | 'normalny'
+    let currentStep = 'language'; // 'language' | 'tickets' | 'success'
+    let selectedLang = 'pl'; // 'pl' | 'en' | 'uk'
+    let selectedDuration = '20'; // '20' | '75' | '90'
 
-    const ticketOptions = [
-      { id: 'u20', type: 'ulgowy', duration: '20', price: 1, label: 'Ulgowy 20 min', icon: '🎟️', sub: 'Uczniowie (1 moneta)' },
-      { id: 'u75', type: 'ulgowy', duration: '75', price: 2, label: 'Ulgowy 75 min', icon: '🎟️', sub: 'Uczniowie (2 monety)' },
-      { id: 'u90', type: 'ulgowy', duration: '90', price: 3, label: 'Ulgowy 90 min', icon: '🎟️', sub: 'Uczniowie (3 monety)' },
-      { id: 'n20', type: 'normalny', duration: '20', price: 2, label: 'Normalny 20 min', icon: '🎫', sub: 'Dorośli (2 monety)' },
-      { id: 'n75', type: 'normalny', duration: '75', price: 4, label: 'Normalny 75 min', icon: '🎫', sub: 'Dorośli (4 monety)' },
-      { id: 'n90', type: 'normalny', duration: '90', price: 7, label: 'Normalny 90 min', icon: '🎫', sub: 'Dorośli (7 monet)' }
-    ];
+    const i18n = {
+      pl: {
+        title: 'BILETOMAT MIEJSKI ZTM',
+        stepLang: 'KROK 1/2: WYBÓR JĘZYKA',
+        langPrompt: 'Dotknij flagi, aby wybrać język, a następnie zatwierdź:',
+        confirmBtn: 'ZATWIERDŹ WYBÓR JĘZYKA',
+        coins: 'TWOJE MONETY',
+        stepTicket: 'KROK 2/2: WYBÓR CZASU I RODZAJU BILETU',
+        durationPrompt: 'Wybierz czas przejazdu (20 min, 75 min lub 90 min):',
+        ulgowy: 'Ulgowy (uczniowski)',
+        normalny: 'Normalny (standard)',
+        min: 'minut',
+        back: 'Powrót do wyboru języka',
+        insufficient: 'BŁĄD PŁATNOŚCI! Za mało monet! Biletomat nakłada karę (-3 HP)!'
+      },
+      en: {
+        title: 'CITY TICKET MACHINE',
+        stepLang: 'STEP 1/2: LANGUAGE SELECTION',
+        langPrompt: 'Select your language and press Confirm:',
+        confirmBtn: 'CONFIRM LANGUAGE',
+        coins: 'YOUR COINS',
+        stepTicket: 'STEP 2/2: SELECT DURATION & FARE',
+        durationPrompt: 'Select ticket duration (20 min, 75 min or 90 min):',
+        ulgowy: 'Reduced (Student)',
+        normalny: 'Standard',
+        min: 'minutes',
+        back: 'Back to language selection',
+        insufficient: 'PAYMENT FAILED! Not enough coins! Penalty applied (-3 HP)!'
+      },
+      uk: {
+        title: 'МІСЬКИЙ КВИТКОВИЙ АВТОМАТ',
+        stepLang: 'КРОК 1/2: ОБРАТИ МОВУ',
+        langPrompt: 'Оберіть мову та натисніть Підтвердити:',
+        confirmBtn: 'ПІДТВЕРДИТИ МОВУ',
+        coins: 'ВАШІ МОНЕТИ',
+        stepTicket: 'КРОК 2/2: ОБЕРІТЬ ЧАС ТА ТИП КВИТКА',
+        durationPrompt: 'Оберіть тривалість (20 хв, 75 хв або 90 хв):',
+        ulgowy: 'Пільговий (учнівський)',
+        normalny: 'Звичайний',
+        min: 'хвилин',
+        back: 'Повернутися до вибору мови',
+        insufficient: 'ПОМИЛКА ОПЛАТИ! Недостатньо монет! Штраф (-3 HP)!'
+      }
+    };
+
+    const ticketsByDuration = {
+      '20': [
+        { id: 'u20', type: 'ulgowy', duration: '20', price: 1, label: 'Ulgowy 20 min', sub: '1 moneta' },
+        { id: 'n20', type: 'normalny', duration: '20', price: 3, label: 'Normalny 20 min', sub: '3 monety' }
+      ],
+      '75': [
+        { id: 'u75', type: 'ulgowy', duration: '75', price: 2, label: 'Ulgowy 75 min', sub: '2 monety' },
+        { id: 'n75', type: 'normalny', duration: '75', price: 4, label: 'Normalny 75 min', sub: '4 monety' }
+      ],
+      '90': [
+        { id: 'u90', type: 'ulgowy', duration: '90', price: 3, label: 'Ulgowy 90 min', sub: '3 monety' },
+        { id: 'n90', type: 'normalny', duration: '90', price: 7, label: 'Normalny 90 min', sub: '7 monet' }
+      ]
+    };
 
     const renderBiletomat = (errorMessage = null) => {
+      const texts = i18n[selectedLang] || i18n.pl;
+
       if (currentStep === 'language') {
         modalMount.innerHTML = `
           <div class="dicey-modal-backdrop dd-biletomat-backdrop">
@@ -668,33 +728,39 @@ export class CityEncounterManager {
               <div class="dd-biletomat-top-bar">
                 <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.src='./public/assets/Postacie/Biletomat.png'" />
                 <div class="biletomat-title-box">
-                  <h3>BILETOMAT MIEJSKI ZTM</h3>
-                  <span>WYBÓR JĘZYKA / SELECT LANGUAGE / ОБЕРІТЬ МОВУ</span>
+                  <h3>${texts.title}</h3>
+                  <span>${texts.stepLang}</span>
                 </div>
                 <div class="biletomat-coins-pill">
-                  🪙 TWOJE MONETY: <strong>${this.app.player.coins}</strong>
+                  ${texts.coins}: <strong>${this.app.player.coins}</strong>
                 </div>
               </div>
 
               ${errorMessage ? `<div class="biletomat-error-alert">${errorMessage}</div>` : ''}
 
               <div class="biletomat-screen-body">
-                <p class="biletomat-instruction">Wybierz język obsługi biletomatu:</p>
+                <p class="biletomat-instruction">${texts.langPrompt}</p>
                 <div class="biletomat-lang-grid">
-                  <button type="button" class="btn-biletomat-lang" data-lang="pl">
+                  <button type="button" class="btn-biletomat-lang ${selectedLang === 'pl' ? 'active-lang' : ''}" data-lang="pl" style="${selectedLang === 'pl' ? 'outline: 3px solid #10b981; transform: scale(1.04);' : ''}">
                     <span class="bl-flag">🇵🇱</span>
                     <strong class="bl-text">POLSKI</strong>
                     <span class="bl-sub">Domyślny</span>
                   </button>
-                  <button type="button" class="btn-biletomat-lang" data-lang="en">
+                  <button type="button" class="btn-biletomat-lang ${selectedLang === 'en' ? 'active-lang' : ''}" data-lang="en" style="${selectedLang === 'en' ? 'outline: 3px solid #10b981; transform: scale(1.04);' : ''}">
                     <span class="bl-flag">🇬🇧</span>
                     <strong class="bl-text">ENGLISH</strong>
                     <span class="bl-sub">International</span>
                   </button>
-                  <button type="button" class="btn-biletomat-lang" data-lang="uk">
+                  <button type="button" class="btn-biletomat-lang ${selectedLang === 'uk' ? 'active-lang' : ''}" data-lang="uk" style="${selectedLang === 'uk' ? 'outline: 3px solid #10b981; transform: scale(1.04);' : ''}">
                     <span class="bl-flag">🇺🇦</span>
                     <strong class="bl-text">УКРАЇНСЬКА</strong>
                     <span class="bl-sub">Для гостей</span>
+                  </button>
+                </div>
+
+                <div style="margin-top: 25px; text-align: center;">
+                  <button type="button" class="btn-dicey-take" id="btn-confirm-lang" style="background: #10b981; color: white; padding: 12px 28px; font-size: 1.05rem; font-weight: 800; border-radius: 12px; cursor: pointer; border: none; box-shadow: 0 4px 14px rgba(16,185,129,0.4);">
+                    ${texts.confirmBtn} ➔
                   </button>
                 </div>
               </div>
@@ -706,66 +772,118 @@ export class CityEncounterManager {
           btn.addEventListener('click', () => {
             sound.playStep();
             selectedLang = btn.dataset.lang;
-            currentStep = 'type';
             renderBiletomat();
           });
         });
-      } else if (currentStep === 'type') {
+
+        const confirmBtn = modalMount.querySelector('#btn-confirm-lang');
+        if (confirmBtn) {
+          confirmBtn.addEventListener('click', () => {
+            sound.playStep();
+            currentStep = 'tickets';
+            renderBiletomat();
+          });
+        }
+      } else if (currentStep === 'tickets') {
+        const currentTickets = ticketsByDuration[selectedDuration] || ticketsByDuration['20'];
+
         modalMount.innerHTML = `
           <div class="dicey-modal-backdrop dd-biletomat-backdrop">
             <div class="dd-biletomat-container">
               <div class="dd-biletomat-top-bar">
                 <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.src='./public/assets/Postacie/Biletomat.png'" />
                 <div class="biletomat-title-box">
-                  <h3>BILETOMAT MIEJSKI ZTM</h3>
-                  <span>KROK 1/2: WYBÓR RODZAJU BILETU (ULGOWY CZY NORMALNY)</span>
+                  <h3>${texts.title}</h3>
+                  <span>${texts.stepTicket}</span>
                 </div>
                 <div class="biletomat-coins-pill">
-                  🪙 TWOJE MONETY: <strong>${this.app.player.coins}</strong>
+                  ${texts.coins}: <strong>${this.app.player.coins}</strong>
                 </div>
               </div>
 
-              ${errorMessage ? `<div class="biletomat-error-alert">${errorMessage}</div>` : ''}
+              ${errorMessage ? `<div class="biletomat-error-alert" style="color: #ef4444; background: rgba(239,68,68,0.15); border: 1px solid #ef4444; border-radius: 8px; padding: 10px; margin: 10px 0; font-weight: bold; text-align: center;">${errorMessage}</div>` : ''}
 
               <div class="biletomat-screen-body">
-                <p class="biletomat-instruction">Kto będzie podróżował? Wybierz rodzaj biletu:</p>
+                <p class="biletomat-instruction">${texts.durationPrompt}</p>
 
-                <div class="biletomat-type-grid">
-                  <button type="button" class="btn-biletomat-type type-ulgowy" data-type="ulgowy">
-                    <div class="bty-header">
-                      <span class="bty-icon">🎟️</span>
-                      <strong class="bty-title">BILET ULGOWY 50%</strong>
-                    </div>
-                    <div class="bty-sub">Dla uczniów, studentów i dzieci. Wymaga ważnej legitymacji szkolnej!</div>
-                    <div class="bty-badge">Ceny: 1 – 3 monety 🪙</div>
-                  </button>
-
-                  <button type="button" class="btn-biletomat-type type-normalny" data-type="normalny">
-                    <div class="bty-header">
-                      <span class="bty-icon">🎫</span>
-                      <strong class="bty-title">BILET NORMALNY 100%</strong>
-                    </div>
-                    <div class="bty-sub">Dla osób dorosłych bez uprawnień do ulgi.</div>
-                    <div class="bty-badge">Ceny: 2 – 7 monet 🪙</div>
-                  </button>
+                <!-- Wybór czasu trwania (20m, 75m, 90m) -->
+                <div class="biletomat-durations-row" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                  ${['20', '75', '90'].map(dur => `
+                    <button type="button" class="btn-biletomat-dur" data-dur="${dur}" style="flex: 1; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 1.1rem; cursor: pointer; border: 2px solid ${selectedDuration === dur ? '#3b82f6' : '#374151'}; background: ${selectedDuration === dur ? '#1e3a8a' : '#1f2937'}; color: white; transition: all 0.2s;">
+                      ⏱️ ${dur} ${texts.min}
+                    </button>
+                  `).join('')}
                 </div>
 
-                <div class="biletomat-nav-row">
-                  <button type="button" class="btn-biletomat-back" id="biletomat-back-to-lang">
-                    ⬅ Zmień język
+                <!-- Opcje biletów dla wybranego czasu: Ulgowy vs Normalny -->
+                <div class="biletomat-tickets-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                  ${currentTickets.map(t => `
+                    <button type="button" class="btn-biletomat-ticket ${t.type}" data-id="${t.id}" style="display: flex; flex-direction: column; align-items: center; padding: 18px; border-radius: 12px; border: 2px solid ${t.type === 'ulgowy' ? '#10b981' : '#f59e0b'}; background: ${t.type === 'ulgowy' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)'}; color: white; cursor: pointer; text-align: center;">
+                      <div class="btt-header" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px;">
+                        ${t.type === 'ulgowy' ? '🎓 ' + texts.ulgowy : '💼 ' + texts.normalny}
+                      </div>
+                      <div class="btt-price" style="font-size: 1.4rem; font-weight: 900; color: ${t.type === 'ulgowy' ? '#34d399' : '#fbbf24'}; margin: 6px 0;">
+                        🪙 ${t.price} ${t.price === 1 ? 'moneta' : (t.price < 5 ? 'monety' : 'monet')}
+                      </div>
+                      <div class="btt-sub" style="font-size: 0.85rem; opacity: 0.8;">
+                        ${t.type === 'ulgowy' ? 'Ważny z legitymacją szkolną' : 'Dla wszystkich'}
+                      </div>
+                    </button>
+                  `).join('')}
+                </div>
+
+                <div class="biletomat-nav-row" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                  <button type="button" class="btn-biletomat-back" id="biletomat-back-to-lang" style="background: transparent; border: 1px solid #4b5563; color: #9ca3af; padding: 8px 16px; border-radius: 8px; cursor: pointer;">
+                    ← ${texts.back}
                   </button>
-                  <span class="biletomat-step-pill">Krok 1 z 2</span>
+                  <span class="biletomat-step-pill" style="color: #9ca3af; font-size: 0.9rem;">20m (1/3) • 75m (2/4) • 90m (3/7)</span>
                 </div>
               </div>
             </div>
           </div>
         `;
 
-        modalMount.querySelectorAll('.btn-biletomat-type').forEach(btn => {
+        modalMount.querySelectorAll('.btn-biletomat-dur').forEach(btn => {
           btn.addEventListener('click', () => {
             sound.playStep();
-            selectedType = btn.dataset.type;
-            currentStep = 'duration';
+            selectedDuration = btn.dataset.dur;
+            renderBiletomat();
+          });
+        });
+
+        modalMount.querySelectorAll('.btn-biletomat-ticket').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const ticketId = btn.dataset.id;
+            const chosen = (ticketsByDuration[selectedDuration] || []).find(t => t.id === ticketId);
+            if (!chosen) return;
+
+            // Weryfikacja monet gracza - bije 3 HP kary za niewystarczającą ilość monet
+            if (this.app.player.coins < chosen.price) {
+              sound.playWrong();
+              this.app.player.hp = Math.max(0, this.app.player.hp - 3);
+              this.app.updateHUD();
+
+              if (this.app.player.hp <= 0) {
+                this.app.handleGameOver();
+                return;
+              }
+
+              const errorMsg = `⚠️ ${texts.insufficient} (Koszt: ${chosen.price}, posiadasz: ${this.app.player.coins})`;
+              renderBiletomat(errorMsg);
+              return;
+            }
+
+            // Płatność udana
+            this.app.player.coins -= chosen.price;
+            this.app.updateHUD();
+            this.cityTicketChosen = {
+              type: chosen.type,
+              duration: chosen.duration,
+              price: chosen.price,
+              label: `${chosen.type === 'ulgowy' ? texts.ulgowy : texts.normalny} (${chosen.duration} min)`
+            };
+            sound.playSuccess();
+            currentStep = 'success';
             renderBiletomat();
           });
         });
@@ -778,94 +896,6 @@ export class CityEncounterManager {
             renderBiletomat();
           });
         }
-      } else if (currentStep === 'duration') {
-        const availableTickets = ticketOptions.filter(t => t.type === selectedType);
-        const typeLabel = selectedType === 'ulgowy' ? 'BILET ULGOWY 50%' : 'BILET NORMALNY 100%';
-
-        modalMount.innerHTML = `
-          <div class="dicey-modal-backdrop dd-biletomat-backdrop">
-            <div class="dd-biletomat-container">
-              <div class="dd-biletomat-top-bar">
-                <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.src='./public/assets/Postacie/Biletomat.png'" />
-                <div class="biletomat-title-box">
-                  <h3>BILETOMAT MIEJSKI ZTM</h3>
-                  <span>KROK 2/2: WYBÓR CZASU WAŻNOŚCI (${typeLabel})</span>
-                </div>
-                <div class="biletomat-coins-pill">
-                  🪙 TWOJE MONETY: <strong>${this.app.player.coins}</strong>
-                </div>
-              </div>
-
-              ${errorMessage ? `<div class="biletomat-error-alert">${errorMessage}</div>` : ''}
-
-              <div class="biletomat-screen-body">
-                <p class="biletomat-instruction">Dotknij ekranu i wybierz czas przejazdu (${typeLabel}):</p>
-
-                <div class="biletomat-tickets-grid">
-                  ${availableTickets.map(t => `
-                    <button type="button" class="btn-biletomat-ticket ${t.type}" data-id="${t.id}">
-                      <div class="btt-header">
-                        <span class="btt-icon">${t.icon}</span>
-                        <strong class="btt-label">${t.label}</strong>
-                      </div>
-                      <div class="btt-price">🪙 ${t.price} ${t.price === 1 ? 'moneta' : t.price < 5 ? 'monety' : 'monet'}</div>
-                      <div class="btt-sub">${t.sub}</div>
-                    </button>
-                  `).join('')}
-                </div>
-
-                <div class="biletomat-nav-row">
-                  <button type="button" class="btn-biletomat-back" id="biletomat-back-to-type">
-                    ⬅ Zmień rodzaj ulgi
-                  </button>
-                  <span class="biletomat-step-pill">Krok 2 z 2</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-
-        modalMount.querySelectorAll('.btn-biletomat-ticket').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const ticketId = btn.dataset.id;
-            const chosen = ticketOptions.find(t => t.id === ticketId);
-            if (!chosen) return;
-
-            // Weryfikacja monet gracza
-            if (this.app.player.coins < chosen.price) {
-              sound.playWrong();
-              // Obrażenie 1 HP za brak pieniędzy
-              this.app.player.hp = Math.max(1, this.app.player.hp - 1);
-              this.app.updateHUD();
-
-              const errorMsg = `⚠️ BŁĄD PŁATNOŚCI! Bilet kosztuje ${chosen.price} monet, a posiadasz tylko ${this.app.player.coins} monet! Biletomat piknął czerwonym światłem (-1 HP)! Wybierz tańszy bilet lub bilet 20-minutowy.`;
-              renderBiletomat(errorMsg);
-              return;
-            }
-
-            // Płatność udana
-            this.app.player.coins -= chosen.price;
-            this.app.updateHUD();
-            this.cityTicketChosen = {
-              type: chosen.type,
-              duration: chosen.duration,
-              price: chosen.price,
-              label: chosen.label
-            };
-            sound.playSuccess();
-            currentStep = 'success';
-            renderBiletomat();
-          });
-        });
-
-        const backBtn = modalMount.querySelector('#biletomat-back-to-type');
-        if (backBtn) {
-          backBtn.addEventListener('click', () => {
-            sound.playStep();
-            currentStep = 'type';
-            renderBiletomat();
-          });
-        }
       } else if (currentStep === 'success') {
         const ticket = this.cityTicketChosen;
         modalMount.innerHTML = `
@@ -874,7 +904,7 @@ export class CityEncounterManager {
               <div class="biletomat-top-bar">
                 <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.src='./public/assets/Postacie/Biletomat.png'" />
                 <div class="biletomat-title-box">
-                  <h3>BILETOMAT: TRANSAKCJA UDANA! 🎟️</h3>
+                  <h3>BILETOMAT: TRANSAKCJA UDANA!</h3>
                   <span>ODBIERZ WYDRUKOWANY BILET</span>
                 </div>
               </div>
@@ -894,12 +924,12 @@ export class CityEncounterManager {
 
               <div class="biletomat-note">
                 ${ticket.type === 'ulgowy' 
-                  ? '⚠️ <strong>Pamiętaj!</strong> Podczas kontroli biletów musisz okazać <strong>legitymację szkolną</strong>!' 
+                  ? '<strong>Pamiętaj!</strong> Podczas kontroli biletów musisz okazać <strong>legitymację szkolną</strong>!' 
                   : 'Bilet normalny nie wymaga okazywania dokumentu zniżkowego.'}
               </div>
 
               <button type="button" class="btn-dicey-take btn-city-continue" id="biletomat-take-btn" style="background: #10b981; color: #fff; font-weight: 800; margin-top: 15px;">
-                ODBIERZ BILET I WSIADAJ! 🎟️
+ODBIERZ BILET I WSIADAJ!
               </button>
             </div>
           </div>
@@ -911,12 +941,12 @@ export class CityEncounterManager {
             sound.playFanfare();
             const node = this.app.getNode(nodeId);
             if (node) node.completed = true;
-            this.awardProgress(1, 1, 150);
+            this.app.awardProgress(1, 1, 150);
             this.app.updateHUD();
             playJaggedCurtainWipe(() => {
               this.app.closeModal();
               this.app.renderBoard();
-              this.app.showTemporaryPlayerBubble('Bilet kupiony! Wsiadam do pojazdu! 🎟️✨', 2500);
+              this.app.showTemporaryPlayerBubble('Bilet kupiony! Wsiadam do pojazdu!', 2500);
             });
           });
         }
@@ -942,7 +972,7 @@ export class CityEncounterManager {
         <div class="dicey-modal-backdrop dd-inspector-backdrop">
           <div class="dd-inspector-container">
             <div class="dd-inspector-header">
-              <span class="inspector-badge-icon">🪪</span>
+              <span class="inspector-badge-icon"></span>
               <h2>KONTROLA BILETÓW W POJEŹDZIE!</h2>
             </div>
 
@@ -957,7 +987,7 @@ export class CityEncounterManager {
               </div>
 
               <div class="dd-inspector-speech-bubble" id="inspector-speech-bubble">
-                <span class="isb-avatar">👮</span>
+                <span class="isb-avatar"></span>
                 <p class="isb-text">
                   ${isUlgowy 
                     ? '„Dzień dobry, kontrola biletów! Widzę bilet ulgowy. <strong>Legitymację poproszę!</strong>”' 
@@ -973,7 +1003,7 @@ export class CityEncounterManager {
                   <div class="itb-input-row">
                     <input type="text" id="inspector-text-input" class="inspector-input-field" placeholder="Wpisz np. Legitymacja..." autocomplete="off" autofocus />
                     <button type="button" class="btn-dicey-take btn-inspector-submit" id="inspector-submit-btn">
-                      POKAŻ 🪪
+POKAŻ
                     </button>
                   </div>
 
@@ -991,7 +1021,7 @@ export class CityEncounterManager {
                 <div class="dd-inspector-normal-box">
                   <p>Twój bilet normalny jest ważny i nie wymaga dokumentu zniżkowego.</p>
                   <button type="button" class="btn-dicey-take btn-city-continue" id="inspector-normal-ok-btn" style="background: #10b981; color: #fff; font-weight: 800;">
-                    POKAŻ BILET NORMALNY 🎫
+POKAŻ BILET NORMALNY
                   </button>
                 </div>
               `}
@@ -1016,17 +1046,17 @@ export class CityEncounterManager {
 
             const bubbleText = modalMount.querySelector('.isb-text');
             if (bubbleText) {
-              bubbleText.innerHTML = '„Dziękuję, wszystko się zgadza! Legitymacja szkolna jest ważna. Życzę miłej podróży!” 🪪✨';
+              bubbleText.innerHTML = '„Dziękuję, wszystko się zgadza! Legitymacja szkolna jest ważna. Życzę miłej podróży!”';
             }
 
             const typeBox = modalMount.querySelector('.dd-inspector-type-box');
             if (typeBox) {
               typeBox.innerHTML = `
                 <div class="inspector-success-card">
-                  <h4>KONTROLA ZALICZONA POMYŚLNIE! ✔</h4>
+                  <h4>KONTROLA ZALICZONA POMYŚLNIE!</h4>
                   <p>Wzorowo okazałeś legitymację szkolną i obroniłeś swój bilet ulgowy!</p>
                   <button type="button" class="btn-dicey-take btn-city-continue" id="inspector-done-btn" style="background: #10b981; color: #fff; font-weight: 800; margin-top: 10px;">
-                    RUSZAJ W DALSZĄ DROGĘ ➡
+RUSZAJ W DALSZĄ DROGĘ
                   </button>
                 </div>
               `;
@@ -1036,21 +1066,30 @@ export class CityEncounterManager {
                 doneBtn.addEventListener('click', () => {
                   const node = this.app.getNode(nodeId);
                   if (node) node.completed = true;
-                  this.awardProgress(1, 1, 200);
+                  this.app.awardProgress(1, 1, 200);
                   this.app.updateHUD();
                   playJaggedCurtainWipe(() => {
                     this.app.closeModal();
                     this.app.renderBoard();
-                    this.app.showTemporaryPlayerBubble('Kontrola zaliczona! Pora na Finał! 🪪✨', 2500);
+                    this.app.showTemporaryPlayerBubble('Kontrola zaliczona! Pora na Finał!', 2500);
                   });
                 });
               }
             }
           } else {
             sound.playWrong();
+            // Inspektor bije 13 obrażeń za brak ważnej odpowiedzi
+            this.app.player.hp = Math.max(0, this.app.player.hp - 13);
+            this.app.updateHUD();
+
+            if (this.app.player.hp <= 0) {
+              this.app.handleGameOver();
+              return;
+            }
+
             renderInspector({
               type: 'error',
-              text: '❌ Kontroler pyta o legitymację! Wpisz w odpowiedzi słowo „legitymacja”!'
+              text: 'MANDAT I KARA! Inspektor zadaje 13 obrażeń (-13 HP)! Wpisz w odpowiedzi „legitymacja”, aby udowodnić prawo do ulgi!'
             });
           }
         };
@@ -1078,12 +1117,12 @@ export class CityEncounterManager {
             sound.playSuccess();
             const node = this.app.getNode(nodeId);
             if (node) node.completed = true;
-            this.awardProgress(1, 1, 200);
+            this.app.awardProgress(1, 1, 200);
             this.app.updateHUD();
             playJaggedCurtainWipe(() => {
               this.app.closeModal();
               this.app.renderBoard();
-              this.app.showTemporaryPlayerBubble('Bilet sprawdzony! Droga wolna! 🎫✨', 2500);
+              this.app.showTemporaryPlayerBubble('Bilet sprawdzony! Droga wolna!', 2500);
             });
           });
         }

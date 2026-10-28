@@ -6,7 +6,7 @@ import { sound } from '../audio/sound.js';
 
 const DUEL_ROUNDS = [
   {
-    speaker: 'Gejmer Kuba 🎮',
+    speaker: 'Gejmer Kuba',
     avatar: './assets/Postacie/Gejmer.png',
     bubblePl: '„Wchodzisz rano do szatni! Przywitaj się ze mną jak kolega!”',
     bubbleVn: '"Bạn mới bước vào phòng thay đồ buổi sáng! Hãy chào tớ tự nhiên như bạn bè nhé!"',
@@ -15,25 +15,25 @@ const DUEL_ROUNDS = [
     hintVn: 'Chọn thẻ chào hỏi: Siema!, Elo! hoặc Hejka!'
   },
   {
-    speaker: 'Piłkarz Maks ⚽',
+    speaker: 'Piłkarz Maks',
     avatar: './assets/Postacie/Pilkarz.png',
-    bubblePl: '„Elo Tan! Zapytaj mnie, co u mnie słychać!”',
-    bubbleVn: '"Elo Tan! Hãy hỏi thăm xem dạo này tớ thế nào đi!"',
+    bubblePl: '„Elo! Zapytaj mnie, co u mnie słychać!”',
+    bubbleVn: '"Elo! Hãy hỏi thăm xem dạo này tớ thế nào đi!"',
     acceptedIds: ['cotam'],
     diceRulePl: 'Użyj kości, aby zagrać kartę pytania',
     hintVn: 'Chọn thẻ câu hỏi: Co tam? (Có gì mới không?)'
   },
   {
-    speaker: 'Gejmer Kuba 🎮',
+    speaker: 'Gejmer Kuba',
     avatar: './assets/Postacie/Gejmer.png',
-    bubblePl: '„U mnie wszystko super! A co tam u Ciebie, Tan?”',
-    bubbleVn: '"Tớ mọi thứ đều tuyệt! Còn cậu thế nào hả Tan?"',
+    bubblePl: '„U mnie wszystko super! A co tam u Ciebie?”',
+    bubbleVn: '"Tớ mọi thứ đều tuyệt! Còn cậu thế nào?"',
     acceptedIds: ['spoko'],
     diceRulePl: 'Odpowiedz krótko, że wszystko dobrze',
     hintVn: 'Chọn thẻ trả lời: Spoko! (Ổn cả!)'
   },
   {
-    speaker: 'Piłkarz Maks ⚽',
+    speaker: 'Piłkarz Maks',
     avatar: './assets/Postacie/Pilkarz.png',
     bubblePl: '„Dzwonek na lekcję! Biegniemy na korytarz. Pożegnaj się!”',
     bubbleVn: '"Chuông vào lớp rồi! Chạy ra hành lang thôi. Chào tạm biệt nhé!"',
@@ -76,15 +76,15 @@ export class DiceDuelGame {
       <div class="arena-overlay dice-duel-arena">
         <div class="arena-header">
           <div class="fighter-badge player-fighter">
-            <img src="/assets/Tan.png" alt="Tan" class="fighter-avatar" onerror="this.src='./public/assets/Tan.png'" />
+            <img src="./assets/Warrior.png" alt="Bohater" class="fighter-avatar" onerror="this.src='./public/assets/Warrior.png'" />
             <div>
-              <div class="fighter-name">TAN • KOŚCI SLANGÓW 🎲</div>
+              <div class="fighter-name">BOHATER • KOŚCI SLANGÓW</div>
               <div class="fighter-sub">Finał Piętra 1 (Szatnia)</div>
             </div>
           </div>
 
           <div class="minigame-title-box">
-            <div class="wordwall-badge dice-mode-badge">🎲 DICEY DUNGEONS FINAŁ: ROZMOWA W SZATNI</div>
+            <div class="wordwall-badge dice-mode-badge">DICEY DUNGEONS FINAŁ: ROZMOWA W SZATNI</div>
             <h2>Rozmowa przy Wyjściu • Hội Thoại Cuối Tầng (${this.roundIndex + 1} / ${DUEL_ROUNDS.length})</h2>
             <p class="minigame-instruction">
               Wybierz kość i kliknij pasującą <strong>Kartę Slangową</strong>, aby odpowiedzieć koledze!
@@ -106,13 +106,13 @@ export class DiceDuelGame {
           <div class="duel-speech-content">
             <div class="duel-speaker-label">${round.speaker} mówi:</div>
             <div class="duel-bubble-pl">${round.bubblePl}</div>
-            <div class="duel-bubble-vn">🇻🇳 ${round.bubbleVn}</div>
-            <div class="duel-hint-pill">💡 Podpowiedź (Gợi ý): ${round.hintVn}</div>
+            <div class="duel-bubble-vn">${round.bubbleVn}</div>
+            <div class="duel-hint-pill">Podpowiedź (Gợi ý): ${round.hintVn}</div>
           </div>
         </div>
 
         <div class="dice-tray-bar">
-          <span class="dice-tray-label">🎲 Twoje kości (Xúc xắc của Tan):</span>
+          <span class="dice-tray-label">Twoje kości:</span>
           <div class="dice-list">
             ${this.rolledDice.map((val, idx) => `
               <button class="die-cube ${idx === this.selectedDieIndex ? 'selected-die' : ''}" data-die="${idx}">
@@ -121,8 +121,8 @@ export class DiceDuelGame {
               </button>
             `).join('')}
           </div>
-          <button class="btn-tool" id="duel-reroll-btn">🔄 Przerzuć kości (Đổ lại xúc xắc)</button>
-          <button class="btn-tool btn-close-arena" id="duel-exit-btn">⬅ Wróć na planszę</button>
+          <button class="btn-tool" id="duel-reroll-btn">Przerzuć kości (Đổ lại xúc xắc)</button>
+          <button class="btn-tool btn-close-arena" id="duel-exit-btn">Wróć na planszę</button>
         </div>
 
         <div class="dice-cards-grid">
@@ -130,15 +130,15 @@ export class DiceDuelGame {
             <div class="dicey-equipment-card" data-card-id="${card.id}" style="--card-color: ${card.color}">
               <div class="card-header-strip" style="background: ${card.color}">
                 <span>${card.emoji} ${card.word}</span>
-                <button class="card-audio-btn" data-speak="${card.cleanWord}" title="Posłuchaj wymowy">🔊</button>
+                <button class="card-audio-btn" data-speak="${card.cleanWord}" title="Posłuchaj wymowy"></button>
               </div>
               <div class="card-body">
                 <div class="card-phonetic">${card.phonetic}</div>
                 <div class="card-meaning-pl">${card.plMeaning}</div>
-                <div class="card-meaning-vn">🇻🇳 ${card.vnMeaning}</div>
+                <div class="card-meaning-vn">${card.vnMeaning}</div>
               </div>
               <button class="card-slot-btn" data-play-card="${card.id}">
-                🎲 Włóż kość i powiedz: „${card.word}”
+Włóż kość i powiedz: „${card.word}”
               </button>
             </div>
           `).join('')}
@@ -195,7 +195,7 @@ export class DiceDuelGame {
       if (feedback) {
         feedback.className = 'bp-feedback-banner good';
         feedback.innerHTML = `
-          <div><strong>🎉 Świetnie! Powiedziałeś „${card.word}” (+${100 + dieVal * 10} pkt)!</strong></div>
+          <div><strong>Świetnie! Powiedziałeś „${card.word}” (+${100 + dieVal * 10} pkt)!</strong></div>
           <div class="vn-sub">Tuyệt vời! Bạn đã dùng đúng từ "${card.word}"!</div>
         `;
       }
@@ -216,8 +216,8 @@ export class DiceDuelGame {
       if (feedback) {
         feedback.className = 'bp-feedback-banner bad';
         feedback.innerHTML = `
-          <div><strong>❌ „${card.word}” to ${card.category} (${card.categoryVn}).</strong></div>
-          <div class="vn-sub">💡 ${round.hintVn}</div>
+          <div><strong>„${card.word}” to ${card.category} (${card.categoryVn}).</strong></div>
+          <div class="vn-sub">${round.hintVn}</div>
         `;
       }
     }
@@ -228,10 +228,10 @@ export class DiceDuelGame {
     modal.className = 'victory-modal-backdrop';
     modal.innerHTML = `
       <div class="victory-modal-card grand-victory">
-        <div class="victory-badge">🏆 PIĘTRO 1 UKOŃCZONE! • HOÀN THÀNH TẦNG 1!</div>
-        <h2>Gratulacje, Tan! przeszedłeś Szatnię! 🎉🇻🇳🇵🇱</h2>
+        <div class="victory-badge">PIĘTRO 1 UKOŃCZONE! • HOÀN THÀNH TẦNG 1!</div>
+        <h2>Gratulacje! Przeszedłeś Szatnię!</h2>
         <p>Teraz umiesz przywitać się i pożegnać z polskimi nastolatkami na korytarzu jak prawdziwy kumpel!</p>
-        <p class="vn-sub">Chúc mừng Tan! Bạn đã thuộc làu cách chào hỏi và tạm biệt tự nhiên của học sinh Ba Lan!</p>
+        <p class="vn-sub">Chúc mừng! Bạn đã thuộc làu cách chào hỏi và tạm biệt tự nhiên của học sinh Ba Lan!</p>
         <div class="victory-words-recap">
           ${SLANG_WORDS.map(w => `
             <div class="recap-chip">
@@ -242,10 +242,10 @@ export class DiceDuelGame {
           `).join('')}
         </div>
         <div class="victory-reward-box">
-          ⭐ Zdobyte punkty w finale: <strong>+${this.score} PKT</strong> • Poziom A0 ➔ A0+!
+Zdobyte punkty w finale: <strong>+${this.score} PKT</strong> • Poziom A0 ➔ A0+!
         </div>
         <button class="btn-primary-large" id="duel-finish-btn">
-          Wróć na planszę (Możesz grać ponownie w każdy poziom!) ➡
+Wróć na planszę (Możesz grać ponownie w każdy poziom!)
         </button>
       </div>
     `;

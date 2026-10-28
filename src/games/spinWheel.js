@@ -3,24 +3,32 @@
 
 import { BOARD_3_WHEEL_SCENARIOS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
+import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
 
 export class SpinWheelGame {
   constructor(container, options = {}) {
     this.container = container;
-    this.player = options.player || { name: 'Tan', hp: 20, maxHp: 20 };
+    this.player = options.player || { name: 'Bohater', hp: 20, maxHp: 20 };
     this.onPlayerDamaged = options.onPlayerDamaged;
     this.onComplete = options.onComplete;
     this.onClose = options.onClose;
-    this.title = options.title || 'Zakręć kołem';
+    const rawEnemyName = (options.enemyName || 'Kotek Pomocnik')
+      .replace(/\s*\([^)]*\)/g, '')
+      .replace(/\s*\[[^\]]*\]/g, '')
+      .trim();
+    this.enemyName = options.enemyName || rawEnemyName || 'kotek';
+    this.title = options.title || rawEnemyName || 'Kotek Pomocnik';
 
-    const baseScenarios = options.scenarios || BOARD_3_WHEEL_SCENARIOS;
+    const rawScenarios = options.scenarios || BOARD_3_WHEEL_SCENARIOS;
+    const baseScenarios = (rawScenarios && rawScenarios.length > 0)
+      ? (rawScenarios.length > 6 ? rawScenarios.slice(0, 6) : rawScenarios)
+      : BOARD_3_WHEEL_SCENARIOS.slice(0, 3);
     this.remainingSlices = [...baseScenarios];
     this.totalCount = baseScenarios.length;
     this.tanDamage = options.tanDamage || getPlayerDamage(this.player);
-    this.enemyMaxHp = options.enemyMaxHp || (this.totalCount * this.tanDamage);
+    this.enemyMaxHp = this.totalCount * this.tanDamage;
     this.enemyHp = this.enemyMaxHp;
-    this.enemyDamage = options.enemyDamage !== undefined ? options.enemyDamage : 1;
-    this.enemyName = options.enemyName || 'kotek';
+    this.enemyDamage = options.enemyDamage !== undefined ? options.enemyDamage : 2;
     this.score = 0;
 
     this.angle = 0;
@@ -72,20 +80,17 @@ export class SpinWheelGame {
           <div class="ww-wheel-combat-card">
             <div class="ww-wheel-left-col">
               <div class="wheel-wrapper">
-                <canvas id="wheel-canvas" width="290" height="290"></canvas>
-                <div class="wheel-pointer" title="Wskaźnik">◀</div>
-                <button class="wheel-center-btn" id="sw-spin-center-btn">
-                  ZAKRĘĆ!
-                </button>
+                <canvas id="wheel-canvas" width="440" height="440"></canvas>
+                <div class="wheel-pointer" title="Wskaźnik"></div>
               </div>
               <button class="btn-primary-spin" id="sw-spin-main-btn">
-                🎡 ZAKRĘĆ KOŁEM (${this.remainingSlices.length}/${this.totalCount})
+ZAKRĘĆ KOŁEM (${this.remainingSlices.length}/${this.totalCount})
               </button>
             </div>
 
             <div class="ww-wheel-right-col" id="sw-question-panel">
               <div class="wheel-empty-prompt">
-                <div class="big-wheel-icon">🎡</div>
+                <div class="big-wheel-icon"></div>
                 <h3>Nowe zwroty o grach!</h3>
                 <p>Kliknij <strong>„ZAKRĘĆ KOŁEM”</strong> po lewej stronie, aby wylosować pytanie i przetestować nowe karty!</p>
               </div>
@@ -93,20 +98,20 @@ export class SpinWheelGame {
           </div>
         </div>
 
-        <!-- Lewy dolny róg: Tan -->
+        <!-- Lewy dolny róg: Bohater -->
         <div class="dd-arena-fighter dd-arena-player" id="mp-player-box">
           <div class="dd-sprite-container player-sprite-container" id="mp-player-sprite-wrap">
             <img
-              src="./assets/Tan.png"
-              alt="Tan"
+              src="${this.player?.avatar || './assets/Warrior.png'}"
+              alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
               id="mp-player-sprite"
-              onerror="this.src='./public/assets/Tan.png'"
+              onerror="this.src='./assets/Warrior.png'"
             />
           </div>
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Tan</span>
+              <span class="dd-fighter-name">${this.player?.heroName || this.player?.name || 'Bohater'}</span>
             </div>
             <div class="dd-fighter-hp-bar" id="mp-player-hp-bar">
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
@@ -117,13 +122,33 @@ export class SpinWheelGame {
       </div>
     `;
 
+    const animatedTitle = this.container.querySelector('#mp-animated-title');
+    if (animatedTitle) {
+      const dismiss = () => {
+        if (!animatedTitle.classList.contains('is-dismissed')) {
+          animatedTitle.classList.remove('is-centered');
+          animatedTitle.classList.add('is-dismissed');
+          setTimeout(() => {
+            if (animatedTitle.parentNode) animatedTitle.remove();
+          }, 600);
+        }
+      };
+      setTimeout(dismiss, 1100);
+      this.container.addEventListener('pointerdown', dismiss, { once: true });
+    }
+
     this.canvas = this.container.querySelector('#wheel-canvas');
     this.ctx = this.canvas.getContext('2d');
     this.questionPanel = this.container.querySelector('#sw-question-panel');
 
     const triggerSpin = () => this.spin();
-    this.container.querySelector('#sw-spin-center-btn').addEventListener('click', triggerSpin);
-    this.container.querySelector('#sw-spin-main-btn').addEventListener('click', triggerSpin);
+    if (this.canvas) {
+      this.canvas.addEventListener('click', triggerSpin);
+    }
+    const mainBtn = this.container.querySelector('#sw-spin-main-btn');
+    if (mainBtn) {
+      mainBtn.addEventListener('click', triggerSpin);
+    }
 
     this.drawWheel();
   }
@@ -143,7 +168,7 @@ export class SpinWheelGame {
 
     this.questionPanel.innerHTML = `
       <div class="wheel-empty-prompt spinning-state">
-        <div class="big-wheel-icon spin-anim">🎡</div>
+        <div class="big-wheel-icon spin-anim"></div>
         <h3>Koło się kręci...</h3>
         <p>Zobaczmy, który zwrot wypadnie teraz!</p>
       </div>
@@ -173,9 +198,16 @@ export class SpinWheelGame {
         sound.stopSpinWheel();
         this.selectedSlice = this.remainingSlices[currentIdx];
         sound.playSuccess();
-        const speakTxt = this.selectedSlice.speakText || this.selectedSlice.word || this.selectedSlice.sliceLabel || this.selectedSlice.label;
-        if (speakTxt) {
-          sound.speakPolish(speakTxt);
+        const slice = this.selectedSlice;
+        const sLabel = (slice.sliceLabel || slice.word || slice.label || '').trim();
+        const sSpeak = (slice.speakText || slice.word || sLabel || '').trim();
+        const nLabel = sLabel.toLowerCase().replace(/[!?.„”«»:\-]/g, '').trim();
+        const nSpeak = sSpeak.toLowerCase().replace(/[!?.„”«»:\-]/g, '').trim();
+        const speech = (sSpeak && nSpeak !== nLabel)
+          ? (nSpeak.startsWith(nLabel) ? sSpeak : `${sLabel}: ${sSpeak}`)
+          : (sSpeak || sLabel);
+        if (speech) {
+          sound.speakPolish(speech);
         }
         this.renderScenarioCard(this.selectedSlice);
       }
@@ -191,7 +223,7 @@ export class SpinWheelGame {
     const H = this.canvas.height;
     const cx = W / 2;
     const cy = H / 2;
-    const radius = Math.min(cx, cy) - 14;
+    const radius = Math.min(cx, cy) - 16;
 
     ctx.clearRect(0, 0, W, H);
 
@@ -202,10 +234,10 @@ export class SpinWheelGame {
 
     ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, cy, radius + 7, 0, Math.PI * 2);
+    ctx.arc(cx, cy, radius + 8, 0, Math.PI * 2);
     ctx.fillStyle = '#ffd166';
     ctx.fill();
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     ctx.strokeStyle = '#1d3557';
     ctx.stroke();
     ctx.restore();
@@ -224,7 +256,7 @@ export class SpinWheelGame {
       ctx.closePath();
       ctx.fillStyle = slice.sliceColor || slice.color || PALETTE[i % PALETTE.length];
       ctx.fill();
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3.5;
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
 
@@ -232,21 +264,22 @@ export class SpinWheelGame {
       ctx.rotate(startAngle + arc / 2);
       ctx.textAlign = 'right';
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 13px "Fredoka", "Segoe UI", sans-serif';
-      ctx.shadowColor = 'rgba(0,0,0,0.5)';
-      ctx.shadowBlur = 4;
       const labelText = slice.sliceLabel || slice.label || slice.cleanWord || slice.word || 'Słowo';
-      ctx.fillText(labelText, radius - 14, 5);
+      const fontSize = labelText.length > 20 ? 14 : (labelText.length > 14 ? 15 : 16);
+      ctx.font = `bold ${fontSize}px "Fredoka", "Segoe UI", sans-serif`;
+      ctx.shadowColor = 'rgba(0,0,0,0.6)';
+      ctx.shadowBlur = 5;
+      ctx.fillText(labelText, radius - 18, 5);
       ctx.restore();
     }
 
-    for (let i = 0; i < Math.max(6, count * 2); i++) {
-      const a = this.angle + (i * Math.PI * 2) / Math.max(6, count * 2);
-      const px = cx + Math.cos(a) * (radius + 3.5);
-      const py = cy + Math.sin(a) * (radius + 3.5);
+    for (let i = 0; i < Math.max(8, count * 2); i++) {
+      const a = this.angle + (i * Math.PI * 2) / Math.max(8, count * 2);
+      const px = cx + Math.cos(a) * (radius + 4);
+      const py = cy + Math.sin(a) * (radius + 4);
       ctx.fillStyle = i % 2 === 0 ? '#ffffff' : '#ef476f';
       ctx.beginPath();
-      ctx.arc(px, py, 3, 0, Math.PI * 2);
+      ctx.arc(px, py, 3.5, 0, Math.PI * 2);
       ctx.fill();
     }
   }
@@ -254,8 +287,16 @@ export class SpinWheelGame {
   renderScenarioCard(scenario) {
     const sliceColor = scenario.sliceColor || scenario.color || '#3a86ff';
     const badge = scenario.badge || 'KOTEK POMOCNIK';
-    const speakText = scenario.speakText || scenario.word || scenario.sliceLabel || scenario.label || '';
-    const sliceLabel = scenario.sliceLabel || scenario.word || speakText;
+    const sliceLabel = (scenario.sliceLabel || scenario.word || scenario.label || '').trim();
+    const speakText = (scenario.speakText || scenario.word || sliceLabel || '').trim();
+
+    const normLabel = sliceLabel.toLowerCase().replace(/[!?.„”«»:\-]/g, '').trim();
+    const normSpeak = speakText.toLowerCase().replace(/[!?.„”«»:\-]/g, '').trim();
+    const hasDistinctQuote = Boolean(speakText && normSpeak !== normLabel);
+
+    const fullAudioText = hasDistinctQuote
+      ? (normSpeak.startsWith(normLabel) ? speakText : `${sliceLabel}: ${speakText}`)
+      : (speakText || sliceLabel);
 
     const rawOptions = Array.isArray(scenario.options) ? scenario.options : [];
     const normalizedOptions = rawOptions.map((opt) => {
@@ -277,13 +318,20 @@ export class SpinWheelGame {
         <div class="scenario-top-row">
           <span class="scenario-badge" style="background: ${sliceColor}">${badge}</span>
           <button class="btn-audio-inline" id="sw-speak-btn">
-            🔊 Posłuchaj
+Posłuchaj
           </button>
         </div>
 
         <div class="scenario-slice-heading" style="color: ${sliceColor}">
           ${sliceLabel}
         </div>
+
+        ${hasDistinctQuote ? `
+          <div class="scenario-quote-box" style="border-left-color: ${sliceColor}">
+            <span class="scenario-quote-label">Przykład / Hasło:</span>
+            <span class="scenario-quote-text">„${speakText}”</span>
+          </div>
+        ` : ''}
 
         <div class="scenario-options-list">
           ${shuffledOptions.map((opt, idx) => `
@@ -297,7 +345,7 @@ export class SpinWheelGame {
     `;
 
     this.questionPanel.querySelector('#sw-speak-btn').addEventListener('click', () => {
-      if (speakText) sound.speakPolish(speakText);
+      if (fullAudioText) sound.speakPolish(fullAudioText);
     });
 
     const buttons = this.questionPanel.querySelectorAll('.scenario-option-btn');
@@ -309,7 +357,7 @@ export class SpinWheelGame {
           buttons.forEach((b) => (b.disabled = true));
           btn.classList.add('opt-correct');
           sound.playAttackHit(this.enemyName);
-          if (speakText) sound.speakPolish(speakText);
+          if (fullAudioText) sound.speakPolish(fullAudioText);
 
           this.score += 120;
           this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
@@ -326,12 +374,19 @@ export class SpinWheelGame {
           btn.disabled = true;
 
           const dmg = this.enemyDamage || 1;
-          this.player.hp = Math.max(1, this.player.hp - dmg);
           if (this.onPlayerDamaged) {
             this.onPlayerDamaged(dmg);
+          } else {
+            this.player.hp = Math.max(0, this.player.hp - dmg);
           }
           this.updatePlayerHud();
           this.triggerFighterHit('player', `-${dmg}`);
+
+          if (this.player.hp <= 0) {
+            setTimeout(() => {
+              playHeroDefeatAnimation(this.container, this.player, this.onClose);
+            }, 500);
+          }
         }
       });
     });
@@ -342,7 +397,7 @@ export class SpinWheelGame {
     const mainBtn = this.container.querySelector('#sw-spin-main-btn');
     if (mainBtn) {
       mainBtn.disabled = false;
-      mainBtn.textContent = `🎡 ZAKRĘĆ KOŁEM (${this.remainingSlices.length}/${this.totalCount})`;
+      mainBtn.textContent = `ZAKRĘĆ KOŁEM (${this.remainingSlices.length}/${this.totalCount})`;
     }
 
     if (this.remainingSlices.length === 0 || this.enemyHp <= 0) {
@@ -353,7 +408,7 @@ export class SpinWheelGame {
     this.drawWheel();
     this.questionPanel.innerHTML = `
       <div class="wheel-empty-prompt">
-        <div class="big-wheel-icon">✨</div>
+        <div class="big-wheel-icon"></div>
         <h3>Świetnie! Pozostało na kole: ${this.remainingSlices.length}</h3>
         <p>Kliknij <strong>„ZAKRĘĆ KOŁEM”</strong>, aby wylosować kolejny zwrot!</p>
       </div>
@@ -399,6 +454,18 @@ export class SpinWheelGame {
     const pct = Math.max(0, Math.min(100, (this.enemyHp / this.enemyMaxHp) * 100));
     if (fill) fill.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.enemyHp}/${this.enemyMaxHp}`;
+  }
+
+  updatePlayerHud() {
+    const fill = this.container.querySelector('#mp-player-hp-fill');
+    const txt = this.container.querySelector('#mp-player-hp-text');
+    const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
+    if (fill) fill.style.width = `${pct}%`;
+    if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+  }
+
+  updatePlayerBar() {
+    this.updatePlayerHud();
   }
 
   finishWheel() {

@@ -60,7 +60,7 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
         category: 'equipment',
         name: 'SNEAKERSY',
         color: '#8338ec',
-        statEmoji: '👟',
+        statEmoji: '',
         bigStat: '+4',
         subStatText: 'MAX HP +4',
         descPl: 'Wygodne buty szkolne! Zwiększają na stałe Twoje maksymalne punkty zdrowia o +4 HP.',
@@ -76,7 +76,7 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
         category: 'equipment',
         name: 'ENERGETYK',
         color: '#00b4d8',
-        statEmoji: '⚡',
+        statEmoji: '',
         bigStat: `+${app.player.bonusTimeSec}s`,
         subStatText: 'CZAS W MINIGRACH',
         descPl: `Napój na refleks! Daje dodatkowy czas (+${app.player.bonusTimeSec}s) na odpowiedź w minigrach czasowych.`,
@@ -92,7 +92,7 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
         category: 'consumable',
         name: 'KEBAB',
         color: '#f77f00',
-        statEmoji: '🥙',
+        statEmoji: '',
         bigStat: `×${app.player.kebabs}`,
         subStatText: 'ULECZ +10 HP',
         descPl: `Ciepły kebab z sosem! Przedmiot jednorazowy — natychmiast regeneruje +10 punktów życia (W torbie: ${app.player.kebabs}).`,
@@ -113,8 +113,8 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
         statEmoji: w.emoji,
         bigStat: w.phonetic,
         subStatText: w.category,
-        descPl: `🇵🇱 Znaczenie: ${w.plMeaning}\n💬 Przykład: ${w.examplePl.replace('\n', ' ')}`,
-        descVn: `🇻🇳 Nghĩa: ${w.vnMeaning}\n💬 Ví dụ: ${w.exampleVn.replace('\n', ' ')}`,
+        descPl: `Znaczenie: ${w.plMeaning}\n Przykład: ${w.examplePl.replace('\n', ' ')}`,
+        descVn: `Nghĩa: ${w.vnMeaning}\n Ví dụ: ${w.exampleVn.replace('\n', ' ')}`,
         cleanWord: w.cleanWord,
         actionType: isUnlocked ? 'speak' : null,
         isUnlocked: isUnlocked
@@ -148,9 +148,9 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
           slotsHtml.push(`
             <div class="dd-inv-slot-card slot-locked ${isSelected ? 'is-selected' : ''}" data-item-id="${item.id}">
               <div class="dd-inv-card-inner">
-                <div class="dd-inv-card-header header-locked">🔒 ? ? ?</div>
+                <div class="dd-inv-card-header header-locked">? ? ?</div>
                 <div class="dd-inv-card-slot-center">
-                  <span class="slot-locked-icon">❓</span>
+                  <span class="slot-locked-icon"></span>
                 </div>
               </div>
             </div>
@@ -208,7 +208,7 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
                     </div>
                     <div class="dd-inspector-body">
                       <div class="dd-inspector-slot-box">
-                        <span class="dd-inspector-emoji">${selectedItem.statEmoji}</span>
+                        ${selectedItem.statEmoji ? `<span class="dd-inspector-emoji">${selectedItem.statEmoji}</span>` : ''}
                         <span class="dd-inspector-big-stat">${selectedItem.bigStat}</span>
                         <div class="dd-inspector-sub">${selectedItem.subStatText}</div>
                       </div>
@@ -221,12 +221,12 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
                       <div class="dd-inspector-actions">
                         ${selectedItem.actionType === 'eat' ? `
                           <button class="btn-dd-inv-action btn-inv-eat" id="inv-eat-kebab-btn">
-                            🥙 Zjedz Kebab (+10 HP)
+                            Zjedz Kebab (+10 HP)
                           </button>
                         ` : ''}
                         ${selectedItem.actionType === 'speak' ? `
                           <button class="btn-dd-inv-action btn-inv-speak" id="inv-speak-btn" data-speak="${selectedItem.cleanWord}">
-                            🔊 Posłuchaj wymowy
+                            Posłuchaj wymowy
                           </button>
                         ` : ''}
                       </div>
@@ -243,14 +243,14 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
                   ${(app.player.boughtShopItemIds.has('sneakers') || app.player.boughtSneakers) ? `
                     <div class="dd-equipped-slot slot-active" style="--eq-c: #8338ec;" data-item-id="item_sneakers">
                       <div class="eq-tag">BUTY</div>
-                      <div class="eq-icon">👟</div>
+                      <div class="eq-icon"><img src="./assets/itemki/sneaker.png" alt="Sneakersy" style="width:36px;height:36px;object-fit:contain;" /></div>
                       <div class="eq-name">SNEAKERSY</div>
                       <div class="eq-stat">+4 Max HP</div>
                     </div>
                   ` : `
                     <div class="dd-equipped-slot slot-empty">
                       <div class="eq-tag">BUTY</div>
-                      <div class="eq-icon">👟</div>
+                      <div class="eq-icon" style="opacity:0.4;">—</div>
                       <div class="eq-name">[Brak butów]</div>
                     </div>
                   `}
@@ -259,14 +259,14 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
                   ${(app.player.boughtShopItemIds.has('energy_drink') || app.player.bonusTimeSec > 0) ? `
                     <div class="dd-equipped-slot slot-active" style="--eq-c: #00b4d8;" data-item-id="item_energy_drink">
                       <div class="eq-tag">NAPÓJ</div>
-                      <div class="eq-icon">⚡</div>
+                      <div class="eq-icon"><img src="./assets/itemki/energetyk.png" alt="Energetyk" style="width:36px;height:36px;object-fit:contain;" /></div>
                       <div class="eq-name">ENERGETYK</div>
                       <div class="eq-stat">+${app.player.bonusTimeSec}s czas</div>
                     </div>
                   ` : `
                     <div class="dd-equipped-slot slot-empty">
                       <div class="eq-tag">NAPÓJ</div>
-                      <div class="eq-icon">⚡</div>
+                      <div class="eq-icon" style="opacity:0.4;">—</div>
                       <div class="eq-name">[Brak napoju]</div>
                     </div>
                   `}
@@ -275,14 +275,14 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
                   ${app.player.kebabs > 0 ? `
                     <div class="dd-equipped-slot slot-active" style="--eq-c: #f77f00;" data-item-id="item_kebab">
                       <div class="eq-tag">JEDZENIE</div>
-                      <div class="eq-icon">🥙</div>
+                      <div class="eq-icon"><img src="./assets/itemki/kebab.png" alt="Kebab" style="width:36px;height:36px;object-fit:contain;" /></div>
                       <div class="eq-name">KEBAB</div>
                       <div class="eq-stat">×${app.player.kebabs} w torbie</div>
                     </div>
                   ` : `
                     <div class="dd-equipped-slot slot-empty">
                       <div class="eq-tag">JEDZENIE</div>
-                      <div class="eq-icon">🥙</div>
+                      <div class="eq-icon" style="opacity:0.4;">—</div>
                       <div class="eq-name">[Brak kebaba]</div>
                     </div>
                   `}
@@ -290,7 +290,7 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
                   <!-- Slot 4: Talia Słów -->
                   <div class="dd-equipped-slot slot-active" style="--eq-c: #06d6a0;">
                     <div class="eq-tag">TALIA</div>
-                    <div class="eq-icon">📖</div>
+                    <div class="eq-icon"><img src="./assets/skrzynka.png" alt="Słownik" style="width:36px;height:36px;object-fit:contain;" /></div>
                     <div class="eq-name">SŁOWNIK</div>
                     <div class="eq-stat">${unlockedSlangsCount} / ${allWords.length}</div>
                   </div>
@@ -303,26 +303,26 @@ export function openInventoryModal(app, initialSelectedId = null, filterCategory
           <div class="dd-inv-bottom-bar">
             <div class="dd-inv-hero-info">
               <div class="dd-inv-hero-img-wrap">
-                <img src="./assets/Tan.png" alt="Tan" onerror="this.src='./public/assets/Tan.png'" />
+                <img src="${app.player.avatar || './assets/Warrior.png'}" alt="${app.player.heroName || 'Bohater'}" onerror="this.src='./assets/Warrior.png'" />
               </div>
               <div class="dd-inv-hero-details">
-                <span class="dd-hero-name">TAN</span>
-                <span class="dd-hero-sub">13 lat • Poziom A0</span>
+                <span class="dd-hero-name">${(app.player.heroName || app.player.characterClass || 'Bohater').toUpperCase()}</span>
+                <span class="dd-hero-sub">Klasa: ${app.player.characterClass || 'Bohater'} • Poziom A0</span>
               </div>
             </div>
 
             <div class="dd-inv-stats-cluster">
               <div class="dd-inv-hp-pill">
-                ❤️ <b>${app.player.hp} / ${app.player.maxHp}</b>
+                HP: <b>${app.player.hp} / ${app.player.maxHp}</b>
               </div>
               <div class="dd-inv-coin-pill">
-                🪙 <b>${app.player.coins}</b>
+                Monety: <b>${app.player.coins}</b>
               </div>
               <div class="dd-inv-dice-pill">
-                🎲 <b>x${app.player.diceCount}</b>
+                Kości: <b>x${app.player.diceCount}</b>
               </div>
               <div class="dd-inv-lvl-pill">
-                POZIOM <b>${app.player.level}</b> (⭐ ${Math.max(0, app.player.xpToNext - app.player.xp)} EXP)
+                POZIOM <b>${app.player.level}</b> (${Math.max(0, app.player.xpToNext - app.player.xp)} EXP)
               </div>
             </div>
 

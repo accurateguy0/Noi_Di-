@@ -1,21 +1,31 @@
 // Poziom Wordwall: ANAGRAM (Przeciągnij litery na właściwe miejsca, aby ułożyć słowo lub zwrot)
-// Pole 1 na Planszy 2: Krótka rozgrzewka / Odprawa z Kotem Bolo (przypomnienie 4 słów: Siema!, Elo!, Nara!, Co tam?)
+// Pole 1 na Planszy 2: Krótka rozgrzewka / Odprawa z Kotkiem (przypomnienie 4 słów: Siema!, Elo!, Nara!, Co tam?)
 
 import { SLANG_WORDS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
+import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
 
 export class AnagramGame {
-  constructor(container, { player, onPlayerDamaged, onComplete, onClose }) {
+  constructor(container, options = {}) {
     this.container = container;
-    this.player = player || { name: 'Tan', hp: 20, maxHp: 20 };
+    const { player, onPlayerDamaged, onComplete, onClose, words, title } = options;
+    this.player = player || { name: 'Bohater', hp: 20, maxHp: 20 };
     this.onPlayerDamaged = onPlayerDamaged;
     this.onComplete = onComplete;
     this.onClose = onClose;
 
-    this.words = SLANG_WORDS.slice(0, 4); // Siema!, Elo!, Nara!, Co tam?
+    const rawWords = (words && words.length > 0) ? [...words] : SLANG_WORDS;
+    this.words = rawWords.slice(0, Math.min(rawWords.length, 5));
+    const rawName = (options?.enemyName || 'Kotek')
+      .replace(/\s*\([^)]*\)/g, '')
+      .replace(/\s*\[[^\]]*\]/g, '')
+      .trim();
+    this.enemyName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+    this.titleText = this.enemyName;
+    this.opponentAvatar = options?.opponentAvatar || './assets/Kotek_Pomoc.png';
     this.currentWordIndex = 0;
     this.tanDamage = getPlayerDamage(this.player);
-    this.enemyDamage = 1; // Kot Bolo / Kotek Pomocnik zadaje 1 obrażenie Tanowi
+    this.enemyDamage = 1; // Kotek / Kotek Pomocnik zadaje 1 obrażenie bohaterowi
     this.enemyMaxHp = this.words.length * this.tanDamage;
     this.enemyHp = this.enemyMaxHp;
 
@@ -93,31 +103,35 @@ export class AnagramGame {
       0,
       Math.min(100, (this.enemyHp / this.enemyMaxHp) * 100)
     );
+    const isWideSprite = (this.opponentAvatar || '').toLowerCase().includes('szczeniak') ||
+                         (this.opponentAvatar || '').toLowerCase().includes('kotek_pomoc') ||
+                         (this.enemyName || '').toLowerCase().includes('szczeniak');
+    const wideClass = isWideSprite ? 'wide-sprite-container szczeniak-sprite-container' : '';
 
     this.container.innerHTML = `
       <div class="dd-combat-arena anagram-arena">
         <!-- Warstwa przechwytująca pierwsze kliknięcie -->
         <div class="mp-intro-click-layer" id="mp-intro-click-layer"></div>
-        <h2 class="mp-animated-title is-centered" id="mp-animated-title">Anagram</h2>
+        <h2 class="mp-animated-title is-centered" id="mp-animated-title">${this.enemyName}</h2>
 
-        <!-- Prawy górny róg: Kot Bolo -->
+        <!-- Prawy górny róg: Przeciwnik -->
         <div class="dd-arena-fighter dd-arena-opponent" id="mp-opponent-box">
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Kot Bolo</span>
+              <span class="dd-fighter-name">${this.enemyName}</span>
             </div>
             <div class="dd-fighter-hp-bar" id="mp-enemy-hp-bar">
               <div class="dd-fighter-hp-fill" id="mp-enemy-hp-fill" style="width: ${enemyHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="mp-enemy-hp-text">${this.enemyHp}/${this.enemyMaxHp}</span>
             </div>
           </div>
-          <div class="dd-sprite-container opponent-sprite-container" id="mp-opponent-sprite-wrap">
+          <div class="dd-sprite-container opponent-sprite-container ${wideClass}" id="mp-opponent-sprite-wrap">
             <img
-              src="./assets/Kotek_Pomoc.png"
-              alt="Kot Bolo"
-              class="dd-fighter-sprite sprite-kotek"
+              src="${this.opponentAvatar}"
+              alt="${this.enemyName}"
+              class="dd-fighter-sprite sprite-opponent"
               id="mp-opponent-sprite"
-              onerror="this.src='./public/assets/Kotek_Pomoc.png'"
+              onerror="this.src='./public${this.opponentAvatar.replace(/^\./, '')}'"
             />
           </div>
         </div>
@@ -125,20 +139,20 @@ export class AnagramGame {
         <!-- Środek areny: Plansza Anagramu -->
         <div class="matching-stage-wrapper anagram-stage-wrapper" id="anagram-stage"></div>
 
-        <!-- Lewy dolny róg: Tan -->
+        <!-- Lewy dolny róg: Bohater -->
         <div class="dd-arena-fighter dd-arena-player" id="mp-player-box">
           <div class="dd-sprite-container player-sprite-container" id="mp-player-sprite-wrap">
             <img
-              src="./assets/Tan.png"
-              alt="Tan"
+              src="${this.player?.avatar || './assets/Warrior.png'}"
+              alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
               id="mp-player-sprite"
-              onerror="this.src='./public/assets/Tan.png'"
+              onerror="this.src='./assets/Warrior.png'"
             />
           </div>
           <div class="dd-fighter-hud">
             <div class="dd-fighter-top-row">
-              <span class="dd-fighter-name">Tan</span>
+              <span class="dd-fighter-name">${this.player?.heroName || this.player?.name || 'Bohater'}</span>
             </div>
             <div class="dd-fighter-hp-bar" id="mp-player-hp-bar">
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
@@ -156,8 +170,12 @@ export class AnagramGame {
       introLayer.addEventListener('pointerdown', () => {
         sound.playStep();
         animatedTitle.classList.remove('is-centered');
+        animatedTitle.classList.add('is-dismissed');
         introLayer.classList.add('intro-dismissed');
-        setTimeout(() => introLayer.remove(), 650);
+        setTimeout(() => {
+          introLayer.remove();
+          if (animatedTitle.parentNode) animatedTitle.remove();
+        }, 650);
       });
     }
   }
@@ -167,7 +185,8 @@ export class AnagramGame {
     this.lockInput = false;
 
     const item = this.words[index];
-    this.targetLetters = this.normalizeWordLetters(item.cleanWord);
+    const targetText = item.cleanWord || item.word || '';
+    this.targetLetters = this.normalizeWordLetters(targetText);
     this.currentSlots = this.scrambleLetters(this.targetLetters);
 
     this.renderAnagramBoard();
@@ -177,17 +196,10 @@ export class AnagramGame {
     const stage = this.container.querySelector('#anagram-stage');
     if (!stage) return;
 
-    const item = this.words[this.currentWordIndex];
-
     stage.innerHTML = `
       <div class="ww-anagram-card">
         <div class="ww-anagram-header">
           <span class="ww-anagram-counter">Słowo ${this.currentWordIndex + 1} / ${this.words.length}</span>
-          <button class="ww-anagram-audio-btn" id="anagram-hint-audio" title="Posłuchaj podpowiedzi">🔊 Posłuchaj</button>
-        </div>
-
-        <div class="ww-anagram-clue">
-          <div class="ww-clue-pl">${item.plMeaning}</div>
         </div>
 
         <div class="ww-anagram-letters-row" id="anagram-letters-row">
@@ -223,13 +235,6 @@ export class AnagramGame {
     if (submitBtn) {
       submitBtn.addEventListener('click', () => {
         this.submitAnswer();
-      });
-    }
-
-    const audioBtn = stage.querySelector('#anagram-hint-audio');
-    if (audioBtn) {
-      audioBtn.addEventListener('click', () => {
-        sound.speakPolish(item.cleanWord);
       });
     }
 
@@ -411,7 +416,7 @@ export class AnagramGame {
     const rowEl = stage?.querySelector('#anagram-letters-row');
 
     if (isSolved) {
-      // Poprawna odpowiedź: Przeciwnik (Kot Bolo) otrzymuje cios
+      // Poprawna odpowiedź: Przeciwnik (Kotek) otrzymuje cios
       this.lockInput = true;
       const item = this.words[this.currentWordIndex];
       this.score += 120;
@@ -419,12 +424,12 @@ export class AnagramGame {
       if (submitBtn) {
         submitBtn.classList.remove('btn-wrong');
         submitBtn.classList.add('btn-correct');
-        submitBtn.innerHTML = 'Świetnie! Poprawnie ✔';
+        submitBtn.innerHTML = 'Świetnie! Poprawnie';
       }
 
       this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
       this.updateOpponentBar();
-      sound.playAttackHit('kotek');
+      sound.playAttackHit(this.enemyName);
       sound.playSuccess();
       setTimeout(() => sound.speakPolish(item.cleanWord), 260);
       this.triggerFighterHit('opponent', `-${this.tanDamage}`);
@@ -447,19 +452,26 @@ export class AnagramGame {
         }
       }, 700);
     } else {
-      // Błędna odpowiedź: Kot Bolo jest pomocnikiem (nie zadaje obrażeń)
+      // Błędna odpowiedź: bohater otrzymuje 1 obrażenie, lektor podaje poprawne słowo, i przechodzimy do kolejnego zadania (adaptacyjno-sytuacyjny)
+      this.lockInput = true;
+      const item = this.words[this.currentWordIndex];
       sound.playWrong();
+      sound.playEnemyHit(this.enemyName);
 
-      if (this.enemyDamage > 0) {
-        sound.playEnemyHit('kotek');
-        this.player.hp = Math.max(1, this.player.hp - this.enemyDamage);
-        if (this.onPlayerDamaged) {
-          this.onPlayerDamaged(this.enemyDamage);
-        }
-        this.updatePlayerHud();
-        this.triggerFighterHit('player', `-${this.enemyDamage}`);
+      const dmg = this.enemyDamage > 0 ? this.enemyDamage : 1;
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(dmg);
       } else {
-        this.triggerFighterHit('player', '✖');
+        this.player.hp = Math.max(0, this.player.hp - dmg);
+      }
+      this.updatePlayerHud();
+      this.triggerFighterHit('player', `-${dmg}`);
+
+      if (this.player.hp <= 0) {
+        setTimeout(() => {
+          playHeroDefeatAnimation(this.container, this.player, this.onClose);
+        }, 500);
+        return;
       }
 
       const tanWrap = this.container.querySelector('#mp-player-sprite-wrap');
@@ -470,21 +482,32 @@ export class AnagramGame {
         setTimeout(() => tanWrap.classList.remove('shake-hit', 'hit-flash'), 600);
       }
 
-      // Przycisk zatwierdź świeci na czerwono i trzęsie się
       if (submitBtn) {
         submitBtn.classList.remove('btn-correct');
         submitBtn.classList.add('btn-wrong');
-        submitBtn.innerHTML = 'Błędna kolejność! ✖';
-        setTimeout(() => {
-          submitBtn.classList.remove('btn-wrong');
-          submitBtn.innerHTML = 'Zatwierdź odpowiedź ➔';
-        }, 1100);
+        submitBtn.innerHTML = `Prawidłowo: <b>${item.cleanWord || item.word}</b>`;
       }
+      setTimeout(() => sound.speakPolish(item.cleanWord || item.word), 350);
 
       if (rowEl) {
         rowEl.classList.add('is-wrong-shake');
         setTimeout(() => rowEl.classList.remove('is-wrong-shake'), 500);
       }
+
+      setTimeout(() => {
+        this.lockInput = false;
+        if (this.currentWordIndex + 1 < this.words.length) {
+          this.loadWord(this.currentWordIndex + 1);
+        } else {
+          const arenaEl = this.container.querySelector('.dd-combat-arena');
+          if (arenaEl) {
+            arenaEl.classList.add('arena-victory-exit');
+          }
+          setTimeout(() => {
+            if (this.onComplete) this.onComplete({ score: this.score });
+          }, 600);
+        }
+      }, 1600);
     }
   }
 

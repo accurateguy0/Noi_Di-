@@ -1,173 +1,160 @@
-// Przedmioty w Kramikach / Sklepikach w poszczególnych modułach gry
+// Definicje przedmiotów szkolnych i kramików
+// Cennik zgodnie z wytycznymi:
+// breloczek - 13, drozdzowka - 2, energetyk - 4, kebab - 10, piornik - 6,
+// plaster - 1, powerbank - 15, sluchawki gamingowe - 14, sneaker - 16,
+// szalik - 8, woda - 2, zeszyt - 5
+// W grze istnieją WYŁĄCZNIE: Życie (HP/Max HP), Obrażenia (DMG) oraz Ilość Podpowiedzi (?)
 
-// Przedmioty w Kramiku / Sklepiku na Planszy 3 (Pole 3)
-export const SHOP_ITEMS = [
-  {
-    id: 'sneakers',
-    namePl: 'SNEAKERSY',
-    price: 6,
-    icon: './assets/sneaker.png',
-    badgePl: 'MAX HP +4',
-    descPl: 'Wygodne szkolne buty! Na stałe zwiększają Twoje maksymalne życie o +4 HP (i leczą +4 HP).',
-    oneTimePurchase: true,
-    color: '#8338ec',
-    bigStat: '+4',
-    statEmoji: '👟',
-    subStatText: 'Dodaj +4 do Max HP'
+export const ALL_ITEMS_CATALOG = {
+  plaster: {
+    id: 'plaster',
+    namePl: 'PLASTER',
+    price: 1,
+    icon: './assets/itemki/plaster.png',
+    badgePl: '+3 HP',
+    descPl: 'Szybki opatrunek na stres! Natychmiast regeneruje +3 HP.',
+    color: '#ef4444',
+    healAmount: 3
   },
-  {
-    id: 'energy_drink',
-    namePl: 'ENERGETYK',
-    price: 2,
-    icon: './assets/energetyk.jpg',
-    badgePl: 'CZAS +1s',
-    descPl: 'Dodaje energii! Zwiększa czas na odpowiedź o +1 sekundę w minigrach czasowych.',
-    oneTimePurchase: true,
-    color: '#00b4d8',
-    bigStat: '+1s',
-    statEmoji: '⚡',
-    subStatText: 'Czas w minigrach +1s'
-  },
-  {
-    id: 'kebab',
-    namePl: 'KEBAB',
-    price: 4,
-    icon: './assets/kebab.jpg',
-    badgePl: '+10 HP (1x)',
-    descPl: 'Ciepły kebab! Przedmiot jednorazowego użytku — regeneruje +10 HP życia.',
-    oneTimePurchase: true,
-    color: '#f77f00',
-    bigStat: '+10',
-    statEmoji: '🥙',
-    subStatText: 'Ulecz natychmiast +10 HP'
-  }
-];
-
-// Kramik Szkolny w Module 3: Przetrwanie na lekcjach
-export const MODULE_3_SHOP_ITEMS = [
-  {
-    id: 'piornik',
-    namePl: 'PIÓRNIK',
-    price: 4,
-    icon: './assets/itemki/piornik.png',
-    badgePl: 'ATAK +1',
-    descPl: 'Praktyczny piórnik ze wszystkimi przyborami! Zwiększa siłę ataku o +1 w walkach i quizach.',
-    oneTimePurchase: true,
-    color: '#2563eb',
-    bigStat: '+1',
-    statEmoji: '✏️',
-    subStatText: 'Dodaje +1 do obrażeń Tan'
-  },
-  {
-    id: 'zeszyt',
-    namePl: 'ZESZYT',
-    price: 4,
-    icon: './assets/itemki/zeszyt.png',
-    badgePl: 'CZAS +1s',
-    descPl: 'Czysty zeszyt w kratkę! Zwiększa limit czasu o +1 sekundę w wyzwaniach na czas.',
-    oneTimePurchase: true,
-    color: '#10b981',
-    bigStat: '+1s',
-    statEmoji: '📓',
-    subStatText: '+1s do czasu na odpowiedź'
-  },
-  {
+  drozdzowka: {
     id: 'drozdzowka',
     namePl: 'DROŻDŻÓWKA',
     price: 2,
     icon: './assets/itemki/drozdzowka.png',
     badgePl: '+6 HP',
-    descPl: 'Świeża drożdżówka ze szkolnego sklepiku! Natychmiast regeneruje +6 HP życia.',
-    oneTimePurchase: true,
+    descPl: 'Świeża drożdżówka ze szkolnego sklepiku! Przywraca +6 HP.',
     color: '#f59e0b',
-    bigStat: '+6',
-    statEmoji: '🥐',
-    subStatText: 'Ulecz natychmiast +6 HP'
-  }
-];
-
-// Kramik Apteczny w Module 4: Ciało, samopoczucie i potrzeby
-export const MODULE_4_SHOP_ITEMS = [
-  {
-    id: 'plaster',
-    namePl: 'PLASTER',
-    price: 7,
-    icon: './assets/itemki/plaster.png',
-    badgePl: '+12 HP & MAX +2',
-    descPl: 'Plaster opatrunkowy z apteczki! Regeneruje natychmiast +12 HP i zwiększa Max HP o +2.',
-    oneTimePurchase: true,
-    color: '#ef4444',
-    bigStat: '+12',
-    statEmoji: '🩹',
-    subStatText: '+12 HP oraz +2 Max HP'
+    healAmount: 6
   },
-  {
-    id: 'szalik',
-    namePl: 'SZALIK',
-    price: 5,
-    icon: './assets/itemki/szalik.png',
-    badgePl: 'MAX HP +4',
-    descPl: 'Ciepły szalik chroniący przed przeziębieniem! Na stałe zwiększa maksymalne życie o +4 HP.',
-    oneTimePurchase: true,
-    color: '#8b5cf6',
-    bigStat: '+4',
-    statEmoji: '🧣',
-    subStatText: 'Dodaje +4 do Max HP'
-  },
-  {
+  woda: {
     id: 'woda',
     namePl: 'WODA',
-    price: 3,
+    price: 2,
     icon: './assets/itemki/woda.jpg',
-    badgePl: '+8 HP',
-    descPl: 'Butelka chłodnej wody niegazowanej! Błyskawicznie gasi pragnienie i przywraca +8 HP.',
-    oneTimePurchase: true,
+    badgePl: '+5 HP',
+    descPl: 'Chłodna woda mineralna! Gasi pragnienie i przywraca +5 HP.',
     color: '#06b6d4',
-    bigStat: '+8',
-    statEmoji: '💧',
-    subStatText: 'Ulecz natychmiast +8 HP'
-  }
-];
-
-// Kramik Technologiczny w Module 5: Pasje, technologia i tożsamość
-export const MODULE_5_SHOP_ITEMS = [
-  {
-    id: 'sluchawki',
-    namePl: 'SŁUCHAWKI',
-    price: 12,
-    icon: './assets/itemki/sluchawki_gamingowe.png',
-    badgePl: 'ATAK +2',
-    descPl: 'Słuchawki gamingowe z redukcją szumów! Zwiększają siłę ataku o +2 we wszystkich starciach.',
-    oneTimePurchase: true,
-    color: '#6366f1',
-    bigStat: '+2',
-    statEmoji: '🎧',
-    subStatText: 'Dodaje +2 do obrażeń Tan'
+    healAmount: 5
   },
-  {
-    id: 'powerbank',
-    namePl: 'POWERBANK',
+  energetyk: {
+    id: 'energetyk',
+    namePl: 'ENERGETYK',
+    price: 4,
+    icon: './assets/itemki/energetyk.png',
+    badgePl: '+1 PODPOWIEDŹ',
+    descPl: 'Zastrzyk energii! Dodaje +1 użycie podpowiedzi (?) do trudnych pytań.',
+    color: '#00b4d8',
+    hintsBonus: 1
+  },
+  zeszyt: {
+    id: 'zeszyt',
+    namePl: 'ZESZYT',
+    price: 5,
+    icon: './assets/itemki/zeszyt.png',
+    badgePl: 'ATAK +1',
+    descPl: 'Czysty zeszyt w kratkę! Zwiększa Twoją wiedzę i siłę ataku o +1 DMG.',
+    color: '#10b981',
+    damageBonus: 1
+  },
+  piornik: {
+    id: 'piornik',
+    namePl: 'PIÓRNIK',
+    price: 6,
+    icon: './assets/itemki/piornik.png',
+    badgePl: 'ATAK +1',
+    descPl: 'Praktyczny piórnik ze wszystkimi przyborami! Dodaje +1 DMG do twoich ciosów.',
+    color: '#2563eb',
+    damageBonus: 1
+  },
+  szalik: {
+    id: 'szalik',
+    namePl: 'SZALIK',
+    price: 8,
+    icon: './assets/itemki/szalik.png',
+    badgePl: 'MAX HP +3',
+    descPl: 'Ciepły szalik chroniący przed chłodem! Na stałe zwiększa Max HP o +3 (i leczy +3 HP).',
+    color: '#8b5cf6',
+    maxHpBonus: 3,
+    healAmount: 3
+  },
+  kebab: {
+    id: 'kebab',
+    namePl: 'KEBAB',
     price: 10,
-    icon: './assets/itemki/powerbank.png',
-    badgePl: 'CZAS +2s',
-    descPl: 'Pojemny powerbank z szybkim ładowaniem! Daje dodatkowe +2 sekundy w zadaniach na czas.',
-    oneTimePurchase: true,
-    color: '#eab308',
-    bigStat: '+2s',
-    statEmoji: '🔋',
-    subStatText: '+2s w minigrach czasowych'
+    icon: './assets/itemki/kebab.png',
+    badgePl: '+10 HP & MAX +2',
+    descPl: 'Pyszny, ciepły kebab! Regeneruje +10 HP oraz zwiększa maksymalne zdrowie o +2 Max HP.',
+    color: '#f77f00',
+    healAmount: 10,
+    maxHpBonus: 2
   },
-  {
+  breloczek: {
     id: 'breloczek',
     namePl: 'BRELOCZEK',
     price: 13,
     icon: './assets/itemki/breloczek.png',
-    badgePl: 'PERFECT +1 🪙',
-    descPl: 'Szczęśliwy breloczek do plecaka! Daje dodatkową monetę (+1 🪙) za każde starcie bez utraty HP!',
-    oneTimePurchase: true,
+    badgePl: '+2 PODPOWIEDZI',
+    descPl: 'Szczęśliwy breloczek do plecaka! Daje +2 dodatkowe użycia podpowiedzi (?).',
     color: '#ec4899',
-    bigStat: '+1🪙',
-    statEmoji: '🔑',
-    subStatText: '+1 moneta za walkę bez strat'
+    hintsBonus: 2
+  },
+  sluchawki: {
+    id: 'sluchawki',
+    namePl: 'SŁUCHAWKI',
+    price: 14,
+    icon: './assets/itemki/sluchawki_gamingowe.png',
+    badgePl: 'ATAK +2',
+    descPl: 'Słuchawki gamingowe z redukcją szumów! Zwiększają siłę ataku bohatera o +2 DMG.',
+    color: '#6366f1',
+    damageBonus: 2
+  },
+  powerbank: {
+    id: 'powerbank',
+    namePl: 'POWERBANK',
+    price: 15,
+    icon: './assets/itemki/powerbank.png',
+    badgePl: '+3 PODPOWIEDZI',
+    descPl: 'Pojemny powerbank! Dodaje aż +3 dodatkowe ładunki podpowiedzi (?).',
+    color: '#eab308',
+    hintsBonus: 3
+  },
+  sneakers: {
+    id: 'sneakers',
+    namePl: 'SNEAKERSY',
+    price: 16,
+    icon: './assets/itemki/sneaker.png',
+    badgePl: 'MAX HP +6',
+    descPl: 'Wygodne szkolne buty! Na stałe zwiększają maksymalne życie o +6 Max HP (i leczą +6 HP).',
+    color: '#8338ec',
+    maxHpBonus: 6,
+    healAmount: 6
   }
+};
+
+// Kramik w Module 1 (np. na Planszy 3) - 3 przedmioty na ladzie w stylu Dicey Dungeons
+export const SHOP_ITEMS = [
+  ALL_ITEMS_CATALOG.drozdzowka,
+  ALL_ITEMS_CATALOG.energetyk,
+  ALL_ITEMS_CATALOG.piornik
+];
+
+// Kramik w Module 3
+export const MODULE_3_SHOP_ITEMS = [
+  ALL_ITEMS_CATALOG.zeszyt,
+  ALL_ITEMS_CATALOG.piornik,
+  ALL_ITEMS_CATALOG.drozdzowka
+];
+
+// Kramik w Module 4
+export const MODULE_4_SHOP_ITEMS = [
+  ALL_ITEMS_CATALOG.plaster,
+  ALL_ITEMS_CATALOG.szalik,
+  ALL_ITEMS_CATALOG.woda
+];
+
+// Kramik w Module 5
+export const MODULE_5_SHOP_ITEMS = [
+  ALL_ITEMS_CATALOG.breloczek,
+  ALL_ITEMS_CATALOG.sluchawki,
+  ALL_ITEMS_CATALOG.powerbank
 ];

@@ -2,6 +2,11 @@
 import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
 import { playJaggedCurtainWipe } from './victoryScreen.js';
+import { openCharacterSelectModal } from './CharacterSelectModal.js';
+import { episodeManager } from '../data/episodeManager.js';
+import { getBoss } from '../data/bosses.js';
+import { getStoryEpisode } from '../data/storyData.js';
+import { showEpisodeIntroModal } from './StoryModal.js';
 
 export function showGrandVictoryModal(app) {
   musicManager.playVictoryMusic();
@@ -14,21 +19,21 @@ export function showGrandVictoryModal(app) {
     <div class="dicey-modal-backdrop dd-city-backdrop dd-grand-backdrop">
       <div class="dd-city-container dd-grand-container">
         <div class="dd-city-header">
-          <span class="city-trophy">👑🏆</span>
+          <span class="city-trophy"></span>
           <h2>WIELKI MISTRZ JĘZYKA POLSKIEGO A0!</h2>
         </div>
         <div class="dd-city-image-wrap">
-          <img src="./assets/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/miasto.png'" />
+          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/tla/miasto.png'" />
         </div>
         <div class="dd-city-text">
-          <p><strong>Niewiarygodne, Tan!</strong> Ukończyłeś wszystkie moduły i całą grę <em>Nói Đi!</em> 🏆🎉</p>
+          <p><strong>Niewiarygodne!</strong> Ukończyłeś wszystkie moduły i całą grę <em>Nói Đi!</em></p>
           <p style="margin-top: 14px; color: #ffd166; font-weight: 800; font-size: 1.15rem;">
             Jesteś w 100% gotowy do swobodnej rozmowy w polskiej szkole i na ulicach miasta!
           </p>
         </div>
         <div class="dd-city-actions" style="margin-top: 18px;">
           <button type="button" class="btn-dicey-take btn-city-continue" id="grand-restart-game-btn" style="background: #10b981; color: #fff; font-weight: 800; width: 100%; max-width: 440px; margin: 0 auto;">
-            ZAGRAJ PONOWNIE W CAŁĄ GRĘ (OD SZATNI) 🔄
+ZAGRAJ PONOWNIE W CAŁĄ GRĘ (OD SZATNI)
           </button>
         </div>
       </div>
@@ -53,50 +58,99 @@ export function showCityVictoryModal(app) {
   if (!modalMount) return;
   modalMount.classList.remove('hidden');
 
+  const pip = app.currentEpisode?.pip || 1;
+  const heroId = app.player?.heroId || 'warrior';
+  const storyEp = getStoryEpisode(heroId, pip);
+  const boss = getBoss(storyEp.bossId);
+  const defeatedBoss = `${boss.name} (${boss.hp} HP, ${boss.dmg} dmg)`;
+  const isFinalEpisode = pip >= 8;
+
   modalMount.innerHTML = `
     <div class="dicey-modal-backdrop dd-city-backdrop">
       <div class="dd-city-container">
         <div class="dd-city-header">
-          <span class="city-trophy">🏆</span>
-          <h2>WKRACZASZ DO MIASTA!</h2>
+          <span class="city-trophy">👑</span>
+          <h2>${isFinalEpisode ? `🏆 FINAŁ UKOŃCZONY: ${storyEp.title.toUpperCase()}!` : `👑 EPIZOD ${pip} UKOŃCZONY: ${storyEp.title.toUpperCase()}!`}</h2>
         </div>
         <div class="dd-city-image-wrap">
-          <img src="./assets/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/miasto.png'" />
+          <img src="${boss.avatar}" alt="${boss.name}" class="dd-city-img" onerror="this.src='${boss.fallbackAvatar || './assets/tla/miasto.png'}'" style="max-height: 170px; object-fit: contain; margin: 0 auto; display: block;" />
         </div>
         <div class="dd-city-text">
-          <p><strong>Gratulacje, Tan!</strong> Opanowałeś powitania, slang, dialogi w szkole i wyrażanie opinii!</p>
-          <p>Boss Piłkarz został pokonany. Pora wyruszyć poza szkołę na ulice tętniącego życiem <strong>Miasta</strong>!</p>
+          <p><strong>Pokonany Boss 6. piętra:</strong> <strong>${defeatedBoss}</strong></p>
+          <p style="margin-top: 10px; padding: 10px 14px; background: rgba(15, 23, 42, 0.65); border-radius: 10px; border-left: 4px solid #ffd166; color: #f8fafc;">
+            ${storyEp.outro}
+          </p>
+          ${isFinalEpisode
+            ? '<p style="color: #ffd166; font-weight: 800; font-size: 1.1rem; margin-top: 10px;">Ukończyłeś wszystkie 8 epizodów tej postaci!</p>'
+            : `<p style="margin-top: 8px;">Ukończyłeś wszystkie 7 plansz (plansze 0–6). <strong>Epizod ${pip + 1} został odblokowany!</strong></p>`
+          }
         </div>
-        <div class="dd-city-actions">
-          <button type="button" class="btn-dicey-take btn-city-continue" id="city-enter-btn" style="background: #10b981; color: #fff; font-weight: 800; margin-bottom: 10px;">
-            WEJDŹ DO ŻABKI / BIEDRONKI 🛒
+        <div class="dd-city-actions" style="display: flex; flex-direction: column; gap: 10px;">
+          ${!isFinalEpisode ? `
+            <button type="button" class="btn-dicey-take btn-city-continue" id="ep-next-btn" style="background: #10b981; color: #fff; font-weight: 800;">
+              ROZPOCZNIJ EPIZOD ${pip + 1} (7 PLANSZ)
+            </button>
+          ` : ''}
+          <button type="button" class="btn-dicey-take btn-city-continue" id="ep-char-select-btn" style="background: #3b82f6; color: #fff; font-weight: 800;">
+            WYBIERZ BOHATERA / EPIZODY (KORONY 👑)
           </button>
-          <button type="button" class="btn-dicey-take btn-city-continue" id="city-restart-btn">
-            ZAGRAJ PONOWNIE (OD POCZĄTKU) 🔄
+          <button type="button" class="btn-dicey-take btn-city-continue" id="ep-restart-btn">
+            POWTÓRZ TEN EPIZOD (OD PLANSZY 0)
           </button>
         </div>
       </div>
     </div>
   `;
 
-  const enterBtn = modalMount.querySelector('#city-enter-btn');
-  if (enterBtn) {
-    enterBtn.addEventListener('click', () => {
+  const nextBtn = modalMount.querySelector('#ep-next-btn');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
       sound.playStep();
       playJaggedCurtainWipe(() => {
         app.closeModal();
-        app.resetBoard(false, 'city_1');
+        const nextPip = pip + 1;
+        episodeManager.setSelectedEpisode(heroId, nextPip);
+        app.currentEpisode = getStoryEpisode(heroId, nextPip);
+        app.player.level = 1;
+        app.player.xp = 0;
+        app.player.xpToNext = 100;
+        app.player.coins = heroId === 'thief' ? 3 : 0;
+        app.player.score = 0;
+        app.loadFloor(0);
+        musicManager.playBoardMusic(0);
+        app.renderBoard();
+        app.updateHUD();
+        showEpisodeIntroModal(app, { pip: nextPip });
       });
     });
   }
 
-  const restartBtn = modalMount.querySelector('#city-restart-btn');
+  const charSelectBtn = modalMount.querySelector('#ep-char-select-btn');
+  if (charSelectBtn) {
+    charSelectBtn.addEventListener('click', () => {
+      sound.playStep();
+      playJaggedCurtainWipe(() => {
+        app.closeModal();
+        openCharacterSelectModal(app);
+      });
+    });
+  }
+
+  const restartBtn = modalMount.querySelector('#ep-restart-btn');
   if (restartBtn) {
     restartBtn.addEventListener('click', () => {
       sound.playStep();
       playJaggedCurtainWipe(() => {
         app.closeModal();
-        app.resetBoard(true, 1);
+        app.player.level = 1;
+        app.player.xp = 0;
+        app.player.xpToNext = 100;
+        app.player.coins = heroId === 'thief' ? 3 : 0;
+        app.player.score = 0;
+        app.loadFloor(0);
+        musicManager.playBoardMusic(0);
+        app.renderBoard();
+        app.updateHUD();
       });
     });
   }
@@ -112,25 +166,25 @@ export function showCityCompleteModal(app) {
     <div class="dicey-modal-backdrop dd-city-backdrop">
       <div class="dd-city-container">
         <div class="dd-city-header">
-          <span class="city-trophy">🛍️</span>
+          <span class="city-trophy"></span>
           <h2>ZAKUPY W MIEŚCIE UKOŃCZONE!</h2>
         </div>
         <div class="dd-city-image-wrap">
-          <img src="./assets/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/miasto.png'" />
+          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/tla/miasto.png'" />
         </div>
         <div class="dd-city-text">
-          <p><strong>Brawo, Tan!</strong> Samodzielnie zrobiłeś zakupy w sklepie!</p>
+          <p><strong>Brawo!</strong> Samodzielnie zrobiłeś zakupy w sklepie!</p>
           <p>Opanowałeś formy biernika (<em>„poproszę wodę, bułkę, czipsy”</em>), wybrałeś torbę, zapłaciłeś i bezbłędnie przeprowadziłeś dialog przy kasie!</p>
         </div>
         <div class="dd-city-actions">
           <button type="button" class="btn-dicey-take btn-city-continue" id="city-next-floor-btn" style="background: #10b981; color: #fff; font-weight: 800; margin-bottom: 10px;">
-            PRZEJDŹ DO PLANSZY 2 (GASTRONOMIA) 🥙
+PRZEJDŹ DO PLANSZY 2 (GASTRONOMIA)
           </button>
           <button type="button" class="btn-dicey-take btn-city-continue" id="city-repeat-btn" style="background: #3b82f6; color: #fff; font-weight: 800; margin-bottom: 10px;">
-            ZAGRAJ PONOWNIE W ŻABCE 🛒
+ZAGRAJ PONOWNIE W ŻABCE
           </button>
           <button type="button" class="btn-dicey-take btn-city-continue" id="city-school-btn">
-            POWRÓT DO SZKOŁY (PLANSZA 1) 🏫
+POWRÓT DO SZKOŁY (PLANSZA 1)
           </button>
         </div>
       </div>
@@ -181,32 +235,32 @@ export function showCity2CompleteModal(app) {
     <div class="dicey-modal-backdrop dd-city-backdrop">
       <div class="dd-city-container">
         <div class="dd-city-header">
-          <span class="city-trophy">🥙🎉</span>
+          <span class="city-trophy"></span>
           <h2>GASTRONOMIA W MIEŚCIE UKOŃCZONA!</h2>
         </div>
         <div class="dd-city-image-wrap">
-          <img src="./assets/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/miasto.png'" />
+          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/tla/miasto.png'" />
         </div>
         <div class="dd-city-text">
-          <p><strong>Brawo, Tan!</strong> Znakomicie opanowałeś zamawianie jedzenia na mieście!</p>
+          <p><strong>Brawo!</strong> Znakomicie opanowałeś zamawianie jedzenia na mieście!</p>
           <p>Wybrałeś swoje ulubione danie, sos, rozmiar posiłku, określiłeś czy jesz na miejscu czy na wynos, spokojnie poczekałeś i podziękowałeś Mistrzowi Kebaba!</p>
           <div style="background: rgba(255, 209, 102, 0.15); border: 2px dashed #ffd166; border-radius: 14px; padding: 10px 14px; margin-top: 8px;">
             <strong style="color: #ffd166;">Kolejny temat w mieście:</strong><br/>
-            💰 <strong>Liczby i pieniądze (1–100):</strong> Rozumienie cen, reszty i operowanie numerem telefonu.
+<strong>Liczby i pieniądze (1–100):</strong> Rozumienie cen, reszty i operowanie numerem telefonu.
           </div>
         </div>
         <div class="dd-city-actions">
           <button type="button" class="btn-dicey-take btn-city-continue" id="city2-next-floor-btn" style="background: #3a86ff; color: #fff; font-weight: 800; margin-bottom: 10px;">
-            PRZEJDŹ DO PLANSZY 3 (KOMUNIKACJA I BILETOMAT) 🚏
+PRZEJDŹ DO PLANSZY 3 (KOMUNIKACJA I BILETOMAT)
           </button>
           <button type="button" class="btn-dicey-take btn-city-continue" id="city2-repeat-btn" style="background: #f77f00; color: #fff; font-weight: 800; margin-bottom: 10px;">
-            ZAGRAJ PONOWNIE NA PLANSZY 2 🥙
+ZAGRAJ PONOWNIE NA PLANSZY 2
           </button>
           <button type="button" class="btn-dicey-take btn-city-continue" id="city2-prev-btn" style="background: #10b981; color: #fff; font-weight: 800; margin-bottom: 10px;">
-            POWRÓT DO ŻABKI (PLANSZA 1) 🛒
+POWRÓT DO ŻABKI (PLANSZA 1)
           </button>
           <button type="button" class="btn-dicey-take btn-city-continue" id="city2-school-btn">
-            POWRÓT DO SZKOŁY (PLANSZA 1) 🏫
+POWRÓT DO SZKOŁY (PLANSZA 1)
           </button>
         </div>
       </div>
