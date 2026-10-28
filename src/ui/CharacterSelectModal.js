@@ -396,11 +396,9 @@ export function openCharacterSelectModal(app) {
               <div class="cs-board-card">
                 <h2 class="cs-board-episodes-title">EPIZODY</h2>
                 <div class="cs-episodes-grid" id="cs-episodes-grid">
-                  ${(() => {
-                    const unlockedEpisodes = hero.episodes.filter((ep) => episodeManager.isEpisodeUnlocked(hero.id, ep.pip));
-                    const hasLockedEpisodes = hero.episodes.length > unlockedEpisodes.length;
-
-                    const unlockedHtml = unlockedEpisodes.map((ep) => {
+                  ${hero.episodes.map((ep) => {
+                    const isUnlocked = episodeManager.isEpisodeUnlocked(hero.id, ep.pip);
+                    if (isUnlocked) {
                       const isCompleted = episodeManager.isEpisodeCompleted(hero.id, ep.pip);
                       const isSelected = ep.pip === selectedPip;
 
@@ -420,23 +418,25 @@ export function openCharacterSelectModal(app) {
                           </div>
                         </div>
                       `;
-                    }).join('');
-
-                    const lockedHtml = hasLockedEpisodes ? `
-                      <div class="cs-locked-episodes-box" id="cs-locked-box" title="Kolejne epizody są zablokowane. Wygraj wcześniejszy epizod, aby odblokować następny!">
-                        <svg class="cs-locked-box-svg" viewBox="0 0 34 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M 8 16 V 9 C 8 4 12 1 17 1 C 22 1 26 4 26 9 V 16" stroke="#FDE6CE" stroke-width="4.5" stroke-linecap="round"/>
-                          <rect x="2" y="14" width="30" height="23" rx="6" fill="#FDE6CE"/>
-                          <line x1="2" y1="25" x2="32" y2="25" stroke="#E6A163" stroke-width="1.2"/>
-                          <circle cx="17" cy="25" r="5" stroke="#E6A163" stroke-width="1.5" fill="#FDE6CE"/>
-                          <circle cx="17" cy="23.5" r="2" fill="#E6A163"/>
-                          <path d="M 16 23.5 L 15.5 28 H 18.5 L 18 23.5 Z" fill="#E6A163"/>
-                        </svg>
-                      </div>
-                    ` : '';
-
-                    return unlockedHtml + lockedHtml;
-                  })()}
+                    } else {
+                      return `
+                        <div
+                          class="cs-locked-episode-box"
+                          data-pip="${ep.pip}"
+                          title="Epizod ${ep.pip} jest zablokowany. Wygraj wcześniejszy epizod, aby odblokować!"
+                        >
+                          <svg class="cs-locked-box-svg" viewBox="0 0 34 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 8 16 V 9 C 8 4 12 1 17 1 C 22 1 26 4 26 9 V 16" stroke="#FDE6CE" stroke-width="4.5" stroke-linecap="round"/>
+                            <rect x="2" y="14" width="30" height="23" rx="6" fill="#FDE6CE"/>
+                            <line x1="2" y1="25" x2="32" y2="25" stroke="#E6A163" stroke-width="1.2"/>
+                            <circle cx="17" cy="25" r="5" stroke="#E6A163" stroke-width="1.5" fill="#FDE6CE"/>
+                            <circle cx="17" cy="23.5" r="2" fill="#E6A163"/>
+                            <path d="M 16 23.5 L 15.5 28 H 18.5 L 18 23.5 Z" fill="#E6A163"/>
+                          </svg>
+                        </div>
+                      `;
+                    }
+                  }).join('')}
                 </div>
               </div>
             ` : `
@@ -522,17 +522,6 @@ export function openCharacterSelectModal(app) {
           renderStage(false);
         }
       });
-    });
-
-    // Kliknięcie w pudełko zablokowanych epizodów
-    document.getElementById('cs-locked-box')?.addEventListener('click', () => {
-      sound.playStep();
-      const box = document.getElementById('cs-locked-box');
-      if (box) {
-        box.classList.remove('shake-hit');
-        void box.offsetWidth;
-        box.classList.add('shake-hit');
-      }
     });
 
     // 5. Strzałka w lewo (ze zmniejszeniem postaci i dźwiękiem whoosh)
