@@ -61,6 +61,7 @@ export const HEROES = [
     characterClass: 'Thief',
     avatar: './assets/Thief.png',
     fallbackAvatar: './assets/Thief.png',
+    animationVideo: './assets/animacje/Thief_animacje.webm',
     diceIcon: './assets/dice_heads/die_thief.png',
     tagline: 'Zwinny złodziej słów',
     desc: 'Zwinny spryciarz potrafiący wykradać literki i końcówki fleksyjne (DMG 2→5, Limit Break 8→13 HP).',
