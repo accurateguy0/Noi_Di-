@@ -31,9 +31,67 @@ function buildHeroEpisodes(heroId) {
 }
 
 // Hero pedestal animation cycles matching Dicey Dungeons idle cycles.
-// (Animations will be populated per character once generated from video references)
 export const HERO_ANIMATIONS = {
-  // Empty for now pending image generation quota reset
+  warrior: {
+    loopDuration: 4200,
+    keyframes: [
+      { time: 0, frame: './assets/heroes/warrior/warrior_idle.png' },
+      { time: 1600, frame: './assets/heroes/warrior/warrior_blink.png' },
+      { time: 1850, frame: './assets/heroes/warrior/warrior_idle.png' },
+      { time: 2600, frame: './assets/heroes/warrior/warrior_smile.png' },
+      { time: 4000, frame: './assets/heroes/warrior/warrior_idle.png' }
+    ]
+  },
+  thief: {
+    loopDuration: 4400,
+    keyframes: [
+      { time: 0, frame: './assets/heroes/thief/thief_idle.png' },
+      { time: 1500, frame: './assets/heroes/thief/thief_blink.png' },
+      { time: 1750, frame: './assets/heroes/thief/thief_idle.png' },
+      { time: 2500, frame: './assets/heroes/thief/thief_smile.png' },
+      { time: 4100, frame: './assets/heroes/thief/thief_idle.png' }
+    ]
+  },
+  robot: {
+    loopDuration: 4600,
+    keyframes: [
+      { time: 0, frame: './assets/heroes/robot/robot_idle.png' },
+      { time: 1700, frame: './assets/heroes/robot/robot_blink.png' },
+      { time: 1950, frame: './assets/heroes/robot/robot_idle.png' },
+      { time: 2700, frame: './assets/heroes/robot/robot_smile.png' },
+      { time: 4300, frame: './assets/heroes/robot/robot_idle.png' }
+    ]
+  },
+  witch: {
+    loopDuration: 4300,
+    keyframes: [
+      { time: 0, frame: './assets/heroes/witch/witch_idle.png' },
+      { time: 1600, frame: './assets/heroes/witch/witch_blink.png' },
+      { time: 1850, frame: './assets/heroes/witch/witch_idle.png' },
+      { time: 2600, frame: './assets/heroes/witch/witch_smile.png' },
+      { time: 4100, frame: './assets/heroes/witch/witch_idle.png' }
+    ]
+  },
+  jester: {
+    loopDuration: 4800,
+    keyframes: [
+      { time: 0, frame: './assets/heroes/jester/jester_idle.png' },
+      { time: 1800, frame: './assets/heroes/jester/jester_blink.png' },
+      { time: 2050, frame: './assets/heroes/jester/jester_idle.png' },
+      { time: 2800, frame: './assets/heroes/jester/jester_smile.png' },
+      { time: 4500, frame: './assets/heroes/jester/jester_idle.png' }
+    ]
+  },
+  inventor: {
+    loopDuration: 4500,
+    keyframes: [
+      { time: 0, frame: './assets/heroes/inventor/inventor_idle.png' },
+      { time: 1700, frame: './assets/heroes/inventor/inventor_blink.png' },
+      { time: 1950, frame: './assets/heroes/inventor/inventor_idle.png' },
+      { time: 2700, frame: './assets/heroes/inventor/inventor_smile.png' },
+      { time: 4200, frame: './assets/heroes/inventor/inventor_idle.png' }
+    ]
+  }
 };
 
 export const HEROES = [
