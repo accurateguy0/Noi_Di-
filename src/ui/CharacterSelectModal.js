@@ -41,6 +41,7 @@ export const HEROES = [
     characterClass: 'Warrior',
     avatar: './assets/Warrior.png',
     fallbackAvatar: './assets/Warrior.png',
+    animationVideo: './assets/animacje/Warrior_animacje.webm',
     diceIcon: './assets/dice_heads/die_warrior.png',
     tagline: 'Nieugięta siła i odwaga',
     desc: 'Mistrz bezpośrednich starć językowych. Nie boi się trudnych słów ani gramatyki!',
@@ -550,6 +551,33 @@ export function openCharacterSelectModal(app) {
     }
   };
 
+  const renderPedestalSpriteHtml = (data) => {
+    const isVideo = Boolean(data.isHeroUnlocked && data.hero.animationVideo);
+    if (isVideo) {
+      return `
+        <video
+          class="cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}"
+          id="cs-hero-sprite"
+          src="${data.hero.animationVideo}"
+          autoplay
+          loop
+          muted
+          playsinline
+          poster="${data.hero.avatar}"
+        ></video>
+      `;
+    }
+    return `
+      <img
+        class="cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}"
+        id="cs-hero-sprite"
+        src="${data.hero.avatar}"
+        alt="${data.hero.name}"
+        onerror="this.src='${data.hero.fallbackAvatar}'"
+      />
+    `;
+  };
+
   const switchToHero = (newIndex) => {
     if (newIndex < 0 || newIndex >= HEROES.length) return;
     if (newIndex === currentHeroIndex && !spriteTimer) return;
@@ -565,8 +593,9 @@ export function openCharacterSelectModal(app) {
     updateHeroBoards(currentHeroIndex);
 
     // 3. Animacja zmniejszenia i powiększenia postaci na podeście
+    const wrap = document.querySelector('.cs-center-hero-wrap');
     const sprite = document.getElementById('cs-hero-sprite');
-    if (sprite) {
+    if (wrap && sprite) {
       if (spriteTimer) clearTimeout(spriteTimer);
       if (popTimer) clearTimeout(popTimer);
       stopHeroAnimation();
@@ -577,18 +606,17 @@ export function openCharacterSelectModal(app) {
       spriteTimer = setTimeout(() => {
         spriteTimer = null;
         const data = getHeroData(currentHeroIndex);
-        sprite.src = data.hero.avatar;
-        sprite.alt = data.hero.name;
-        sprite.onerror = () => { sprite.src = data.hero.fallbackAvatar; };
-        sprite.classList.toggle('is-locked-hero', !data.isHeroUnlocked);
-        sprite.classList.remove('hero-shrinking');
-        sprite.classList.add('hero-popping');
+        wrap.innerHTML = renderPedestalSpriteHtml(data);
+        const newSprite = document.getElementById('cs-hero-sprite');
+        if (newSprite) {
+          newSprite.classList.add('hero-popping');
 
-        popTimer = setTimeout(() => {
-          popTimer = null;
-          sprite.classList.remove('hero-popping');
-          startHeroAnimation(data.hero.id, data.isHeroUnlocked);
-        }, 220);
+          popTimer = setTimeout(() => {
+            popTimer = null;
+            newSprite.classList.remove('hero-popping');
+            startHeroAnimation(data.hero.id, data.isHeroUnlocked);
+          }, 220);
+        }
       }, 120);
     }
   };
@@ -660,7 +688,7 @@ export function openCharacterSelectModal(app) {
 
           <!-- 6. Centralny podest i postać bohatera (Pedestal Sprite) -->
           <div class="cs-center-hero-wrap">
-            <img class="cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}" id="cs-hero-sprite" src="${data.hero.avatar}" alt="${data.hero.name}" onerror="this.src='${data.hero.fallbackAvatar}'" />
+            ${renderPedestalSpriteHtml(data)}
           </div>
 
           <!-- 7. Prawa świecąca tablica: Epizody LUB Zablokowane -->
