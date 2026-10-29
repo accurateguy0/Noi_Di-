@@ -29,3 +29,5 @@ npm run build
 Preview the production build locally:
 
 npm run preview
+
+The app will be available at: https://accurateguy0.github.io/Noi_Di-/
