@@ -36,9 +36,11 @@ export const HERO_ANIMATIONS = {
     loopDuration: 4200,
     keyframes: [
       { time: 0, frame: './assets/heroes/warrior/warrior_idle.png' },
-      { time: 1600, frame: './assets/heroes/warrior/warrior_blink.png' },
-      { time: 1850, frame: './assets/heroes/warrior/warrior_idle.png' },
+      { time: 1200, frame: './assets/heroes/warrior/warrior_breathe.png' },
+      { time: 1650, frame: './assets/heroes/warrior/warrior_blink.png' },
+      { time: 1950, frame: './assets/heroes/warrior/warrior_breathe.png' },
       { time: 2600, frame: './assets/heroes/warrior/warrior_smile.png' },
+      { time: 3600, frame: './assets/heroes/warrior/warrior_breathe.png' },
       { time: 4000, frame: './assets/heroes/warrior/warrior_idle.png' }
     ]
   },
