@@ -34,7 +34,7 @@ export class TitleScreen {
       <img
         class="title-bg-ambient"
         src="./assets/tla/Start_page_background.png"
-        onerror="if(!this.src.includes('public/')) { this.src='./public/assets/tla/Start_page_background.png'; } else { this.src='/assets/tla/Start_page_background.png'; }"
+        onerror="if(!this.src.includes('public/')) { this.onerror=null; this.src='./assets/tla/Start_page_background.png'; } else { this.src='/assets/tla/Start_page_background.png'; }"
         alt=""
         aria-hidden="true"
       />
@@ -43,7 +43,7 @@ export class TitleScreen {
       <img
         class="title-bg-img"
         src="./assets/tla/Start_page_background.png"
-        onerror="if(!this.src.includes('public/')) { this.src='./public/assets/tla/Start_page_background.png'; } else { this.src='/assets/tla/Start_page_background.png'; }"
+        onerror="if(!this.src.includes('public/')) { this.onerror=null; this.src='./assets/tla/Start_page_background.png'; } else { this.src='/assets/tla/Start_page_background.png'; }"
         alt="Noi Di Start"
       />
 

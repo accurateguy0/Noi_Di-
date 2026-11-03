@@ -17,26 +17,34 @@ class MusicManager {
   }
 
   initUserInteraction() {
+    this.attachInteractionUnlock();
+  }
+
+  attachInteractionUnlock() {
+    if (this._unlockBound) return;
+    this._unlockBound = true;
+
     const unlock = () => {
       this.interactionUnlocked = true;
       if (this.pendingPlay && !this.muted) {
         const fn = this.pendingPlay;
         this.pendingPlay = null;
-        fn();
-      }
-      if (this.currentTrack && !this.currentTrack.paused) {
-        const events = ['pointerdown', 'mousedown', 'touchstart', 'keydown', 'click'];
-        events.forEach((ev) => {
-          if (typeof window !== 'undefined' && window.removeEventListener) window.removeEventListener(ev, unlock, true);
-          if (typeof document !== 'undefined' && document.removeEventListener) document.removeEventListener(ev, unlock, true);
-        });
+        try {
+          fn();
+        } catch (e) {}
+      } else if (this.currentTrack && this.currentTrack.paused && !this.muted && !this.currentTrack._cancelled) {
+        this.currentTrack.play().catch(() => {});
       }
     };
 
-    const events = ['pointerdown', 'mousedown', 'touchstart', 'keydown', 'click', 'pointermove'];
+    const events = ['pointerdown', 'mousedown', 'touchstart', 'touchend', 'click', 'keydown'];
     events.forEach((ev) => {
-      if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener(ev, unlock, { capture: true, passive: true });
-      if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener(ev, unlock, { capture: true, passive: true });
+      if (typeof window !== 'undefined' && window.addEventListener) {
+        window.addEventListener(ev, unlock, { capture: true, passive: true });
+      }
+      if (typeof document !== 'undefined' && document.addEventListener) {
+        document.addEventListener(ev, unlock, { capture: true, passive: true });
+      }
     });
   }
 
@@ -164,6 +172,8 @@ class MusicManager {
         if (playPromise !== undefined) {
           playPromise.catch(() => {
             this.pendingPlay = () => this.playTrack(filename, loop);
+            this._unlockBound = false;
+            this.attachInteractionUnlock();
           });
         }
 

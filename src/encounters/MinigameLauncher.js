@@ -353,7 +353,7 @@ export class MinigameLauncher {
                 alt="Myśli"
                 class="dd-fighter-sprite sprite-mysli"
                 id="mp-opponent-sprite"
-                onerror="this.src='./public/assets/Postacie/Mysli.png'"
+                onerror="this.onerror=null; this.src='./assets/Postacie/Mysli.png'"
               />
             </div>
           </div>
@@ -501,7 +501,7 @@ export class MinigameLauncher {
                 alt="Myśli"
                 class="dd-fighter-sprite sprite-mysli"
                 id="mp-opponent-sprite"
-                onerror="this.src='./public/assets/Postacie/Mysli.png'"
+                onerror="this.onerror=null; this.src='./assets/Postacie/Mysli.png'"
               />
             </div>
           </div>

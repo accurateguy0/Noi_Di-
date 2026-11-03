@@ -18,7 +18,7 @@ export function renderBoloHelperHtml(vnHtml, idSuffix = 'main') {
           width="24"
           height="24"
           class="bolo-trigger-icon"
-          onerror="this.src='./public/assets/Kotek_Pomoc.png'"
+          onerror="this.onerror=null; this.src='./assets/Kotek_Pomoc.png'"
         />
         <span class="bolo-trigger-label">Trợ giúp</span>
       </button>
@@ -31,7 +31,7 @@ export function renderBoloHelperHtml(vnHtml, idSuffix = 'main') {
             width="48"
             height="48"
             class="bolo-popup-avatar"
-            onerror="this.src='./public/assets/Kotek_Pomoc.png'"
+            onerror="this.onerror=null; this.src='./assets/Kotek_Pomoc.png'"
           />
           <div class="bolo-popup-content">
             <div class="bolo-popup-header">

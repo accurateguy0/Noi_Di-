@@ -95,7 +95,7 @@ export class BossFootballerGame {
               alt="Boss Piłkarz"
               class="dd-fighter-sprite sprite-pilkarz"
               id="boss-opponent-sprite"
-              onerror="this.src='./public/assets/Postacie/Pilkarz.png'"
+              onerror="this.onerror=null; this.src='./assets/Postacie/Pilkarz.png'"
             />
           </div>
         </div>

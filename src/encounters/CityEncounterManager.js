@@ -112,7 +112,7 @@ ZATWIERDŹ KOSZYK (${selectedProductIds.size})
                   src="./assets/slowka/karta_kredytowa.jpg"
                   alt="Karta"
                   class="sc-img"
-                  onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.src='./public/assets/slowka/karta_kredytowa.jpg';}else{this.style.display='none'; this.nextElementSibling.style.display='inline-block';}"
+                  onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.onerror=null; this.src='./assets/slowka/karta_kredytowa.jpg';}else{this.style.display='none'; this.nextElementSibling.style.display='inline-block';}"
                 />
                 <span class="sc-icon" style="display: none;"></span>
                 <span class="sc-title">KARTA</span>
@@ -124,7 +124,7 @@ ZATWIERDŹ KOSZYK (${selectedProductIds.size})
                   src="./assets/slowka/gotowka.jpg"
                   alt="Gotówka"
                   class="sc-img"
-                  onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.src='./public/assets/slowka/gotowka.jpg';}else{this.style.display='none'; this.nextElementSibling.style.display='inline-block';}"
+                  onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.onerror=null; this.src='./assets/slowka/gotowka.jpg';}else{this.style.display='none'; this.nextElementSibling.style.display='inline-block';}"
                 />
                 <span class="sc-icon" style="display: none;"></span>
                 <span class="sc-title">GOTÓWKA</span>
@@ -188,7 +188,7 @@ IDĘ DO KASY!
                 src="./assets/Postacie/Mysli.png"
                 alt="Widmo"
                 class="dd-fighter-sprite sprite-mysli"
-                onerror="this.src='./public/assets/Postacie/Mysli.png'"
+                onerror="this.onerror=null; this.src='./assets/Postacie/Mysli.png'"
               />
             </div>
           </div>
@@ -480,7 +480,7 @@ IDĘ DO KASY!
             <div class="dd-thoughts-container">
               <div class="dd-thoughts-header">
                 <div class="dd-thoughts-title-badge">
-                  <img src="./assets/Postacie/Mysli.png" class="dd-thoughts-icon" alt="Myśli" onerror="this.src='./public/assets/Postacie/Mysli.png'" />
+                  <img src="./assets/Postacie/Mysli.png" class="dd-thoughts-icon" alt="Myśli" onerror="this.onerror=null; this.src='./assets/Postacie/Mysli.png'" />
                   <h2>PREFERENCJE ZAPAMIĘTANE!</h2>
                 </div>
                 <div class="dd-thoughts-hint">Twoje zamówienie jest gotowe w myślach. Powiedz to Mistrzowi Kebaba!</div>
@@ -540,7 +540,7 @@ IDĘ DO MISTRZA KEBABA!
             <div class="dd-thoughts-container">
               <div class="dd-thoughts-header">
                 <div class="dd-thoughts-title-badge">
-                  <img src="./assets/Postacie/Mysli.png" class="dd-thoughts-icon" alt="Myśli" onerror="this.src='./public/assets/Postacie/Mysli.png'" />
+                  <img src="./assets/Postacie/Mysli.png" class="dd-thoughts-icon" alt="Myśli" onerror="this.onerror=null; this.src='./assets/Postacie/Mysli.png'" />
                   <h2>${cur.title} (${currentStepIdx + 1}/${steps.length})</h2>
                 </div>
                 <div class="dd-thoughts-hint">${cur.hint}</div>
@@ -566,7 +566,7 @@ IDĘ DO MISTRZA KEBABA!
             <div class="dd-thoughts-container">
               <div class="dd-thoughts-header">
                 <div class="dd-thoughts-title-badge">
-                  <img src="./assets/Postacie/Mysli.png" class="dd-thoughts-icon" alt="Myśli" onerror="this.src='./public/assets/Postacie/Mysli.png'" />
+                  <img src="./assets/Postacie/Mysli.png" class="dd-thoughts-icon" alt="Myśli" onerror="this.onerror=null; this.src='./assets/Postacie/Mysli.png'" />
                   <h2>${cur.title} (${currentStepIdx + 1}/${steps.length})</h2>
                 </div>
                 <div class="dd-thoughts-hint">${cur.hint}</div>
@@ -726,7 +726,7 @@ IDĘ DO MISTRZA KEBABA!
           <div class="dicey-modal-backdrop dd-biletomat-backdrop">
             <div class="dd-biletomat-container">
               <div class="dd-biletomat-top-bar">
-                <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.src='./public/assets/Postacie/Biletomat.png'" />
+                <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.onerror=null; this.src='./assets/Postacie/Biletomat.png'" />
                 <div class="biletomat-title-box">
                   <h3>${texts.title}</h3>
                   <span>${texts.stepLang}</span>
@@ -791,7 +791,7 @@ IDĘ DO MISTRZA KEBABA!
           <div class="dicey-modal-backdrop dd-biletomat-backdrop">
             <div class="dd-biletomat-container">
               <div class="dd-biletomat-top-bar">
-                <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.src='./public/assets/Postacie/Biletomat.png'" />
+                <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.onerror=null; this.src='./assets/Postacie/Biletomat.png'" />
                 <div class="biletomat-title-box">
                   <h3>${texts.title}</h3>
                   <span>${texts.stepTicket}</span>
@@ -902,7 +902,7 @@ IDĘ DO MISTRZA KEBABA!
           <div class="dicey-modal-backdrop dd-biletomat-backdrop">
             <div class="dd-biletomat-container biletomat-printed-wrap">
               <div class="biletomat-top-bar">
-                <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.src='./public/assets/Postacie/Biletomat.png'" />
+                <img src="./assets/Postacie/Biletomat.png" alt="Biletomat" class="biletomat-logo-mini" onerror="this.onerror=null; this.src='./assets/Postacie/Biletomat.png'" />
                 <div class="biletomat-title-box">
                   <h3>BILETOMAT: TRANSAKCJA UDANA!</h3>
                   <span>ODBIERZ WYDRUKOWANY BILET</span>
@@ -982,7 +982,7 @@ ODBIERZ BILET I WSIADAJ!
                   src="./assets/Postacie/Inspektor_Biletu.png"
                   alt="Inspektor Biletu"
                   class="dd-inspector-sprite-img"
-                  onerror="this.src='./public/assets/Postacie/Inspektor_Biletu.png'"
+                  onerror="this.onerror=null; this.src='./assets/Postacie/Inspektor_Biletu.png'"
                 />
               </div>
 

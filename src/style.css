@@ -3254,6 +3254,34 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   align-items: flex-end;
 }
 
+@media (max-width: 1024px) {
+  .dd-arena-opponent {
+    top: 8px;
+    right: 10px;
+    gap: 6px;
+    z-index: 25;
+  }
+  .dd-arena-opponent .dd-fighter-sprite.sprite-kotek {
+    height: 220px;
+  }
+  .dd-arena-player {
+    bottom: 0;
+    left: 8px;
+    gap: 6px;
+    z-index: 25;
+  }
+  .dd-arena-player .dd-fighter-sprite.sprite-tan {
+    height: 270px;
+  }
+  .dd-fighter-hp-bar {
+    width: 180px;
+    height: 28px;
+  }
+  .dd-fighter-name {
+    font-size: 1.15rem;
+  }
+}
+
 /* Wyjazd postaci i kart dopasowania poza ekran po zakończeniu walki (wygrana lub przegrana) */
 .dd-combat-arena.arena-victory-exit .dd-arena-opponent {
   transform: translateX(135%);

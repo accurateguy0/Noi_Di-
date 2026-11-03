@@ -36,7 +36,7 @@ export class BalloonPopGame {
       <div class="arena-overlay balloon-arena">
         <div class="arena-header">
           <div class="fighter-badge player-fighter">
-            <img src="./assets/Warrior.png" alt="Bohater" class="fighter-avatar" onerror="this.src='./public/assets/Warrior.png'" />
+            <img src="./assets/Warrior.png" alt="Bohater" class="fighter-avatar" onerror="this.onerror=null; this.src='./assets/Warrior.png'" />
             <div>
               <div class="fighter-name">BOHATER (Poziom A0)</div>
               <div class="fighter-sub">Szkolne Lochy</div>
@@ -57,7 +57,7 @@ export class BalloonPopGame {
               <div class="fighter-name">GEJMER KUBA</div>
               <div class="fighter-sub" id="bp-level-indicator">Fala 1 / 3 • Pkt: 0</div>
             </div>
-            <img src="./assets/Postacie/Gejmer.png" alt="Gejmer" class="fighter-avatar" onerror="this.src='./public/assets/Postacie/Gejmer.png'" />
+            <img src="./assets/Postacie/Gejmer.png" alt="Gejmer" class="fighter-avatar" onerror="this.onerror=null; this.src='./assets/Postacie/Gejmer.png'" />
           </div>
         </div>
 

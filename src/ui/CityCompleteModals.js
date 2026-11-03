@@ -23,7 +23,7 @@ export function showGrandVictoryModal(app) {
           <h2>WIELKI MISTRZ JĘZYKA POLSKIEGO A0!</h2>
         </div>
         <div class="dd-city-image-wrap">
-          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/tla/miasto.png'" />
+          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.onerror=null; this.src='./assets/tla/miasto.png'" />
         </div>
         <div class="dd-city-text">
           <p><strong>Niewiarygodne!</strong> Ukończyłeś wszystkie moduły i całą grę <em>Nói Đi!</em></p>
@@ -170,7 +170,7 @@ export function showCityCompleteModal(app) {
           <h2>ZAKUPY W MIEŚCIE UKOŃCZONE!</h2>
         </div>
         <div class="dd-city-image-wrap">
-          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/tla/miasto.png'" />
+          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.onerror=null; this.src='./assets/tla/miasto.png'" />
         </div>
         <div class="dd-city-text">
           <p><strong>Brawo!</strong> Samodzielnie zrobiłeś zakupy w sklepie!</p>
@@ -239,7 +239,7 @@ export function showCity2CompleteModal(app) {
           <h2>GASTRONOMIA W MIEŚCIE UKOŃCZONA!</h2>
         </div>
         <div class="dd-city-image-wrap">
-          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.src='./public/assets/tla/miasto.png'" />
+          <img src="./assets/tla/miasto.png" alt="Miasto" class="dd-city-img" onerror="this.onerror=null; this.src='./assets/tla/miasto.png'" />
         </div>
         <div class="dd-city-text">
           <p><strong>Brawo!</strong> Znakomicie opanowałeś zamawianie jedzenia na mieście!</p>

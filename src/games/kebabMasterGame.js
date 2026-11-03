@@ -177,7 +177,7 @@ export class KebabMasterGame {
               alt="Mistrz Kebaba"
               class="dd-fighter-sprite sprite-kebab-master"
               id="km-opponent-sprite"
-              onerror="this.src='./public/assets/Postacie/Mistrz_Kebaba.png'"
+              onerror="this.onerror=null; this.src='./assets/Postacie/Mistrz_Kebaba.png'"
             />
           </div>
         </div>

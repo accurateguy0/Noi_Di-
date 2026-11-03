@@ -64,13 +64,13 @@ export class SpinWheelGame {
               <span class="dd-fighter-hp-text" id="mp-enemy-hp-text">${this.enemyHp}/${this.enemyMaxHp}</span>
             </div>
           </div>
-          <div class="dd-sprite-container opponent-sprite-container" id="mp-opponent-sprite-wrap">
+          <div class="dd-sprite-container opponent-sprite-container wide-sprite-container szczeniak-sprite-container" id="mp-opponent-sprite-wrap">
             <img
               src="./assets/Kotek_Pomoc.png"
               alt="Kotek Pomocnik"
               class="dd-fighter-sprite sprite-kotek"
               id="mp-opponent-sprite"
-              onerror="this.src='./public/assets/Kotek_Pomoc.png'"
+              onerror="if (!this.src.endsWith('/assets/Kotek_Pomoc.png')) this.src='./assets/Kotek_Pomoc.png'"
             />
           </div>
         </div>

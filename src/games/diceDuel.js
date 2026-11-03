@@ -76,7 +76,7 @@ export class DiceDuelGame {
       <div class="arena-overlay dice-duel-arena">
         <div class="arena-header">
           <div class="fighter-badge player-fighter">
-            <img src="./assets/Warrior.png" alt="Bohater" class="fighter-avatar" onerror="this.src='./public/assets/Warrior.png'" />
+            <img src="./assets/Warrior.png" alt="Bohater" class="fighter-avatar" onerror="this.onerror=null; this.src='./assets/Warrior.png'" />
             <div>
               <div class="fighter-name">BOHATER • KOŚCI SLANGÓW</div>
               <div class="fighter-sub">Finał Piętra 1 (Szatnia)</div>

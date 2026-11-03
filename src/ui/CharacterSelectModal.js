@@ -553,7 +553,10 @@ export function openCharacterSelectModal(app) {
   };
 
   const renderPedestalSpriteHtml = (data) => {
-    const isVideo = Boolean(data.isHeroUnlocked && data.hero.animationVideo);
+    const canPlayWebm = typeof document !== 'undefined'
+      ? Boolean(document.createElement('video').canPlayType('video/webm'))
+      : true;
+    const isVideo = Boolean(data.isHeroUnlocked && data.hero.animationVideo && canPlayWebm);
     if (isVideo) {
       return `
         <video
@@ -565,6 +568,7 @@ export function openCharacterSelectModal(app) {
           muted
           playsinline
           poster="${data.hero.avatar}"
+          onerror="this.outerHTML='<img class=\\'cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}\\' id=\\'cs-hero-sprite\\' src=\\'${data.hero.avatar}\\' alt=\\'${data.hero.name}\\' onerror=\\'this.src=\\\\\\'${data.hero.fallbackAvatar}\\\\\\'\\'>'"
         ></video>
       `;
     }
@@ -650,7 +654,7 @@ export function openCharacterSelectModal(app) {
           <img
             class="cs-stage-bg-img"
             src="./assets/tla/character_selection_background.png"
-            onerror="if(!this.src.includes('public/')) { this.src='./public/assets/tla/character_selection_background.png'; } else { this.src='/assets/tla/character_selection_background.png'; }"
+            onerror="if(!this.src.includes('public/')) { this.onerror=null; this.src='./assets/tla/character_selection_background.png'; } else { this.src='/assets/tla/character_selection_background.png'; }"
             alt="Character Selection Stage"
           />
 

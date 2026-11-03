@@ -134,7 +134,7 @@ export class OpenTheBoxGame {
               alt="Kasjerka"
               class="dd-fighter-sprite sprite-kasjerka"
               id="otb-opponent-sprite"
-              onerror="this.src='./public/assets/Postacie/Mistrzynia_Zabki.png'"
+              onerror="this.onerror=null; this.src='./assets/Postacie/Mistrzynia_Zabki.png'"
             />
           </div>
         </div>
@@ -203,7 +203,7 @@ export class OpenTheBoxGame {
           <div class="otb-mystery-box opened">
             <div class="otb-box-lid"></div>
             <div class="otb-item-display">
-              <img src="${item.image}" alt="${item.title}" class="otb-revealed-img" onerror="this.src='./public/assets/slowka/woda.jpg'" />
+              <img src="${item.image}" alt="${item.title}" class="otb-revealed-img" onerror="this.onerror=null; this.src='./assets/slowka/woda.jpg'" />
               <span class="otb-item-hint">${item.title}</span>
             </div>
           </div>
