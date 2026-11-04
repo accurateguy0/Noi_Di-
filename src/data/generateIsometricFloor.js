@@ -480,6 +480,7 @@ export function generateIsometric19NodeFloor(floorNumber, episodePip = 1, heroId
       items: data.items,
       words: data.words,
       steps: data.steps,
+      dialogSteps: data.dialogSteps,
       boxes: data.boxes,
       archetype: data.archetype,
       scenarios: data.scenarios,

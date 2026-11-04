@@ -4,6 +4,15 @@
 import { SLANG_WORDS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import { resolveAsset } from '../ui/CharacterSelectModal.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class MatchingPairsGame {
   constructor(container, options = {}) {
@@ -22,6 +31,7 @@ export class MatchingPairsGame {
     this.opponentAvatar = options.opponentAvatar || './assets/Kotek_Pomoc.png';
     this.words = options.words;
     this.titleText = this.enemyName;
+    initLimitBreak(this);
 
     this.pairCount = options.pairCount || 3; // 3 pary (6 kafelków) dla Kotka
     this.tanDamage = options.tanDamage || getPlayerDamage(this.player);
@@ -119,11 +129,11 @@ export class MatchingPairsGame {
           </div>
           <div class="dd-sprite-container opponent-sprite-container ${wideClass}" id="mp-opponent-sprite-wrap">
             <img
-              src="${this.opponentAvatar}"
+              src="${resolveAsset(this.opponentAvatar)}"
               alt="${this.enemyName}"
               class="dd-fighter-sprite sprite-opponent"
               id="mp-opponent-sprite"
-              onerror="this.src='./public${this.opponentAvatar.replace(/^\./, '')}'"
+              onerror="this.onerror=null; this.src='${resolveAsset(this.opponentAvatar)}';"
             />
           </div>
         </div>
@@ -150,11 +160,11 @@ export class MatchingPairsGame {
         <div class="dd-arena-fighter dd-arena-player" id="mp-player-box">
           <div class="dd-sprite-container player-sprite-container" id="mp-player-sprite-wrap">
             <img
-              src="${this.player?.avatar || './assets/Warrior.png'}"
+              src="${resolveAsset(this.player?.avatar || './assets/Warrior.png')}"
               alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
               id="mp-player-sprite"
-              onerror="this.src='./assets/Warrior.png'"
+              onerror="this.onerror=null; this.src='${resolveAsset('./assets/Warrior.png')}';"
             />
           </div>
           <div class="dd-fighter-hud">
@@ -165,10 +175,13 @@ export class MatchingPairsGame {
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="mp-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const introLayer = this.container.querySelector('#mp-intro-click-layer');
     const animatedTitle = this.container.querySelector('#mp-animated-title');
@@ -254,6 +267,7 @@ export class MatchingPairsGame {
     const textEl = this.container.querySelector('#mp-player-hp-text');
     if (fillEl) fillEl.style.width = `${pct}%`;
     if (textEl) textEl.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   updatePlayerHud() {
@@ -306,7 +320,8 @@ export class MatchingPairsGame {
         }, 320);
       }
       this.updateOpponentBar();
-      this.triggerFighterHit('opponent', `-${this.tanDamage}`);
+      const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+      this.triggerFighterHit('opponent', `-${finalDmg}`);
 
       if (this.matchedPairIds.size === this.pairCount) {
         setTimeout(() => {
@@ -327,14 +342,19 @@ export class MatchingPairsGame {
 
       const dmg = this.enemyDamage || 0;
       if (dmg > 0) {
-        sound.playEnemyHit(this.enemyName);
-        if (this.onPlayerDamaged) {
-          this.onPlayerDamaged(dmg);
+        const dodged = handleLimitBreakDamageTaken(this, dmg);
+        if (dodged) {
+          this.triggerFighterHit('player', 'UNIK!');
         } else {
-          this.player.hp = Math.max(0, this.player.hp - dmg);
+          sound.playEnemyHit(this.enemyName);
+          if (this.onPlayerDamaged) {
+            this.onPlayerDamaged(dmg);
+          } else {
+            this.player.hp = Math.max(0, this.player.hp - dmg);
+          }
+          this.triggerFighterHit('player', `-${dmg}`);
         }
         this.updatePlayerBar();
-        this.triggerFighterHit('player', `-${dmg}`);
       } else {
         this.triggerFighterHit('player', '');
       }

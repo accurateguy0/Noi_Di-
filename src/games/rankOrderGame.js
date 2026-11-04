@@ -5,6 +5,15 @@
 
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import { resolveAsset } from '../ui/CharacterSelectModal.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class RankOrderGame {
   constructor(container, {
@@ -28,6 +37,7 @@ export class RankOrderGame {
     this.onComplete = onComplete;
     this.onClose = onClose;
     this.shoppingChoices = shoppingChoices;
+    initLimitBreak(this);
 
     const rawName = (enemyName || 'Koleżanka')
       .replace(/\s*\([^)]*\)/g, '')
@@ -115,11 +125,11 @@ export class RankOrderGame {
           </div>
           <div class="dd-sprite-container opponent-sprite-container ${wideClass}" id="ro-opponent-sprite-wrap">
             <img
-              src="${this.opponentAvatar}"
+              src="${resolveAsset(this.opponentAvatar)}"
               alt="${this.enemyName}"
               class="dd-fighter-sprite sprite-opponent"
               id="ro-opponent-sprite"
-              onerror="this.src='./public${this.opponentAvatar.replace(/^\\./, '')}'"
+              onerror="this.onerror=null; this.src='${resolveAsset(this.opponentAvatar)}';"
             />
           </div>
         </div>
@@ -145,10 +155,10 @@ export class RankOrderGame {
         <div class="dd-arena-fighter dd-arena-player" id="ro-player-box">
           <div class="dd-sprite-container player-sprite-container" id="ro-player-sprite-wrap">
             <img
-              src="${this.player?.avatar || './assets/Warrior.png'}"
+              src="${resolveAsset(this.player?.avatar || './assets/Warrior.png')}"
               alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
-              onerror="this.src='./assets/Warrior.png'"
+              onerror="this.onerror=null; this.src='${resolveAsset('./assets/Warrior.png')}';"
             />
           </div>
           <div class="dd-fighter-hud">
@@ -159,10 +169,13 @@ export class RankOrderGame {
               <div class="dd-fighter-hp-fill" id="ro-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="ro-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const roTitle = this.container.querySelector('#ro-title');
     if (roTitle) {
@@ -293,6 +306,7 @@ export class RankOrderGame {
       sound.playAttackHit(this.enemyName);
       sound.playSuccess();
       this.enemyHp = 0;
+      consumeLimitBreakAttack(this, this.enemyMaxHp);
       this.triggerFighterHit('opponent', `-${this.enemyMaxHp}`);
       this.updateEnemyHud();
 
@@ -300,10 +314,17 @@ export class RankOrderGame {
         this.finishBattle();
       }, 700);
     } else {
-      sound.playEnemyHit(this.enemyName);
-      this.triggerFighterHit('player', `-${this.enemyDamage}`);
-      if (this.onPlayerDamaged) {
-        this.onPlayerDamaged(this.enemyDamage);
+      const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
+      if (dodged) {
+        this.triggerFighterHit('player', 'UNIK!');
+      } else {
+        sound.playEnemyHit(this.enemyName);
+        this.triggerFighterHit('player', `-${this.enemyDamage}`);
+        if (this.onPlayerDamaged) {
+          this.onPlayerDamaged(this.enemyDamage);
+        } else {
+          this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+        }
       }
       this.updatePlayerHud();
 
@@ -360,6 +381,7 @@ export class RankOrderGame {
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     if (fill) fill.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   finishBattle() {

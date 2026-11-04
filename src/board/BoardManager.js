@@ -187,7 +187,11 @@ export class BoardManager {
         const relIcon = String(node.icon).replace(/^(\.\/|\/)+/, '');
         const cleanPath = `${cleanBase}${relIcon}`;
         const relativeFallback = `./${relIcon}`;
-        const lowerFallback = `${cleanBase}${relIcon.toLowerCase()}`;
+        // Zachowujemy właściwą wielkość liter folderów (np. Postacie/), korygując jedynie nazwę pliku:
+        const fileLower = relIcon.replace(/\/([^/]+)$/, (_, f) => '/' + f.toLowerCase());
+        const fileCapital = relIcon.replace(/\/([^/]+)$/, (_, f) => '/' + (f.charAt(0).toUpperCase() + f.slice(1)));
+        const fileLowerFallback = `${cleanBase}${fileLower}`;
+        const fileCapitalFallback = `${cleanBase}${fileCapital}`;
         const itemkiRel = relIcon.includes('itemki/') ? relIcon : relIcon.replace('assets/', 'assets/itemki/');
         const itemkiFallback = `${cleanBase}${itemkiRel}`;
         const sharedSideClass = isCurrent && node.type !== 'apple' && !isHidden
@@ -199,11 +203,13 @@ export class BoardManager {
           img.onerror = () => {
             attempts++;
             const cur = img.getAttribute('src');
-            if (attempts === 1 && cur !== relativeFallback) {
+            if (attempts === 1 && cur !== fileLowerFallback) {
+              img.setAttribute('src', fileLowerFallback);
+            } else if (attempts === 2 && cur !== fileCapitalFallback) {
+              img.setAttribute('src', fileCapitalFallback);
+            } else if (attempts === 3 && cur !== relativeFallback) {
               img.setAttribute('src', relativeFallback);
-            } else if (attempts === 2 && cur !== lowerFallback) {
-              img.setAttribute('src', lowerFallback);
-            } else if (attempts === 3 && cur !== itemkiFallback) {
+            } else if (attempts === 4 && cur !== itemkiFallback) {
               img.setAttribute('src', itemkiFallback);
             } else {
               img.onerror = null;

@@ -8,11 +8,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Dyscyplina i zasada fair play",
       "descriptionPl": "Przygotujcie się do biegu sztafetowego! Ułóż etapy rozmowy w logiczną całość.",
       "steps": [
-        "1. „Cześć! Zgłosiłeś naszą klasę do szkolnego biegu sztafetowego?”",
-        "2. „Tak, mamy zgraną czwórkę i regularnie trenujemy na WF-ie!”",
-        "3. „Pamiętajmy o zasadzie fair play – szanujemy każdego rywala!”",
-        "4. „Jasne! Niezależnie od wyniku gratulujemy przeciwnikom na mecie.”",
-        "5. „Dokładnie, prawdziwy sportowiec walczy do końca i z honorem!”"
+        "„Cześć! Zgłosiłeś naszą klasę do szkolnego biegu sztafetowego?”",
+        "„Tak, mamy zgraną czwórkę i regularnie trenujemy na WF-ie!”",
+        "„Pamiętajmy o zasadzie fair play – szanujemy każdego rywala!”",
+        "„Jasne! Niezależnie od wyniku gratulujemy przeciwnikom na mecie.”",
+        "„Dokładnie, prawdziwy sportowiec walczy do końca i z honorem!”"
       ]
     },
     {
@@ -20,11 +20,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Asekuracja i bezpieczeństwo ćwiczeń",
       "descriptionPl": "Przed gimnastyką trzeba rozłożyć sprzęt. Ułóż kroki w bezpiecznej kolejności.",
       "steps": [
-        "1. „Hej, pomożesz mi rozłożyć materace pod drabinkami ściennymi?”",
-        "2. „Pewnie, asekuracja i bezpieczeństwo podczas skoków to podstawa.”",
-        "3. „Rozłóżmy też kozła gimnastycznego i sprawdźmy stabilność podpór.”",
-        "4. „Świetnie, teraz żaden uczeń nie dozna bolesnej kontuzji.”",
-        "5. „Trener na pewno doceni naszą odpowiedzialność i zgranie!”"
+        "„Hej, pomożesz mi rozłożyć materace pod drabinkami ściennymi?”",
+        "„Pewnie, asekuracja i bezpieczeństwo podczas skoków to podstawa.”",
+        "„Rozłóżmy też kozła gimnastycznego i sprawdźmy stabilność podpór.”",
+        "„Świetnie, teraz żaden uczeń nie dozna bolesnej kontuzji.”",
+        "„Trener na pewno doceni naszą odpowiedzialność i zgranie!”"
       ]
     },
     {
@@ -32,11 +32,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Koncentracja i głęboki oddech przed startem",
       "descriptionPl": "Stres przed finałowym biegiem? Ułóż rozmowę motywacyjną.",
       "steps": [
-        "1. „Strasznie denerwuję się przed dzisiejszym startem na 60 metrów!”",
-        "2. „Spokojnie, weź trzy głębokie oddechy i pomyśl o treningach.”",
-        "3. „Masz rację, przepracowaliśmy solidnie każdy element startu z bloków.”",
-        "4. „Skup się na własnym torze i biegnij swoim wyćwiczonym rytmem.”",
-        "5. „Dzięki za wsparcie, teraz czuję pełną gotowość do rywalizacji!”"
+        "„Strasznie denerwuję się przed dzisiejszym startem na 60 metrów!”",
+        "„Spokojnie, weź trzy głębokie oddechy i pomyśl o treningach.”",
+        "„Masz rację, przepracowaliśmy solidnie każdy element startu z bloków.”",
+        "„Skup się na własnym torze i biegnij swoim wyćwiczonym rytmem.”",
+        "„Dzięki za wsparcie, teraz czuję pełną gotowość do rywalizacji!”"
       ]
     },
     {
@@ -44,11 +44,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Kamienie na szaniec i wzór męstwa",
       "descriptionPl": "Dyskutujecie o postawie bohaterów Szarych Szeregów. Ułóż argumenty.",
       "steps": [
-        "1. „Czytałeś rozdział o Akcji pod Arsenałem w Kamieniach na szaniec?”",
-        "2. „Tak, determinacja i braterstwo Zośki i przyjaciół są niesamowite.”",
-        "3. „Rudy mimo brutalnych przesłuchań nie zdradził żadnego z kolegów.”",
-        "4. „To dowód, że największą siłą człowieka jest wierność ideałom.”",
-        "5. „Tacy bohaterowie to prawdziwy wzór odwagi cywilnej dla każdego!”"
+        "„Czytałeś rozdział o Akcji pod Arsenałem w Kamieniach na szaniec?”",
+        "„Tak, determinacja i braterstwo Zośki i przyjaciół są niesamowite.”",
+        "„Rudy mimo brutalnych przesłuchań nie zdradził żadnego z kolegów.”",
+        "„To dowód, że największą siłą człowieka jest wierność ideałom.”",
+        "„Tacy bohaterowie to prawdziwy wzór odwagi cywilnej dla każdego!”"
       ]
     },
     {
@@ -56,11 +56,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Poprawna ortografia haseł motywacyjnych",
       "descriptionPl": "Tworzycie transparent na zawody. Ułóż zdania w logiczny ciąg.",
       "steps": [
-        "1. „Wypiszmy na transparencie hasło: W zdrowym ciele zdrowy duch!”",
-        "2. „Pamiętajmy o pisowni «ch» w słowie duch oraz «rz» w zdrowym.”",
-        "3. „Dodajmy też: Walczymy dzielnie do ostatniego gwizdka sędziego!”",
-        "4. „Piękne kolory i brak błędów ortograficznych – transparent zachwyca!”",
-        "5. „Z takim dopingiem nasza reprezentacja da z siebie sto procent!”"
+        "„Wypiszmy na transparencie hasło: W zdrowym ciele zdrowy duch!”",
+        "„Pamiętajmy o pisowni «ch» w słowie duch oraz «rz» w zdrowym.”",
+        "„Dodajmy też: Walczymy dzielnie do ostatniego gwizdka sędziego!”",
+        "„Piękne kolory i brak błędów ortograficznych – transparent zachwyca!”",
+        "„Z takim dopingiem nasza reprezentacja da z siebie sto procent!”"
       ]
     },
     {
@@ -68,11 +68,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Szybka reakcja przy zwichnięciu kostki",
       "descriptionPl": "Kolega skręcił nogę podczas meczu. Ułóż procedurę ratunkową.",
       "steps": [
-        "1. „Uwaga, Janek źle wylądował pod koszem i trzyma się za kostkę!”",
-        "2. „Niech natychmiast usiądzie i nie obciąża bolącej stopy.”",
-        "3. „Biegnę do gabinetu pielęgniarki po zimny kompres i bandaż.”",
-        "4. „Schładzamy staw, unosimy nogę lekko w górę i powiadamiamy nauczyciela.”",
-        "5. „Szybka i opanowana reakcja uchroniła go przed powikłaniami!”"
+        "„Uwaga, Janek źle wylądował pod koszem i trzyma się za kostkę!”",
+        "„Niech natychmiast usiądzie i nie obciąża bolącej stopy.”",
+        "„Biegnę do gabinetu pielęgniarki po zimny kompres i bandaż.”",
+        "„Schładzamy staw, unosimy nogę lekko w górę i powiadamiamy nauczyciela.”",
+        "„Szybka i opanowana reakcja uchroniła go przed powikłaniami!”"
       ]
     },
     {
@@ -80,11 +80,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Unikanie kontuzji i zgranie drużyny",
       "descriptionPl": "Przed szkolnym meczem trzeba dobrze przygotować ciało. Ułóż etapy w logicznej kolejności.",
       "steps": [
-        "1. „Przed rozpoczęciem meczu musimy przeprowadzić solidną rozgrzewkę stawów.”",
-        "2. „Zacznijmy od krążeń ramion i dynamicznego rozciągania nóg.”",
-        "3. „Prawidłowa rozgrzewka chroni przed naciągnięciem mięśni i bolesnymi urazami.”",
-        "4. „Teraz kilka próbnych odbić sposobem górnym i dolnym nad siatką.”",
-        "5. „Jesteśmy idealnie przygotowani fizycznie, zagrajmy z pełnym zaangażowaniem!”"
+        "„Przed rozpoczęciem meczu musimy przeprowadzić solidną rozgrzewkę stawów.”",
+        "„Zacznijmy od krążeń ramion i dynamicznego rozciągania nóg.”",
+        "„Prawidłowa rozgrzewka chroni przed naciągnięciem mięśni i bolesnymi urazami.”",
+        "„Teraz kilka próbnych odbić sposobem górnym i dolnym nad siatką.”",
+        "„Jesteśmy idealnie przygotowani fizycznie, zagrajmy z pełnym zaangażowaniem!”"
       ]
     },
     {
@@ -92,11 +92,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Ścianka wspinaczkowa i opanowanie emocji",
       "descriptionPl": "Wspinaczka wymaga odwagi i skupienia. Ułóż kroki bezpiecznego wejścia.",
       "steps": [
-        "1. „Boję się wejść na najwyższy punkt ścianki wspinaczkowej!”",
-        "2. „Pamiętaj, że jesteś bezpiecznie przypięty liną asekuracyjną i masz kask.”",
-        "3. „Skup wzrok na najbliższym chwycie i stawiaj stopy pewnie na stopniach.”",
-        "4. „Krok po kroku, oddychaj spokojnie i nie patrz nerwowo w dół.”",
-        "5. „Udało się, dotknąłem szczytu! Pokonanie własnego strachu daje ogromną siłę!”"
+        "„Boję się wejść na najwyższy punkt ścianki wspinaczkowej!”",
+        "„Pamiętaj, że jesteś bezpiecznie przypięty liną asekuracyjną i masz kask.”",
+        "„Skup wzrok na najbliższym chwycie i stawiaj stopy pewnie na stopniach.”",
+        "„Krok po kroku, oddychaj spokojnie i nie patrz nerwowo w dół.”",
+        "„Udało się, dotknąłem szczytu! Pokonanie własnego strachu daje ogromną siłę!”"
       ]
     },
     {
@@ -104,11 +104,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Zasada fair play i szacunek dla rywala",
       "descriptionPl": "Na zawodach liczy się nie tylko medal. Ułóż rozmowę o prawdziwym sporcie.",
       "steps": [
-        "1. „Widziałeś, jak biegacz z równoległej klasy potknął się tuż przed metą?”",
-        "2. „Zamiast go wyprzedzić, podbiegłeś i pomogłeś mu wstać na równe nogi.”",
-        "3. „Wynik medalowy jest ważny, ale szacunek dla drugiego człowieka ma pierwszeństwo.”",
-        "4. „Wszyscy kibice na trybunach nagrodzili waszą postawę gromkimi brawami.”",
-        "5. „Bo prawdziwy mistrz wygrywa nie tylko sprawnością, lecz przede wszystkim sercem!”"
+        "„Widziałeś, jak biegacz z równoległej klasy potknął się tuż przed metą?”",
+        "„Zamiast go wyprzedzić, podbiegłeś i pomogłeś mu wstać na równe nogi.”",
+        "„Wynik medalowy jest ważny, ale szacunek dla drugiego człowieka ma pierwszeństwo.”",
+        "„Wszyscy kibice na trybunach nagrodzili waszą postawę gromkimi brawami.”",
+        "„Bo prawdziwy mistrz wygrywa nie tylko sprawnością, lecz przede wszystkim sercem!”"
       ]
     },
     {
@@ -116,11 +116,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Zawisza Czarny i honor rycerski",
       "descriptionPl": "Omawianie motywu rycerskiego na języku polskim. Ułóż etapy dyskusji.",
       "steps": [
-        "1. „Rozmawiamy na lekcji o cechach Zawiszy Czarnego i rycerzy z «Krzyżaków».”",
-        "2. „Słowo rycerza było cenniejsze niż złoto – danej obietnicy nigdy nie łamano.”",
-        "3. „Obrona słabszych i pokrzywdzonych stanowiła najwyższy nakaz moralny.”",
-        "4. „Jak te zasady możemy przełożyć na nasze codzienne życie w klasie?”",
-        "5. „Stawać zawsze w obronie wyśmiewanych i dotrzymywać każdego danego słowa!”"
+        "„Rozmawiamy na lekcji o cechach Zawiszy Czarnego i rycerzy z «Krzyżaków».”",
+        "„Słowo rycerza było cenniejsze niż złoto – danej obietnicy nigdy nie łamano.”",
+        "„Obrona słabszych i pokrzywdzonych stanowiła najwyższy nakaz moralny.”",
+        "„Jak te zasady możemy przełożyć na nasze codzienne życie w klasie?”",
+        "„Stawać zawsze w obronie wyśmiewanych i dotrzymywać każdego danego słowa!”"
       ]
     }
   ],
@@ -130,11 +130,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Demaskowanie podejrzanej wiadomości w sieci",
       "descriptionPl": "Ktoś przysłał podejrzany link na grupie klasy! Ułóż dialog demaskujący oszustwo.",
       "steps": [
-        "1. „Hej! Zobacz, dostałam na komunikatorze dziwną wiadomość z linkiem!”",
-        "2. „Uważaj, treść ma błędy językowe i żąda podania hasła do konta!”",
-        "3. „To typowy phishing – próba wyłudzenia danych przez oszusta.”",
-        "4. „Masz rację, nie klikam w link i od razu blokuję ten podejrzany numer!”",
-        "5. „Super decyzja! W sieci czujność i spryt to podstawa bezpieczeństwa.”"
+        "„Hej! Zobacz, dostałam na komunikatorze dziwną wiadomość z linkiem!”",
+        "„Uważaj, treść ma błędy językowe i żąda podania hasła do konta!”",
+        "„To typowy phishing – próba wyłudzenia danych przez oszusta.”",
+        "„Masz rację, nie klikam w link i od razu blokuję ten podejrzany numer!”",
+        "„Super decyzja! W sieci czujność i spryt to podstawa bezpieczeństwa.”"
       ]
     },
     {
@@ -142,11 +142,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Zagadka ukryta między kartkami starej kroniki",
       "descriptionPl": "Znaleźliście zakodowaną wskazówkę w bibliotece. Ułóż etapy jej rozszyfrowania.",
       "steps": [
-        "1. „Spójrz na tę zakładkę w słowniku – litery są poprzesuwane w alfabecie!”",
-        "2. „To klasyczny szyfr Cezara! Przesuńmy każdą literę o trzy pozycje wstecz.”",
-        "3. „Pierwsze słowo to «SPOTKANIE», a drugie oznacza «AULĘ» szkolną!”",
-        "4. „Ktoś przygotował dla nas świetną grę terenową z okazji Dnia Książki.”",
-        "5. „Chodźmy dyskretnie sprawdzić kolejną wskazówkę za kurtyną!”"
+        "„Spójrz na tę zakładkę w słowniku – litery są poprzesuwane w alfabecie!”",
+        "„To klasyczny szyfr Cezara! Przesuńmy każdą literę o trzy pozycje wstecz.”",
+        "„Pierwsze słowo to «SPOTKANIE», a drugie oznacza «AULĘ» szkolną!”",
+        "„Ktoś przygotował dla nas świetną grę terenową z okazji Dnia Książki.”",
+        "„Chodźmy dyskretnie sprawdzić kolejną wskazówkę za kurtyną!”"
       ]
     },
     {
@@ -154,11 +154,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Ochrona danych osobowych i uczciwość",
       "descriptionPl": "Na korytarzu leży legitymacja szkolna. Ułóż odpowiedzialne działanie.",
       "steps": [
-        "1. „Zobacz, ktoś upuścił na schodach legitymację szkolną ze zdjęciem!”",
-        "2. „Nie wolno robić jej zdjęć ani wrzucać danych kolegi do internetu.”",
-        "3. „PESEL i adres zamieszkania to poufne dane podlegające ochronie.”",
-        "4. „Zanieśmy dokument prosto do sekretariatu lub do pani wicedyrektor.”",
-        "5. „Dzięki temu właściciel szybko odzyska zgubę bez żadnego stresu!”"
+        "„Zobacz, ktoś upuścił na schodach legitymację szkolną ze zdjęciem!”",
+        "„Nie wolno robić jej zdjęć ani wrzucać danych kolegi do internetu.”",
+        "„PESEL i adres zamieszkania to poufne dane podlegające ochronie.”",
+        "„Zanieśmy dokument prosto do sekretariatu lub do pani wicedyrektor.”",
+        "„Dzięki temu właściciel szybko odzyska zgubę bez żadnego stresu!”"
       ]
     },
     {
@@ -166,11 +166,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Śledztwo w sprawie znikających malin Balladyny",
       "descriptionPl": "Analizujecie motyw zbrodni w dramacie Słowackiego. Ułóż wnioski.",
       "steps": [
-        "1. „Gdyby w lesie był detektyw, od razu zauważyłby podejrzane zachowanie Balladyny!”",
-        "2. „Jej pośpiech i krwawa plama na czole zdradziły winę przed matką.”",
-        "3. „Żadna zbrodnia i kłamstwo nie pozostają na zawsze w ukryciu.”",
-        "4. „Nawet korona Kirkora nie zagłuszyła jej rosnącego strachu przed karą.”",
-        "5. „Sprawiedliwość zawsze triumfuje, a prawda wychodzi na jaw!”"
+        "„Gdyby w lesie był detektyw, od razu zauważyłby podejrzane zachowanie Balladyny!”",
+        "„Jej pośpiech i krwawa plama na czole zdradziły winę przed matką.”",
+        "„Żadna zbrodnia i kłamstwo nie pozostają na zawsze w ukryciu.”",
+        "„Nawet korona Kirkora nie zagłuszyła jej rosnącego strachu przed karą.”",
+        "„Sprawiedliwość zawsze triumfuje, a prawda wychodzi na jaw!”"
       ]
     },
     {
@@ -178,11 +178,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Dyplomacja i argumentacja przy zamawianiu posiłku",
       "descriptionPl": "W szkolnym sklepiku skończyły się bułki grahamki. Ułóż uprzejmą rozmowę.",
       "steps": [
-        "1. „Dzień dobry! Czy są jeszcze dostępne bułki z ziarnami dyni?”",
-        "2. „Niestety, właśnie sprzedałam ostatnią sztukę starszym uczniom.”",
-        "3. „Rozumiem, a czy mogłaby pani przygotować dla nas kanapkę z razowego chleba?”",
-        "4. „Oczywiście, mam świeży chleb, sałatę, pomidora i biały ser!”",
-        "5. „Wspaniale, uprzejme pytanie i elastyczność rozwiązują każdy problem!”"
+        "„Dzień dobry! Czy są jeszcze dostępne bułki z ziarnami dyni?”",
+        "„Niestety, właśnie sprzedałam ostatnią sztukę starszym uczniom.”",
+        "„Rozumiem, a czy mogłaby pani przygotować dla nas kanapkę z razowego chleba?”",
+        "„Oczywiście, mam świeży chleb, sałatę, pomidora i biały ser!”",
+        "„Wspaniale, uprzejme pytanie i elastyczność rozwiązują każdy problem!”"
       ]
     },
     {
@@ -190,11 +190,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Prima aprilis bez ranienia niczyich uczuć",
       "descriptionPl": "Planujecie żart na 1 kwietnia. Ułóż zasady bezpiecznej zabawy.",
       "steps": [
-        "1. „Zbliża się prima aprilis! Zróbmy klasowy, wesoły dowcip naszemu wychowawcy!”",
-        "2. „Pamiętajmy o żelaznej zasadzie: żart musi śmieszyć, a nie ośmieszać ani niszczyć rzeczy.”",
-        "3. „Przyklejmy na drzwiach sali kolorową kartkę z napisem: «Dziś lekcja w plenerze... żart!».”",
-        "4. „A na biurku postawmy bukiet z papierowych kwiatów z origami!”",
-        "5. „Nauczyciel uśmiechnie się od ucha do ucha, a atmosfera będzie genialna!”"
+        "„Zbliża się prima aprilis! Zróbmy klasowy, wesoły dowcip naszemu wychowawcy!”",
+        "„Pamiętajmy o żelaznej zasadzie: żart musi śmieszyć, a nie ośmieszać ani niszczyć rzeczy.”",
+        "„Przyklejmy na drzwiach sali kolorową kartkę z napisem: «Dziś lekcja w plenerze... żart!».”",
+        "„A na biurku postawmy bukiet z papierowych kwiatów z origami!”",
+        "„Nauczyciel uśmiechnie się od ucha do ucha, a atmosfera będzie genialna!”"
       ]
     },
     {
@@ -202,11 +202,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Logika i spostrzegawczość",
       "descriptionPl": "Trwa szkolny escape room z lektur. Ułóż etapy rozwiązania zagadki.",
       "steps": [
-        "1. „Mamy trzy minuty na rozwiązanie ostatniej zagadki w szkolnym escape roomie!”",
-        "2. „Spójrz na tę rymowaną wskazówkę: szukaj tego, co ukryte między wierszami.”",
-        "3. „Pierwsze litery każdego wersu tworzą wyraz: S-Z-Y-F-R!”",
-        "4. „Wpisuję te litery do kłódki szyfrowej w drewnianej skrzyni!”",
-        "5. „Zamek puścił, skrzynia otwarta! Bystre oko i logika to najlepsza broń!”"
+        "„Mamy trzy minuty na rozwiązanie ostatniej zagadki w szkolnym escape roomie!”",
+        "„Spójrz na tę rymowaną wskazówkę: szukaj tego, co ukryte między wierszami.”",
+        "„Pierwsze litery każdego wersu tworzą wyraz: S-Z-Y-F-R!”",
+        "„Wpisuję te litery do kłódki szyfrowej w drewnianej skrzyni!”",
+        "„Zamek puścił, skrzynia otwarta! Bystre oko i logika to najlepsza broń!”"
       ]
     },
     {
@@ -214,11 +214,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Skojarzenia i szybkie zapamiętywanie",
       "descriptionPl": "Powtórka ważnych dat przed konkursem historycznym. Ułóż dialog w logiczną całość.",
       "steps": [
-        "1. „Jak zapamiętać datę chrztu Polski dziewięćset sześćdziesiąt sześć?”",
-        "2. „Zbudujmy skojarzenie obrazowe: dziewięć orłów i dwie bliźniacze szóstki.”",
-        "3. „A bitwa pod Grunwaldem w tysiąc czterysta dziesiątym roku?”",
-        "4. „Wyobraź sobie czternastu rycerzy trzymających dziesięć potężnych mieczy.”",
-        "5. „Niezwykłe! Dzięki technice skojarzeń pamięć działa błyskawicznie i bezbłędnie!”"
+        "„Jak zapamiętać datę chrztu Polski dziewięćset sześćdziesiąt sześć?”",
+        "„Zbudujmy skojarzenie obrazowe: dziewięć orłów i dwie bliźniacze szóstki.”",
+        "„A bitwa pod Grunwaldem w tysiąc czterysta dziesiątym roku?”",
+        "„Wyobraź sobie czternastu rycerzy trzymających dziesięć potężnych mieczy.”",
+        "„Niezwykłe! Dzięki technice skojarzeń pamięć działa błyskawicznie i bezbłędnie!”"
       ]
     },
     {
@@ -226,11 +226,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Phishing i ochrona prywatności",
       "descriptionPl": "Dostałeś podejrzany link na komunikatorze. Ułóż bezpieczne kroki reakcji.",
       "steps": [
-        "1. „Dostałam dziwną wiadomość z linkiem: «Wygrałaś darmowy telefon, kliknij!»”",
-        "2. „Uważaj, to klasyczny phishing mający wyłudzić hasła i dane logowania!”",
-        "3. „Zwróć uwagę na podejrzany adres nadawcy z literówkami i brak certyfikatu.”",
-        "4. „Natychmiast usuwam tę wiadomość i blokuję podejrzany numer.”",
-        "5. „Świetna czujność! Sprytny internauta nigdy nie daje się złapać na fałszywe obietnice.”"
+        "„Dostałam dziwną wiadomość z linkiem: «Wygrałaś darmowy telefon, kliknij!»”",
+        "„Uważaj, to klasyczny phishing mający wyłudzić hasła i dane logowania!”",
+        "„Zwróć uwagę na podejrzany adres nadawcy z literówkami i brak certyfikatu.”",
+        "„Natychmiast usuwam tę wiadomość i blokuję podejrzany numer.”",
+        "„Świetna czujność! Sprytny internauta nigdy nie daje się złapać na fałszywe obietnice.”"
       ]
     },
     {
@@ -238,11 +238,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Motyw winy i kary w dramacie",
       "descriptionPl": "Szukanie dowodów zbrodni w Balladynie. Ułóż etapy dedukcji.",
       "steps": [
-        "1. „Pani od polskiego zadała odnalezienie motywu winy i kary w «Balladynie».”",
-        "2. „Prześledźmy drogę zbrodni: krwawa plama na czole, której nie da się zmyć.”",
-        "3. „Nawet korona nie dała bohaterce szczęścia, a na koniec dosięgnął ją piorun.”",
-        "4. „Każdy zły uczynek prędzej czy później pociąga za sobą nieuchronne konsekwencje.”",
-        "5. „Logiczna dedukcja doprowadziła nas prosto do sedna przesłania dramatu!”"
+        "„Pani od polskiego zadała odnalezienie motywu winy i kary w «Balladynie».”",
+        "„Prześledźmy drogę zbrodni: krwawa plama na czole, której nie da się zmyć.”",
+        "„Nawet korona nie dała bohaterce szczęścia, a na koniec dosięgnął ją piorun.”",
+        "„Każdy zły uczynek prędzej czy później pociąga za sobą nieuchronne konsekwencje.”",
+        "„Logiczna dedukcja doprowadziła nas prosto do sedna przesłania dramatu!”"
       ]
     }
   ],
@@ -252,11 +252,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Reguły stawiania przecinków przed spójnikami",
       "descriptionPl": "Zaprogramuj poprawne zasady składniowe. Ułóż instrukcję krok po kroku.",
       "steps": [
-        "1. „Inicjalizacja modułu analizy zdań złożonych podrzędnie.”",
-        "2. „Wykryj wskaźniki zespolenia: «ponieważ», «który», «że», «gdyż».”",
-        "3. „Reguła logiczna: przed wyżej wymienionymi spójnikami ZAWSZE wstawiamy przecinek.”",
-        "4. „Wyjątek binarny: przed spójnikami łącznymi «i», «oraz» zasadniczo przecinka nie stawiamy.”",
-        "5. „Algorytm zakończony sukcesem – tekst wolny od błędów składniowych!”"
+        "„Inicjalizacja modułu analizy zdań złożonych podrzędnie.”",
+        "„Wykryj wskaźniki zespolenia: «ponieważ», «który», «że», «gdyż».”",
+        "„Reguła logiczna: przed wyżej wymienionymi spójnikami ZAWSZE wstawiamy przecinek.”",
+        "„Wyjątek binarny: przed spójnikami łącznymi «i», «oraz» zasadniczo przecinka nie stawiamy.”",
+        "„Algorytm zakończony sukcesem – tekst wolny od błędów składniowych!”"
       ]
     },
     {
@@ -264,11 +264,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Struktura bazy bibliotecznej według alfabetu",
       "descriptionPl": "Katalogujecie książki w bibliotece. Ułóż proces sortowania lektur.",
       "steps": [
-        "1. „Rozpoczynam procedurę sortowania alfabetycznego lektur szkolnych.”",
-        "2. „Pobierz nazwisko autora jako klucz główny: Fredro, Mickiewicz, Sienkiewicz, Słowacki.”",
-        "3. „Gdy nazwiska są identyczne, porównaj pierwsze litery tytułów dzieł.”",
-        "4. „Umieść tomy na regale z etykietami odpowiadającymi kodom literowym.”",
-        "5. „Baza zaktualizowana – wyszukiwanie książki zajmuje teraz poniżej sekundy!”"
+        "„Rozpoczynam procedurę sortowania alfabetycznego lektur szkolnych.”",
+        "„Pobierz nazwisko autora jako klucz główny: Fredro, Mickiewicz, Sienkiewicz, Słowacki.”",
+        "„Gdy nazwiska są identyczne, porównaj pierwsze litery tytułów dzieł.”",
+        "„Umieść tomy na regale z etykietami odpowiadającymi kodom literowym.”",
+        "„Baza zaktualizowana – wyszukiwanie książki zajmuje teraz poniżej sekundy!”"
       ]
     },
     {
@@ -276,11 +276,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Zarządzanie czasem na teście ósmoklasisty",
       "descriptionPl": "Optymalizujecie 120 minut egzaminu CKE. Ułóż harmonogram.",
       "steps": [
-        "1. „Uruchom proces alokacji czasu: 120 minut na cały arkusz egzaminacyjny.”",
-        "2. „Faza 1: 50 minut na zadania zamknięte i analizę tekstu nieliterackiego.”",
-        "3. „Faza 2: 55 minut na szkic, plan i napisanie rozprawki lub opowiadania.”",
-        "4. „Faza 3: 15 minut bufora na krytyczną korektę ortografii i interpunkcji.”",
-        "5. „Harmonogram optymalny – zapobiega deficytowi czasu przed ostatnim dzwonkiem!”"
+        "„Uruchom proces alokacji czasu: 120 minut na cały arkusz egzaminacyjny.”",
+        "„Faza 1: 50 minut na zadania zamknięte i analizę tekstu nieliterackiego.”",
+        "„Faza 2: 55 minut na szkic, plan i napisanie rozprawki lub opowiadania.”",
+        "„Faza 3: 15 minut bufora na krytyczną korektę ortografii i interpunkcji.”",
+        "„Harmonogram optymalny – zapobiega deficytowi czasu przed ostatnim dzwonkiem!”"
       ]
     },
     {
@@ -288,11 +288,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Identyfikacja sprzeczności i pleonazmów w tekście",
       "descriptionPl": "Skanujecie referat w poszukiwaniu masła maślanego. Ułóż kroki korekty.",
       "steps": [
-        "1. „Skanowanie tekstu referatu w poszukiwaniu błędów leksykalnych.”",
-        "2. „Wykryto niepoprawny zwrot pleonastyczny: «w miesiącu lipcu».”",
-        "3. „Korekta jednostki leksykalnej: usuń zbędny człon «w miesiącu» – zostaw «w lipcu».”",
-        "4. „Wykryto kolejną anomalię: «akwen wodny» – akwen z definicji jest wodny!”",
-        "5. „Protokół językowy oczyszczony – komunikat jest precyzyjny i logiczny!”"
+        "„Skanowanie tekstu referatu w poszukiwaniu błędów leksykalnych.”",
+        "„Wykryto niepoprawny zwrot pleonastyczny: «w miesiącu lipcu».”",
+        "„Korekta jednostki leksykalnej: usuń zbędny człon «w miesiącu» – zostaw «w lipcu».”",
+        "„Wykryto kolejną anomalię: «akwen wodny» – akwen z definicji jest wodny!”",
+        "„Protokół językowy oczyszczony – komunikat jest precyzyjny i logiczny!”"
       ]
     },
     {
@@ -300,11 +300,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Przekład kodów graficznych na bogactwo języka",
       "descriptionPl": "Uczysz Robota, jak zastępować emotikony przymiotnikami. Ułóż dialog.",
       "steps": [
-        "1. „Zauważyłem, że uczniowie w wiadomościach używają symbolu uśmiechniętej buźki.”",
-        "2. „Tak, ale w wypracowaniu szkolnym emotikony są niedopuszczalne!”",
-        "3. „Jakie wyrazy precyzyjnie opisują ten stan emocjonalny w języku literackim?”",
-        "4. „Możesz użyć słów: «entuzjastyczny», «rozradowany», «pogodny» lub «pełen euforii».”",
-        "5. „Parametry zaktualizowane – język opisowy posiada nieskończenie wyższą rozdzielczość!”"
+        "„Zauważyłem, że uczniowie w wiadomościach używają symbolu uśmiechniętej buźki.”",
+        "„Tak, ale w wypracowaniu szkolnym emotikony są niedopuszczalne!”",
+        "„Jakie wyrazy precyzyjnie opisują ten stan emocjonalny w języku literackim?”",
+        "„Możesz użyć słów: «entuzjastyczny», «rozradowany», «pogodny» lub «pełen euforii».”",
+        "„Parametry zaktualizowane – język opisowy posiada nieskończenie wyższą rozdzielczość!”"
       ]
     },
     {
@@ -312,11 +312,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Przeciążenie informacyjne i regeneracja pamięci",
       "descriptionPl": "Mózg ucznia po 7 lekcjach jest przegrzany. Ułóż procedurę odpoczynku.",
       "steps": [
-        "1. „Alarm: temperatura procesora przekracza normę, poziom energii spada do 5%.”",
-        "2. „Nie panikuj, to po prostu zmęczenie po sprawdzianie z fizyki i gramatyki.”",
-        "3. „Procedura regeneracyjna: odłóż ekran telefonu i wyjdź na 20-minutowy spacer.”",
-        "4. „Pobierz dawkę tlenu, napij się czystej wody i zjedz pełnowartościowy posiłek.”",
-        "5. „Status: optymalna równowaga przywrócona, system gotowy do dalszego rozwoju!”"
+        "„Alarm: temperatura procesora przekracza normę, poziom energii spada do 5%.”",
+        "„Nie panikuj, to po prostu zmęczenie po sprawdzianie z fizyki i gramatyki.”",
+        "„Procedura regeneracyjna: odłóż ekran telefonu i wyjdź na 20-minutowy spacer.”",
+        "„Pobierz dawkę tlenu, napij się czystej wody i zjedz pełnowartościowy posiłek.”",
+        "„Status: optymalna równowaga przywrócona, system gotowy do dalszego rozwoju!”"
       ]
     },
     {
@@ -324,11 +324,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Części mowy a części zdania",
       "descriptionPl": "Uporządkuj elementy logicznego rozbioru zdania pojedynczego.",
       "steps": [
-        "1. „Uruchamiam procedurę analizy składniowej zdania nadrzędnego.”",
-        "2. „Zidentyfikowano podmiot gramatyczny oraz orzeczenie czasownikowe.”",
-        "3. „Przydawki określają cechy rzeczownika, odpowiadając na pytanie: jaki, który, czyj?”",
-        "4. „Okolicznik precyzuje miejsce, czas oraz sposób wykonania danej czynności.”",
-        "5. „Struktura logiczna zdania zweryfikowana – brak jakichkolwiek anomalii!”"
+        "„Uruchamiam procedurę analizy składniowej zdania nadrzędnego.”",
+        "„Zidentyfikowano podmiot gramatyczny oraz orzeczenie czasownikowe.”",
+        "„Przydawki określają cechy rzeczownika, odpowiadając na pytanie: jaki, który, czyj?”",
+        "„Okolicznik precyzuje miejsce, czas oraz sposób wykonania danej czynności.”",
+        "„Struktura logiczna zdania zweryfikowana – brak jakichkolwiek anomalii!”"
       ]
     },
     {
@@ -336,11 +336,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Cyberbezpieczeństwo w szkolnej chmurze",
       "descriptionPl": "Konfiguracja bezpiecznego logowania do dziennika. Ułóż etapy autoryzacji.",
       "steps": [
-        "1. „Wykryto próbę logowania z niezidentyfikowanego urządzenia w sieci.”",
-        "2. „Zastosowano protokół dwuskładnikowy: hasło alfanumeryczne plus kod SMS.”",
-        "3. „Szyfrowanie end-to-end zabezpiecza poufne dane szkolnego profilu.”",
-        "4. „Tożsamość użytkownika potwierdzona, dostęp autoryzowany pomyślnie.”",
-        "5. „Bezpieczeństwo cyfrowe klasy osiągnęło optymalny poziom stu procent.”"
+        "„Wykryto próbę logowania z niezidentyfikowanego urządzenia w sieci.”",
+        "„Zastosowano protokół dwuskładnikowy: hasło alfanumeryczne plus kod SMS.”",
+        "„Szyfrowanie end-to-end zabezpiecza poufne dane szkolnego profilu.”",
+        "„Tożsamość użytkownika potwierdzona, dostęp autoryzowany pomyślnie.”",
+        "„Bezpieczeństwo cyfrowe klasy osiągnęło optymalny poziom stu procent.”"
       ]
     },
     {
@@ -348,11 +348,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Netykieta i kultura słowa w sieci",
       "descriptionPl": "Wykrywanie agresji słownej w komentarzach. Ułóż proces kulturalnej mediacji.",
       "steps": [
-        "1. „Algorytm monitorujący forum klasowe wykrył komentarz naruszający regulamin.”",
-        "2. „Treść zawierała uszczypliwości oraz brak poszanowania dla zdania kolegi.”",
-        "3. „System wysyła ostrzeżenie i przypomina netykietę kulturalnej dyskusji.”",
-        "4. „Użytkownik zredagował wypowiedź z zachowaniem empatii i rzeczowych argumentów.”",
-        "5. „Komunikacja interpersonalna przywrócona do stanu pełnej harmonii.”"
+        "„Algorytm monitorujący forum klasowe wykrył komentarz naruszający regulamin.”",
+        "„Treść zawierała uszczypliwości oraz brak poszanowania dla zdania kolegi.”",
+        "„System wysyła ostrzeżenie i przypomina netykietę kulturalnej dyskusji.”",
+        "„Użytkownik zredagował wypowiedź z zachowaniem empatii i rzeczowych argumentów.”",
+        "„Komunikacja interpersonalna przywrócona do stanu pełnej harmonii.”"
       ]
     },
     {
@@ -360,11 +360,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Metoda blokowa przed egzaminem",
       "descriptionPl": "Planowanie nauki bez przemęczenia. Ułóż procedurę powtórkową.",
       "steps": [
-        "1. „Wprowadzam do bazy danych zakres materiału do egzaminu ósmoklasisty.”",
-        "2. „Algorytm dzieli powtórki na dwudziestopięciominutowe bloki z przerwą.”",
-        "3. „Metoda Pomodoro zwiększa skupienie i zapobiega przeciążeniu pamięci roboczej.”",
-        "4. „Codzienna systematyczność przynosi znacznie wyższą efektywność niż nauka nocą.”",
-        "5. „Harmonogram zatwierdzony – sukces egzaminacyjny wyliczony na sto procent!”"
+        "„Wprowadzam do bazy danych zakres materiału do egzaminu ósmoklasisty.”",
+        "„Algorytm dzieli powtórki na dwudziestopięciominutowe bloki z przerwą.”",
+        "„Metoda Pomodoro zwiększa skupienie i zapobiega przeciążeniu pamięci roboczej.”",
+        "„Codzienna systematyczność przynosi znacznie wyższą efektywność niż nauka nocą.”",
+        "„Harmonogram zatwierdzony – sukces egzaminacyjny wyliczony na sto procent!”"
       ]
     }
   ],
@@ -374,11 +374,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Budowa generatora rymów i neologizmów",
       "descriptionPl": "Tworzycie prototyp maszyny wymyślającej nowe słowa. Ułóż fazy projektu.",
       "steps": [
-        "1. „Mam genialny pomysł: zbudujmy maszynę pomagającą pisać wiersze!”",
-        "2. „Musimy wyposażyć ją w koła zębate z rdzeniami słów i wymiennymi przedrostkami.”",
-        "3. „Dodajmy też filtr neologizmów, wzorowany na poezji Bolesława Leśmiana!”",
-        "4. „Sprawdźmy prototyp: wprowadzam słowo «światło», a maszyna generuje «rozświetlacz»!”",
-        "5. „Genialny wynalazek – połączyliśmy mechanikę z pięknem języka polskiego!”"
+        "„Mam genialny pomysł: zbudujmy maszynę pomagającą pisać wiersze!”",
+        "„Musimy wyposażyć ją w koła zębate z rdzeniami słów i wymiennymi przedrostkami.”",
+        "„Dodajmy też filtr neologizmów, wzorowany na poezji Bolesława Leśmiana!”",
+        "„Sprawdźmy prototyp: wprowadzam słowo «światło», a maszyna generuje «rozświetlacz»!”",
+        "„Genialny wynalazek – połączyliśmy mechanikę z pięknem języka polskiego!”"
       ]
     },
     {
@@ -386,11 +386,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Metoda mapy myśli przy tworzeniu rozprawki",
       "descriptionPl": "Przygotowujecie argumenty do wypracowania. Ułóż logiczny schemat.",
       "steps": [
-        "1. „Temat rozprawki brzmi: Czy marzenia pomagają człowiekowi osiągnąć sukces?”",
-        "2. „Rysujemy na środku brystolu wielkie koło z hasłem głównym i odgałęzieniami.”",
-        "3. „Gałąź pierwsza: Santiago ze Starego człowieka i morza i jego niezłomność.”",
-        "4. „Gałąź druga: Stanisław Wokulski z Lalki i jego pasja do nauki oraz wynalazków.”",
-        "5. „Mamy gotowy szkielet argumentacyjny – pisanie pójdzie jak z płatka!”"
+        "„Temat rozprawki brzmi: Czy marzenia pomagają człowiekowi osiągnąć sukces?”",
+        "„Rysujemy na środku brystolu wielkie koło z hasłem głównym i odgałęzieniami.”",
+        "„Gałąź pierwsza: Santiago ze Starego człowieka i morza i jego niezłomność.”",
+        "„Gałąź druga: Stanisław Wokulski z Lalki i jego pasja do nauki oraz wynalazków.”",
+        "„Mamy gotowy szkielet argumentacyjny – pisanie pójdzie jak z płatka!”"
       ]
     },
     {
@@ -398,11 +398,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Eksperyment z onomatopejami i głoskami szeleszczącymi",
       "descriptionPl": "Badacie akustykę polskich wyrazów dźwiękonaśladowczych. Ułóż etapy testu.",
       "steps": [
-        "1. „Podłączmy mikrofon i oscyloskop, by zbadać częstotliwość polskich spółgłosek!”",
-        "2. „Wymów do tuby wyrazy dźwiękonaśladowcze: «szelest», «szum», «chrzęst» i «plusk».”",
-        "3. „Wykres na ekranie pokazuje niesamowitą ekspresję naszych głosek szumiących!”",
-        "4. „Julian Tuwim w wierszu Lokomotywa wykorzystał dokładnie to samo zjawisko fonetyczne.”",
-        "5. „Fizyka dźwięku idealnie tłumaczy potęgę poetyckiej ilustracji muzycznej!”"
+        "„Podłączmy mikrofon i oscyloskop, by zbadać częstotliwość polskich spółgłosek!”",
+        "„Wymów do tuby wyrazy dźwiękonaśladowcze: «szelest», «szum», «chrzęst» i «plusk».”",
+        "„Wykres na ekranie pokazuje niesamowitą ekspresję naszych głosek szumiących!”",
+        "„Julian Tuwim w wierszu Lokomotywa wykorzystał dokładnie to samo zjawisko fonetyczne.”",
+        "„Fizyka dźwięku idealnie tłumaczy potęgę poetyckiej ilustracji muzycznej!”"
       ]
     },
     {
@@ -410,11 +410,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Mnemotechniki do zapamiętywania wyjątków ortograficznych",
       "descriptionPl": "Wymyślacie wynalazek ułatwiający naukę ortografii. Ułóż instrukcję.",
       "steps": [
-        "1. „Jak zapamiętać pisownię wyrazów: gżegżółka, piegża, kszyk i rzeżucha?”",
-        "2. „Skonstruujmy komiksowe memory z zabawnymi skojarzeniami wizualnymi!”",
-        "3. „Gżegżółka leci z żółtym żurawiem, a rzeżucha rośnie w rzeźbionym garnku.”",
-        "4. „Gdy obraz łączy się z rymowanką, mózg koduje informację na stałe.”",
-        "5. „Zgłaszamy nasz system mnemotechniczny do szkolnego biura patentowego!”"
+        "„Jak zapamiętać pisownię wyrazów: gżegżółka, piegża, kszyk i rzeżucha?”",
+        "„Skonstruujmy komiksowe memory z zabawnymi skojarzeniami wizualnymi!”",
+        "„Gżegżółka leci z żółtym żurawiem, a rzeżucha rośnie w rzeźbionym garnku.”",
+        "„Gdy obraz łączy się z rymowanką, mózg koduje informację na stałe.”",
+        "„Zgłaszamy nasz system mnemotechniczny do szkolnego biura patentowego!”"
       ]
     },
     {
@@ -422,11 +422,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Hasła reklamowe dla szkolnej zbiórki makulatury",
       "descriptionPl": "Projektujecie plakat promujący zbiórkę surowców. Ułóż hasła w przekonujący ciąg.",
       "steps": [
-        "1. „Nasze koło wynalazców ogłasza akcję: Zamień stary karton na nową książkę!”",
-        "2. „Wymyślmy chwytliwy slogan z rymem i wyraźnym wezwaniem do działania.”",
-        "3. „«Nie wyrzucaj papieru do śmietnika – daj mu drugie życie w roli podręcznika!»”",
-        "4. „Umieśćmy na plakacie infografikę z dokładną wagą ocalonych drzew.”",
-        "5. „Połączenie ekologii, techniki i perswazji językowej przyniesie rekordowe zbiory!”"
+        "„Nasze koło wynalazców ogłasza akcję: Zamień stary karton na nową książkę!”",
+        "„Wymyślmy chwytliwy slogan z rymem i wyraźnym wezwaniem do działania.”",
+        "„«Nie wyrzucaj papieru do śmietnika – daj mu drugie życie w roli podręcznika!»”",
+        "„Umieśćmy na plakacie infografikę z dokładną wagą ocalonych drzew.”",
+        "„Połączenie ekologii, techniki i perswazji językowej przyniesie rekordowe zbiory!”"
       ]
     },
     {
@@ -434,11 +434,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Podróż śladami dawnej polszczyzny i archaizmów",
       "descriptionPl": "Wymyślacie wehikuł przenoszący do czasów Jana Kochanowskiego. Ułóż narrację.",
       "steps": [
-        "1. „Ustawiam koordynaty czasoprzestrzeni na XVI wiek – dwór w Czarnolesie!”",
-        "2. „Musimy zmienić rejestr językowy: zamiast «hej», powiemy «bądź pozdrowion, zacny panie».”",
-        "3. „Zapiszmy w dzienniku podróży archaizmy: «aliści», «jakoż», «jeno» oraz «zwierciadło».”",
-        "4. „Rozmowa z mistrzem Janem pod lipą to najwspanialsza lekcja humanizmu w historii.”",
-        "5. „Wracamy do współczesności bogatsi o zrozumienie korzeni naszej mowy ojczystej!”"
+        "„Ustawiam koordynaty czasoprzestrzeni na XVI wiek – dwór w Czarnolesie!”",
+        "„Musimy zmienić rejestr językowy: zamiast «hej», powiemy «bądź pozdrowion, zacny panie».”",
+        "„Zapiszmy w dzienniku podróży archaizmy: «aliści», «jakoż», «jeno» oraz «zwierciadło».”",
+        "„Rozmowa z mistrzem Janem pod lipą to najwspanialsza lekcja humanizmu w historii.”",
+        "„Wracamy do współczesności bogatsi o zrozumienie korzeni naszej mowy ojczystej!”"
       ]
     },
     {
@@ -446,11 +446,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Model planet z podświetleniem LED",
       "descriptionPl": "Budowa przestrzennej pomocy naukowej. Ułóż kroki montażu prototypu.",
       "steps": [
-        "1. „Zbudujemy trójwymiarowy model Układu Słonecznego z podświetleniem LED!”",
-        "2. „Wykorzystajmy styropianowe kule, farby akrylowe i druciane ramiona obrotowe.”",
-        "3. „Pamiętajmy o zachowaniu właściwej kolejności planet od Słońca ku krańcom.”",
-        "4. „W centrum zamontujmy żółtą diodę imitującą promieniowanie słoneczne.”",
-        "5. „Genialny prototyp! Nasz wynalazek zachwyci całą klasę na lekcji geografii!”"
+        "„Zbudujemy trójwymiarowy model Układu Słonecznego z podświetleniem LED!”",
+        "„Wykorzystajmy styropianowe kule, farby akrylowe i druciane ramiona obrotowe.”",
+        "„Pamiętajmy o zachowaniu właściwej kolejności planet od Słońca ku krańcom.”",
+        "„W centrum zamontujmy żółtą diodę imitującą promieniowanie słoneczne.”",
+        "„Genialny prototyp! Nasz wynalazek zachwyci całą klasę na lekcji geografii!”"
       ]
     },
     {
@@ -458,11 +458,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Druk 3D i mechanika w szkole",
       "descriptionPl": "Projektowanie użytecznego gadżetu dla dyżurnych. Ułóż etapy wdrożenia.",
       "steps": [
-        "1. „Zaprojektowałem mechanizm sprężynowy zapobiegający łamaniu kredy przy tablicy.”",
-        "2. „Obudowę wydrukujemy z biodegradowalnego filamentu na drukarce 3D.”",
-        "3. „Sprawdźmy suwmiarką średnicę kredy i spasowanie ruchomych elementów.”",
-        "4. „Mechanizm działa gładko, a ręce dyżurnego pozostają całkowicie czyste!”",
-        "5. „Innowacja w służbie szkolnej społeczności zdaje egzamin celująco!”"
+        "„Zaprojektowałem mechanizm sprężynowy zapobiegający łamaniu kredy przy tablicy.”",
+        "„Obudowę wydrukujemy z biodegradowalnego filamentu na drukarce 3D.”",
+        "„Sprawdźmy suwmiarką średnicę kredy i spasowanie ruchomych elementów.”",
+        "„Mechanizm działa gładko, a ręce dyżurnego pozostają całkowicie czyste!”",
+        "„Innowacja w służbie szkolnej społeczności zdaje egzamin celująco!”"
       ]
     },
     {
@@ -470,11 +470,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Eksperyment fizyko-chemiczny",
       "descriptionPl": "Wyjaśnienie zjawiska fizycznego na prostym przykładzie. Ułóż doświadczenie.",
       "steps": [
-        "1. „Przeprowadźmy eksperyment fizyczny wyjaśniający napięcie powierzchniowe wody.”",
-        "2. „Połóżmy ostrożnie metalowy spinacz na powierzchni pełnej szklanki.”",
-        "3. „Zobacz, cząsteczki wody tworzą elastyczną błonę utrzymującą metal na wierzchu!”",
-        "4. „Gdy dodamy kroplę płynu do naczyń, napięcie zostaje gwałtownie zerwane.”",
-        "5. „Fascynujące! Zwykłe domowe przedmioty pozwalają odkrywać prawa wszechświata.”"
+        "„Przeprowadźmy eksperyment fizyczny wyjaśniający napięcie powierzchniowe wody.”",
+        "„Połóżmy ostrożnie metalowy spinacz na powierzchni pełnej szklanki.”",
+        "„Zobacz, cząsteczki wody tworzą elastyczną błonę utrzymującą metal na wierzchu!”",
+        "„Gdy dodamy kroplę płynu do naczyń, napięcie zostaje gwałtownie zerwane.”",
+        "„Fascynujące! Zwykłe domowe przedmioty pozwalają odkrywać prawa wszechświata.”"
       ]
     },
     {
@@ -482,11 +482,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Ekologia i odzysk surowców",
       "descriptionPl": "Zamiana resztek owoców w cenny nawóz. Ułóż proces recyklingu bio.",
       "steps": [
-        "1. „Mój najnowszy projekt ekologiczny to automatyczny kompostownik na bioodpady.”",
-        "2. „Resztki jabłek ze stołówki przekształcimy w naturalny nawóz do ogrodu.”",
-        "3. „Zainstalujemy termometr i czujnik wilgotności zasilany panelem słonecznym.”",
-        "4. „W ten sposób szkoła realnie zmniejszy ilość generowanych śmieci.”",
-        "5. „Nauka, technologia i ekologia połączone w jedno pożyteczne dzieło!”"
+        "„Mój najnowszy projekt ekologiczny to automatyczny kompostownik na bioodpady.”",
+        "„Resztki jabłek ze stołówki przekształcimy w naturalny nawóz do ogrodu.”",
+        "„Zainstalujemy termometr i czujnik wilgotności zasilany panelem słonecznym.”",
+        "„W ten sposób szkoła realnie zmniejszy ilość generowanych śmieci.”",
+        "„Nauka, technologia i ekologia połączone w jedno pożyteczne dzieło!”"
       ]
     }
   ],
@@ -496,11 +496,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Moc słów, które leczą rany i budują przyjaźń",
       "descriptionPl": "Przygotowujecie metaforyczny eliksir zgody. Ułóż składniki w harmonijną całość.",
       "steps": [
-        "1. „Do kociołka zrozumienia wrzucamy szczyptę empatii i uważnego słuchania.”",
-        "2. „Dodajemy trzy krople przeprosin, gdy zrobimy komuś niechcący przykrość.”",
-        "3. „Mieszamy z ciepłym słowem podziękowania za wspólnie spędzony czas.”",
-        "4. „Prawdziwa magia kryje się w tonie głosu i szczerości naszych intencji.”",
-        "5. „Ten eliksir potrafi rozbroić każdy szkolny konflikt i zbudować trwałą przyjaźń!”"
+        "„Do kociołka zrozumienia wrzucamy szczyptę empatii i uważnego słuchania.”",
+        "„Dodajemy trzy krople przeprosin, gdy zrobimy komuś niechcący przykrość.”",
+        "„Mieszamy z ciepłym słowem podziękowania za wspólnie spędzony czas.”",
+        "„Prawdziwa magia kryje się w tonie głosu i szczerości naszych intencji.”",
+        "„Ten eliksir potrafi rozbroić każdy szkolny konflikt i zbudować trwałą przyjaźń!”"
       ]
     },
     {
@@ -508,11 +508,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Obrzęd i przesłania moralne dramatu Adama Mickiewicza",
       "descriptionPl": "Analizujecie pouczenia duchów z II części Dziadów. Ułóż prawdy życiowe.",
       "steps": [
-        "1. „W kaplicy cmentarnej Guślarz przywołuje duchy lekkie, ciężkie i pośrednie.”",
-        "2. „Józio i Rózia uczą, że kto nie doznał goryczy na ziemi, nie zazna słodyczy w niebie.”",
-        "3. „Widmo Złego Pana przypomina o bezwzględnym obowiązku pomocy głodnym i ubogim.”",
-        "4. „Dziewczyna Zosia poucza, że nie wolno żyć tylko dla siebie i igrać z uczuciami.”",
-        "5. „Mickiewicz przekazał nam ponadczasowy kodeks moralny oparty na człowieczeństwie!”"
+        "„W kaplicy cmentarnej Guślarz przywołuje duchy lekkie, ciężkie i pośrednie.”",
+        "„Józio i Rózia uczą, że kto nie doznał goryczy na ziemi, nie zazna słodyczy w niebie.”",
+        "„Widmo Złego Pana przypomina o bezwzględnym obowiązku pomocy głodnym i ubogim.”",
+        "„Dziewczyna Zosia poucza, że nie wolno żyć tylko dla siebie i igrać z uczuciami.”",
+        "„Mickiewicz przekazał nam ponadczasowy kodeks moralny oparty na człowieczeństwie!”"
       ]
     },
     {
@@ -520,11 +520,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Opis przyrody i metafory w Panu Tadeuszu",
       "descriptionPl": "Tworzycie opis roślin inspirowany epopeją narodową. Ułóż zdania.",
       "steps": [
-        "1. „Otwieramy księgę leśną, by odnaleźć arcydzieła Mickiewiczowskiego opisu przyrody.”",
-        "2. „Spójrzmy na matecznik: rosną tam potężne dęby, brzozy białe i pachnące zioła.”",
-        "3. „Autor ożywia każdy krzew za pomocą mistrzowskich personifikacji i porównań.”",
-        "4. „Nawet zwykły grzyb – borowik, rydz czy muchomor – zyskuje rangę dzieła sztuki.”",
-        "5. „Natura w literaturze to żywy organizm, pulsujący emocjami i tajemnicą!”"
+        "„Otwieramy księgę leśną, by odnaleźć arcydzieła Mickiewiczowskiego opisu przyrody.”",
+        "„Spójrzmy na matecznik: rosną tam potężne dęby, brzozy białe i pachnące zioła.”",
+        "„Autor ożywia każdy krzew za pomocą mistrzowskich personifikacji i porównań.”",
+        "„Nawet zwykły grzyb – borowik, rydz czy muchomor – zyskuje rangę dzieła sztuki.”",
+        "„Natura w literaturze to żywy organizm, pulsujący emocjami i tajemnicą!”"
       ]
     },
     {
@@ -532,11 +532,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Nastrój grozy i niesamowitości w balladzie Romantyczność",
       "descriptionPl": "Badacie romantyczny sposób postrzegania świata. Ułóż argumenty.",
       "steps": [
-        "1. „Karusia widzi swojego zmarłego narzeczonego Jaśka i rozmawia z nim na rynku.”",
-        "2. „Mędrcy ze szkiełkiem i okiem szydzą z jej łez i widzą tylko pustą przestrzeń.”",
-        "3. „Poeta staje po stronie dziewczyny, głosząc prymat czucia i wiary nad chłodnym rozumem.”",
-        "4. „«Miej serce i patrzaj w serce!» – to najważniejszy manifest epoki romantyzmu.”",
-        "5. „Świat niewidzialny dla oczu staje się dostępny dzięki wrażliwości duszy!”"
+        "„Karusia widzi swojego zmarłego narzeczonego Jaśka i rozmawia z nim na rynku.”",
+        "„Mędrcy ze szkiełkiem i okiem szydzą z jej łez i widzą tylko pustą przestrzeń.”",
+        "„Poeta staje po stronie dziewczyny, głosząc prymat czucia i wiary nad chłodnym rozumem.”",
+        "„«Miej serce i patrzaj w serce!» – to najważniejszy manifest epoki romantyzmu.”",
+        "„Świat niewidzialny dla oczu staje się dostępny dzięki wrażliwości duszy!”"
       ]
     },
     {
@@ -544,11 +544,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Interpretacja symboli literackich i archetypów",
       "descriptionPl": "Odczytujecie znaczenie złotego rogu z Wesela Wyspiańskiego. Ułóż etapy analizy.",
       "steps": [
-        "1. „Wyciągamy kartę z symbolem złotego rogu powierzonego Jaśkowi przez Wernyhorę.”",
-        "2. „Złoty róg to znak szansy na zjednoczenie narodu i walkę o niepodległość.”",
-        "3. „Niestety, Jasiek zgubił róg, schylając się po błahą czapkę z pawich piór.”",
-        "4. „Został mu jeno sznur – symbol niewoli, egoizmu i zmarnowanej dziejowej okazji.”",
-        "5. „Wyspiański genialnie przestrzegł Polaków przed prywatą i brakiem dojrzałości!”"
+        "„Wyciągamy kartę z symbolem złotego rogu powierzonego Jaśkowi przez Wernyhorę.”",
+        "„Złoty róg to znak szansy na zjednoczenie narodu i walkę o niepodległość.”",
+        "„Niestety, Jasiek zgubił róg, schylając się po błahą czapkę z pawich piór.”",
+        "„Został mu jeno sznur – symbol niewoli, egoizmu i zmarnowanej dziejowej okazji.”",
+        "„Wyspiański genialnie przestrzegł Polaków przed prywatą i brakiem dojrzałości!”"
       ]
     },
     {
@@ -556,11 +556,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Zbrodnia z chciwości i nieuchronność kary boskiej",
       "descriptionPl": "Układacie tragiczne losy sióstr z puszczy. Ułóż sekwencję zdarzeń.",
       "steps": [
-        "1. „Dzban pełen leśnych malin stał się przyczyną straszliwej zbrodni w puszczy.”",
-        "2. „Balladyna zabiła swoją siostrę Alinę z chciwości i żądzy zdobycia korony.”",
-        "3. „Krwawa plama na czole bohaterki to niezmywalne piętno zbrodni i wyrzutów sumienia.”",
-        "4. „Nawet zdobycie tronu nie przyniosło jej szczęścia, lecz serię kolejnych morderstw.”",
-        "5. „Finałowy piorun wymierza sprawiedliwość: zło zawsze spotyka zasłużona kara!”"
+        "„Dzban pełen leśnych malin stał się przyczyną straszliwej zbrodni w puszczy.”",
+        "„Balladyna zabiła swoją siostrę Alinę z chciwości i żądzy zdobycia korony.”",
+        "„Krwawa plama na czole bohaterki to niezmywalne piętno zbrodni i wyrzutów sumienia.”",
+        "„Nawet zdobycie tronu nie przyniosło jej szczęścia, lecz serię kolejnych morderstw.”",
+        "„Finałowy piorun wymierza sprawiedliwość: zło zawsze spotyka zasłużona kara!”"
       ]
     },
     {
@@ -568,11 +568,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Mity greckie i frazeologizmy",
       "descriptionPl": "Odkryj tajemnicę labiryntu Minotaura. Ułóż wydarzenia mitologiczne.",
       "steps": [
-        "1. „Rozmawiamy o mitycznym labiryncie Minotaura na starożytnej Krecie.”",
-        "2. „Tezeusz zdołał pokonać potwora, ale bez pomocy nie odnalazłby drogi powrotnej.”",
-        "3. „Księżniczka Ariadna podarowała mu kłębek nici, by rozwijał go za sobą.”",
-        "4. „Dziś wyrażenie «nić Ariadny» to frazeologizm oznaczający ratunek z opresji.”",
-        "5. „Magia antycznych mitów do dziś kryje mądrość wyjaśniającą ludzki los!”"
+        "„Rozmawiamy o mitycznym labiryncie Minotaura na starożytnej Krecie.”",
+        "„Tezeusz zdołał pokonać potwora, ale bez pomocy nie odnalazłby drogi powrotnej.”",
+        "„Księżniczka Ariadna podarowała mu kłębek nici, by rozwijał go za sobą.”",
+        "„Dziś wyrażenie «nić Ariadny» to frazeologizm oznaczający ratunek z opresji.”",
+        "„Magia antycznych mitów do dziś kryje mądrość wyjaśniającą ludzki los!”"
       ]
     },
     {
@@ -580,11 +580,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Mickiewicz, przyroda i sprawiedliwość",
       "descriptionPl": "Analiza lektury obowiązkowej. Ułóż etapy fabuły ballady romantycznej.",
       "steps": [
-        "1. „Zagłębmy się w tajemniczy nastrój jeziora Świteź o północy.”",
-        "2. „Strzelec przysięgał wierność pod modrzewiem, lecz nie dotrzymał uroczystego słowa.”",
-        "3. „Kuszony przez nimfę wodną uległ czarowi i poniósł za to surową karę.”",
-        "4. „W balladach Mickiewicza natura jest żywa i bezwzględnie pilnuje ładu moralnego.”",
-        "5. „To przestroga, że każda złamana obietnica pociąga za sobą duchowe konsekwencje.”"
+        "„Zagłębmy się w tajemniczy nastrój jeziora Świteź o północy.”",
+        "„Strzelec przysięgał wierność pod modrzewiem, lecz nie dotrzymał uroczystego słowa.”",
+        "„Kuszony przez nimfę wodną uległ czarowi i poniósł za to surową karę.”",
+        "„W balladach Mickiewicza natura jest żywa i bezwzględnie pilnuje ładu moralnego.”",
+        "„To przestroga, że każda złamana obietnica pociąga za sobą duchowe konsekwencje.”"
       ]
     },
     {
@@ -592,11 +592,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Środki stylistyczne w wierszu",
       "descriptionPl": "Rozróżnianie metafor i porównań. Ułóż dialog analizy poetyckiej.",
       "steps": [
-        "1. „Jak odróżnić zwykłe porównanie od poetyckiej metafory w liryce?”",
-        "2. „Porównanie zawsze używa łączników: «jak», «jakby» lub «na kształt».”",
-        "3. „Metafora, czyli przenośnia, łączy wyrazy w zupełnie nowy, zaskakujący sens.”",
-        "4. „Na przykład «morze gwiazd» albo «złoty deszcz jesiennych liści».”",
-        "5. „Metafory rozpalają wyobraźnię i malują słowami niezwykłe obrazy!”"
+        "„Jak odróżnić zwykłe porównanie od poetyckiej metafory w liryce?”",
+        "„Porównanie zawsze używa łączników: «jak», «jakby» lub «na kształt».”",
+        "„Metafora, czyli przenośnia, łączy wyrazy w zupełnie nowy, zaskakujący sens.”",
+        "„Na przykład «morze gwiazd» albo «złoty deszcz jesiennych liści».”",
+        "„Metafory rozpalają wyobraźnię i malują słowami niezwykłe obrazy!”"
       ]
     },
     {
@@ -604,11 +604,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Wyciszenie przed klasówką",
       "descriptionPl": "Opanowanie emocji i relaksacja przed testem. Ułóż rytuał koncentracji.",
       "steps": [
-        "1. „Przed egzaminem warto wyciszyć umysł i odpędzić zbędne obawy.”",
-        "2. „Zaparzmy napar ze świeżych ziół: melisa koi nerwy, a mięta odświeża myśli.”",
-        "3. „Zamknij na chwilę oczy i wyobraź sobie cichy, zielony leśny zakątek.”",
-        "4. „Głęboki wdech napełnia wiarą we własną wiedzę, wydech usuwa stres.”",
-        "5. „Prawdziwa magia tkwi w wewnętrznym spokoju i harmonii z samym sobą!”"
+        "„Przed egzaminem warto wyciszyć umysł i odpędzić zbędne obawy.”",
+        "„Zaparzmy napar ze świeżych ziół: melisa koi nerwy, a mięta odświeża myśli.”",
+        "„Zamknij na chwilę oczy i wyobraź sobie cichy, zielony leśny zakątek.”",
+        "„Głęboki wdech napełnia wiarą we własną wiedzę, wydech usuwa stres.”",
+        "„Prawdziwa magia tkwi w wewnętrznym spokoju i harmonii z samym sobą!”"
       ]
     }
   ],
@@ -618,11 +618,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Próba scenki z Zemsty Aleksandra Fredry",
       "descriptionPl": "Czas na próbę szkolnego teatru! Ułóż dialog komediowy we właściwej kolejności.",
       "steps": [
-        "1. „Cześć! Przećwiczymy scenę pisania listu przez Dyndalskiego i Cześnika?”",
-        "2. „Koniecznie! Pamiętaj, żeby powtarzać z komicznym przejęciem: Niech się dzieje wola Nieba!”",
-        "3. „Haha, a ja będę pisać z gęsim piórem: Bawet, bawet, bardzo proszę!”",
-        "4. „Ważne, by w komedii zachować odpowiednie pauzy i didaskalia sceniczne.”",
-        "5. „Na piątkowym przedstawieniu cała szkoła będzie pękać ze śmiechu!”"
+        "„Cześć! Przećwiczymy scenę pisania listu przez Dyndalskiego i Cześnika?”",
+        "„Koniecznie! Pamiętaj, żeby powtarzać z komicznym przejęciem: Niech się dzieje wola Nieba!”",
+        "„Haha, a ja będę pisać z gęsim piórem: Bawet, bawet, bardzo proszę!”",
+        "„Ważne, by w komedii zachować odpowiednie pauzy i didaskalia sceniczne.”",
+        "„Na piątkowym przedstawieniu cała szkoła będzie pękać ze śmiechu!”"
       ]
     },
     {
@@ -630,11 +630,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Rozładowanie niezręcznej sytuacji żartem",
       "descriptionPl": "Potknąłeś się w drzwiach klasy. Ułóż reakcję, która wywoła sympatię.",
       "steps": [
-        "1. „Ojej, potknęłam się o próg i rozsypałam wszystkie kredki po podłodze!”",
-        "2. „Zamiast się czerwienić, zróbmy z tego wielkie sceniczne show!”",
-        "3. „Ukłoń się z uśmiechem: Oto spektakularny taniec kolorowych kredek!”",
-        "4. „Wszyscy zaczynają się śmiać razem z nami i chętnie pomagają zbierać przybory.”",
-        "5. „Dystans do samego siebie i życzliwy humor potrafią rozbroić każdy wstyd!”"
+        "„Ojej, potknęłam się o próg i rozsypałam wszystkie kredki po podłodze!”",
+        "„Zamiast się czerwienić, zróbmy z tego wielkie sceniczne show!”",
+        "„Ukłoń się z uśmiechem: Oto spektakularny taniec kolorowych kredek!”",
+        "„Wszyscy zaczynają się śmiać razem z nami i chętnie pomagają zbierać przybory.”",
+        "„Dystans do samego siebie i życzliwy humor potrafią rozbroić każdy wstyd!”"
       ]
     },
     {
@@ -642,11 +642,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Etyka dowcipu i ochrona rówieśników przed hejtem",
       "descriptionPl": "Ktoś opowiada krzywdzący kawał. Ułóż stanowczą i kulturalną reakcję.",
       "steps": [
-        "1. „Słyszałaś, jaki złośliwy żart opowiadali w szatni o nowym koledze?”",
-        "2. „To wcale nie był żart, tylko przykra złośliwość raniąca czyjeś uczucia.”",
-        "3. „Prawdziwy humor bawi wszystkich zebranych i z nikogo nie szydzi.”",
-        "4. „Podejdźmy i powiedzmy spokojnie: Przestańcie, to nie jest w porządku.”",
-        "5. „Odwaga w obronie innych i mądry dowcip to najlepsze cechy dobrego kolegi!”"
+        "„Słyszałaś, jaki złośliwy żart opowiadali w szatni o nowym koledze?”",
+        "„To wcale nie był żart, tylko przykra złośliwość raniąca czyjeś uczucia.”",
+        "„Prawdziwy humor bawi wszystkich zebranych i z nikogo nie szydzi.”",
+        "„Podejdźmy i powiedzmy spokojnie: Przestańcie, to nie jest w porządku.”",
+        "„Odwaga w obronie innych i mądry dowcip to najlepsze cechy dobrego kolegi!”"
       ]
     },
     {
@@ -654,11 +654,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Rymowane dzieło z zaskakującą puentą",
       "descriptionPl": "Piszecie krótką fraszkę na szkolną tablicę. Ułóż proces twórczy.",
       "steps": [
-        "1. „Wymyślmy rymowaną fraszkę o porannym wstawaniu do szkoły!”",
-        "2. „Ułóżmy rymy parzyste: Budzik dzwoni wniebogłosy / Zaspany przecieram oczy.”",
-        "3. „Teraz najważniejsza część gatunku: zaskakująca i dowcipna puenta na końcu!”",
-        "4. „Choćbym pędził jak rakieta / I tak zamkną mi bufeta!”",
-        "5. „Mistrzowska miniatura poetycka – Kochanowski byłby z nas dumny!”"
+        "„Wymyślmy rymowaną fraszkę o porannym wstawaniu do szkoły!”",
+        "„Ułóżmy rymy parzyste: Budzik dzwoni wniebogłosy / Zaspany przecieram oczy.”",
+        "„Teraz najważniejsza część gatunku: zaskakująca i dowcipna puenta na końcu!”",
+        "„Choćbym pędził jak rakieta / I tak zamkną mi bufeta!”",
+        "„Mistrzowska miniatura poetycka – Kochanowski byłby z nas dumny!”"
       ]
     },
     {
@@ -666,11 +666,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Analiza komizmu postaci Józefa Papkina",
       "descriptionPl": "Dyskutujecie o najzabawniejszej postaci Fredry. Ułóż spostrzeżenia.",
       "steps": [
-        "1. „Dlaczego postać Józefa Papkina w Zemście budzi tak wielki śmiech widzów?”",
-        "2. „Bo istnieje ogromna sprzeczność między tym, co mówi, a tym, jak naprawdę postępuje!”",
-        "3. „Kreuje się na lwa północy i pogromcę smoków, a mdleje ze strachu przed szablą.”",
-        "4. „Komiczny testament, w którym zapisuje Klarze angielską gitarę, to szczyt humoru!”",
-        "5. „Fredro genialnie obnażył ludzkie wady: samochwalstwo, tchórzostwo i gadulstwo!”"
+        "„Dlaczego postać Józefa Papkina w Zemście budzi tak wielki śmiech widzów?”",
+        "„Bo istnieje ogromna sprzeczność między tym, co mówi, a tym, jak naprawdę postępuje!”",
+        "„Kreuje się na lwa północy i pogromcę smoków, a mdleje ze strachu przed szablą.”",
+        "„Komiczny testament, w którym zapisuje Klarze angielską gitarę, to szczyt humoru!”",
+        "„Fredro genialnie obnażył ludzkie wady: samochwalstwo, tchórzostwo i gadulstwo!”"
       ]
     },
     {
@@ -678,11 +678,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Gry słowne i dowcipne interpretacje frazeologizmów",
       "descriptionPl": "Odgadujecie sens polskich przysłów w zabawnych scenkach. Ułóż dialog.",
       "steps": [
-        "1. „Co odpowiesz koledze, który mówi, że rzuca grochem o ścianę?”",
-        "2. „Haha, zapytam go, czy ściana chociaż ugotowała z tego pyszną zupę grochową!”",
-        "3. „A tak na poważnie: to znaczy, że ktoś mówi na próżno i nikt go nie słucha.”",
-        "4. „Dokładnie! A gdy ktoś porywa się z motyką na słońce, podejmuje niemożliwe zadanie.”",
-        "5. „Polskie przysłowia są pełne soczystego humoru i wielowiekowej mądrości życiowej!”"
+        "„Co odpowiesz koledze, który mówi, że rzuca grochem o ścianę?”",
+        "„Haha, zapytam go, czy ściana chociaż ugotowała z tego pyszną zupę grochową!”",
+        "„A tak na poważnie: to znaczy, że ktoś mówi na próżno i nikt go nie słucha.”",
+        "„Dokładnie! A gdy ktoś porywa się z motyką na słońce, podejmuje niemożliwe zadanie.”",
+        "„Polskie przysłowia są pełne soczystego humoru i wielowiekowej mądrości życiowej!”"
       ]
     },
     {
@@ -690,11 +690,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Śmiech, satyra i mądra pointa",
       "descriptionPl": "Renesansowy humor i dystans do siebie. Ułóż etapy czytania fraszek.",
       "steps": [
-        "1. „Poczytajmy razem wesołe fraszki Jana Kochanowskiego z Czarnolasu!”",
-        "2. „Poeta z humorem i błyskotliwym dowcipem opisywał ludzkie przywary.”",
-        "3. „Krótka, rymowana forma zawsze kończy się zaskakującą pointą na finale.”",
-        "4. „Śmiech staje się tu najlepszym lekarstwem na złość, pychę i zadufanie.”",
-        "5. „Kto potrafi śmiać się z własnych słabości, ten posiada prawdziwą mądrość!”"
+        "„Poczytajmy razem wesołe fraszki Jana Kochanowskiego z Czarnolasu!”",
+        "„Poeta z humorem i błyskotliwym dowcipem opisywał ludzkie przywary.”",
+        "„Krótka, rymowana forma zawsze kończy się zaskakującą pointą na finale.”",
+        "„Śmiech staje się tu najlepszym lekarstwem na złość, pychę i zadufanie.”",
+        "„Kto potrafi śmiać się z własnych słabości, ten posiada prawdziwą mądrość!”"
       ]
     },
     {
@@ -702,11 +702,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Komizm postaci i dialogu u Fredry",
       "descriptionPl": "Poznaj najsłynniejszego samochwała polskiej literatury. Ułóż etapy sceny.",
       "steps": [
-        "1. „Józef Papkin z «Zemsty» Aleksandra Fredry to mistrz komizmu słownego i postaci!”",
-        "2. „Przechwala się odwagą lwa, a truchleje ze strachu na widok małego psa.”",
-        "3. „Pamiętasz scenę pisania testamentu, gdy myślał, że Cześnik go otruł?”",
-        "4. „Fredro genialnie obnażył megalomanię i snobizm ówczesnej szlachty.”",
-        "5. „Klasyka polskiej komedii bawi do łez nawet po dwustu latach!”"
+        "„Józef Papkin z «Zemsty» Aleksandra Fredry to mistrz komizmu słownego i postaci!”",
+        "„Przechwala się odwagą lwa, a truchleje ze strachu na widok małego psa.”",
+        "„Pamiętasz scenę pisania testamentu, gdy myślał, że Cześnik go otruł?”",
+        "„Fredro genialnie obnażył megalomanię i snobizm ówczesnej szlachty.”",
+        "„Klasyka polskiej komedii bawi do łez nawet po dwustu latach!”"
       ]
     },
     {
@@ -714,11 +714,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Humor z klasą i szacunkiem",
       "descriptionPl": "Przygotowanie wesołego skeczu na uroczysty apel. Ułóż dialog próbny.",
       "steps": [
-        "1. „Przygotowujemy wesołą scenkę na apel z okazji Dnia Nauczyciela!”",
-        "2. „Pamiętajmy o złotej zasadzie: żart ma bawić i wywoływać uśmiech, nigdy ranić.”",
-        "3. „Pokażmy z przymrużeniem oka codzienne szukanie linijek i zeszytów do nut.”",
-        "4. „Wszyscy nauczyciele zaśmieją się z sympatią, rozpoznając dobrze znane sytuacje.”",
-        "5. „Zdrowy humor buduje najlepszą atmosferę i integruje całą szkołę!”"
+        "„Przygotowujemy wesołą scenkę na apel z okazji Dnia Nauczyciela!”",
+        "„Pamiętajmy o złotej zasadzie: żart ma bawić i wywoływać uśmiech, nigdy ranić.”",
+        "„Pokażmy z przymrużeniem oka codzienne szukanie linijek i zeszytów do nut.”",
+        "„Wszyscy nauczyciele zaśmieją się z sympatią, rozpoznając dobrze znane sytuacje.”",
+        "„Zdrowy humor buduje najlepszą atmosferę i integruje całą szkołę!”"
       ]
     },
     {
@@ -726,11 +726,11 @@ export const HERO_KOLEZANKA_SETS = {
       "subtitlePl": "Wesoła nauka zasad pisowni",
       "descriptionPl": "Zabawne wierszyki na trudne zasady ortograficzne. Ułóż kolejność rymów.",
       "steps": [
-        "1. „Zamiast nudnego wkuwania regułek, ułóżmy wesołe rymowanki ortograficzne!”",
-        "2. „«Kto z rzepą i orzechem w brzuchu kroczy, temu rz nie zamydli oczu!»”",
-        "3. „A z literą «ó»: «Królik, wróbel oraz wół wpadli razem w wielki dół!»”",
-        "4. „Śmieszne obrazy zapadają w pamięć błyskawicznie i bez żadnego wysiłku.”",
-        "5. „Nauka przez śmiech i zabawę to najsprytniejszy sposób na mistrzostwo!”"
+        "„Zamiast nudnego wkuwania regułek, ułóżmy wesołe rymowanki ortograficzne!”",
+        "„«Kto z rzepą i orzechem w brzuchu kroczy, temu rz nie zamydli oczu!»”",
+        "„A z literą «ó»: «Królik, wróbel oraz wół wpadli razem w wielki dół!»”",
+        "„Śmieszne obrazy zapadają w pamięć błyskawicznie i bez żadnego wysiłku.”",
+        "„Nauka przez śmiech i zabawę to najsprytniejszy sposób na mistrzostwo!”"
       ]
     }
   ]

@@ -4,6 +4,15 @@
 import { sound } from '../audio/sound.js';
 import { getPlayerDamage } from '../data/vocabulary.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import { resolveAsset } from '../ui/CharacterSelectModal.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class CharacterDialogGame {
   constructor(container, {
@@ -26,6 +35,7 @@ export class CharacterDialogGame {
     this.onPlayerDamaged = onPlayerDamaged;
     this.onComplete = onComplete;
     this.onClose = onClose;
+    initLimitBreak(this);
 
     const cleanStr = (s) => String(s || '').replace(/\s*\([^)]*\)/g, '').replace(/\s*\[[^\]]*\]/g, '').trim();
     this.enemyName = cleanStr(enemyName) || 'Przeciwnik';
@@ -88,15 +98,20 @@ export class CharacterDialogGame {
   handleTimeout() {
     this.stopTimer();
     this.lockInput = true;
-    sound.playEnemyHit(this.enemyName);
 
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
+    if (dodged) {
+      this.triggerFighterHit('player', 'UNIK!');
     } else {
-      this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      sound.playEnemyHit(this.enemyName);
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(this.enemyDamage);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      }
+      this.triggerFighterHit('player', `-${this.enemyDamage}`);
     }
     this.updatePlayerHp();
-    this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
     if (this.player.hp <= 0) {
       setTimeout(() => {
@@ -148,10 +163,10 @@ export class CharacterDialogGame {
           </div>
           <div class="dd-sprite-container opponent-sprite-container" id="cd-opponent-sprite-wrap">
             <img
-              src="${this.enemyAvatar}"
+              src="${resolveAsset(this.enemyAvatar)}"
               alt="${this.enemyName}"
               class="dd-fighter-sprite cd-opponent-sprite"
-              onerror="this.src='./public${this.enemyAvatar.replace(/^\./, '')}'"
+              onerror="this.onerror=null; this.src='${resolveAsset(this.enemyAvatar)}';"
             />
           </div>
         </div>
@@ -177,10 +192,13 @@ export class CharacterDialogGame {
               <div class="dd-fighter-hp-fill cd-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text cd-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const titleEl = this.container.querySelector('.mp-animated-title');
     if (titleEl) {
@@ -234,7 +252,7 @@ export class CharacterDialogGame {
 
       <div class="cd-bubble-box">
         <div class="cd-character-avatar-bubble">
-          <img src="${this.enemyAvatar}" alt="${this.enemyName}" />
+          <img src="${resolveAsset(this.enemyAvatar)}" alt="${this.enemyName}" />
         </div>
         <div class="cd-character-text">${step.question}</div>
       </div>
@@ -271,9 +289,10 @@ export class CharacterDialogGame {
       sound.playHit(this.enemyName);
       sound.speakPolish(option.text.replace(/„|”|[^\p{L}\p{N}\s,.?!]/gu, ''));
 
-      this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
+      const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+      this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
       this.updateEnemyHp();
-      this.triggerFighterHit('opponent', `-${this.tanDamage}`);
+      this.triggerFighterHit('opponent', `-${finalDmg}`);
 
       const opponentSprite = this.container.querySelector('.cd-opponent-sprite');
       if (opponentSprite) {
@@ -295,16 +314,23 @@ export class CharacterDialogGame {
       this.timeLeft = this.maxTime;
       this.updateTimerUI();
       btnEl.classList.add('is-wrong');
-      sound.playWrong();
-      sound.playEnemyHit(this.enemyName);
-      this.damageTakenInBattle += this.enemyDamage;
+      const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
 
-      if (this.onPlayerDamaged) {
-        this.onPlayerDamaged(this.enemyDamage);
+      if (dodged) {
+        this.triggerFighterHit('player', 'UNIK!');
+      } else {
+        sound.playWrong();
+        sound.playEnemyHit(this.enemyName);
+        this.damageTakenInBattle += this.enemyDamage;
+        if (this.onPlayerDamaged) {
+          this.onPlayerDamaged(this.enemyDamage);
+        } else {
+          this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+        }
+        this.triggerFighterHit('player', `-${this.enemyDamage}`);
       }
 
       this.updatePlayerHp();
-      this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
       const tanSprite = this.container.querySelector('.cd-tan-sprite');
       if (tanSprite) {
@@ -341,12 +367,18 @@ export class CharacterDialogGame {
     }
   }
 
+  addBonusTime(secs = 5) {
+    this.timeLeft = Math.min(this.maxTime + 10, this.timeLeft + secs);
+    this.updateTimerUI();
+  }
+
   updatePlayerHp() {
     const playerHpPct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     const fill = this.container.querySelector('.cd-player-hp-fill');
     const txt = this.container.querySelector('.cd-player-hp-text');
     if (fill) fill.style.width = `${playerHpPct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   updateEnemyHp() {

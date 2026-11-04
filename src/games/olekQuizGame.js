@@ -4,6 +4,14 @@
 import { OLEK_QUIZ_ENCOUNTERS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class OlekQuizGame {
   constructor(container, { encounterKey = 'encounter_1', player, node, onPlayerDamaged, onComplete, onClose }) {
@@ -20,6 +28,7 @@ export class OlekQuizGame {
     this.onClose = onClose;
 
     this.tanDamage = getPlayerDamage(this.player);
+    initLimitBreak(this);
 
     // Wykorzystaj pytania z węzła jeśli są zdefiniowane, inaczej ze słownika
     this.questions = (node?.questions && node.questions.length > 0)
@@ -119,10 +128,13 @@ export class OlekQuizGame {
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="mp-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const introLayer = this.container.querySelector('#mp-intro-click-layer');
     const animatedTitle = this.container.querySelector('#mp-animated-title');
@@ -206,15 +218,20 @@ export class OlekQuizGame {
     this.stopTimer();
     this.lockInput = true;
     const charName = this.opponentName || 'olek';
-    sound.playEnemyHit(charName);
+    const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
 
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    if (dodged) {
+      this.triggerFighterHit('player', 'UNIK!');
     } else {
-      this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      sound.playEnemyHit(charName);
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(this.enemyDamage);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      }
+      this.triggerFighterHit('player', `-${this.enemyDamage}`);
     }
     this.updatePlayerBar();
-    this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
     if (this.player.hp <= 0) {
       setTimeout(() => {
@@ -354,9 +371,10 @@ export class OlekQuizGame {
       // Czysty, głośny okrzyk bojowy bohatera, uderzenie hit i obrona przeciwnika
       sound.playAttackHit(charName);
 
-      this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
+      const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+      this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
       this.updateOpponentBar();
-      this.triggerFighterHit('opponent', `-${this.tanDamage}`);
+      this.triggerFighterHit('opponent', `-${finalDmg}`);
 
       setTimeout(() => {
         if (this.archetype === 'adaptive') {
@@ -390,15 +408,20 @@ export class OlekQuizGame {
       this.timeLeft = this.maxTime;
       this.updateTimerUI();
       btnEl.classList.add('is-wrong');
-      sound.playEnemyHit(charName);
+      const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
 
-      if (this.onPlayerDamaged) {
-        this.onPlayerDamaged(this.enemyDamage);
+      if (dodged) {
+        this.triggerFighterHit('player', 'UNIK!');
       } else {
-        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+        sound.playEnemyHit(charName);
+        if (this.onPlayerDamaged) {
+          this.onPlayerDamaged(this.enemyDamage);
+        } else {
+          this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+        }
+        this.triggerFighterHit('player', `-${this.enemyDamage}`);
       }
       this.updatePlayerBar();
-      this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
       if (this.player.hp <= 0) {
         setTimeout(() => {
@@ -455,12 +478,18 @@ export class OlekQuizGame {
     if (txt) txt.textContent = `${this.enemyHp}/${this.enemyMaxHp}`;
   }
 
+  addBonusTime(secs = 5) {
+    this.timeLeft = Math.min(this.maxTime + 10, this.timeLeft + secs);
+    this.updateTimerUI();
+  }
+
   updatePlayerBar() {
     const bar = this.container.querySelector('#mp-player-hp-fill');
     const txt = this.container.querySelector('#mp-player-hp-text');
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     if (bar) bar.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   triggerFighterHit(target = 'opponent', dmgText = '-5') {

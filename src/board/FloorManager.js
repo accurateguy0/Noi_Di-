@@ -13,6 +13,7 @@ import {
 } from '../data/vocabulary.js';
 import { getBoss } from '../data/bosses.js';
 import { getStoryEpisode } from '../data/storyData.js';
+import { preloadFloorAssets } from '../utils/assetPreloader.js';
 
 export class FloorManager {
   constructor(app) {
@@ -119,6 +120,10 @@ export class FloorManager {
       this.app.lastApproachFromRight = false;
       if (badgeEl) badgeEl.textContent = floor0Data.badgeText || `Poziom 0: Szatnia (Epizod ${pip})`;
     }
+
+    try {
+      preloadFloorAssets(this.app.nodes, floorNumber, this.app.player);
+    } catch (e) {}
   }
 
   resetBoard(manualReset = false, targetFloor = null, options = {}) {

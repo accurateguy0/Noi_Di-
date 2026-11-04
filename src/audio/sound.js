@@ -14,6 +14,20 @@ class SoundManager {
     this.playerClass = 'Warrior';
     this.lowHealthAudio = null;
     this.lowHealthPlaying = false;
+    this.cachedPlVoices = [];
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      const updateVoices = () => {
+        try {
+          const v = window.speechSynthesis.getVoices() || [];
+          this.cachedPlVoices = v.filter((voice) => voice.lang && voice.lang.toLowerCase().startsWith('pl'));
+        } catch (e) {}
+      };
+      updateVoices();
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = updateVoices;
+      }
+    }
 
     this.initUserGesture();
   }
@@ -98,25 +112,68 @@ class SoundManager {
 
   // Preload najważniejszych dźwięków walki i efektów, aby odtwarzały się z zerowym opóźnieniem
   preloadCoreAudio() {
-    const coreFiles = [
+    // Priorytet 1: Błyskawiczny start (podstawowa walka i interfejs)
+    const priority1 = [
       'hit.ogg',
       'fight_start.ogg',
       'warrior_atak.ogg',
       'Warrior_obrona.ogg',
-      'krec_kolem.ogg',
+      'damage_warrior.ogg',
       'heal.ogg',
       'gainxp.ogg',
       'levelup.ogg',
       'openchest.ogg',
-      'transition_1.ogg'
+      'entershop.ogg',
+      'limitready.ogg',
+      'pokonanyprzeciwnik.ogg',
+      'defeatplayer.ogg',
+      'krec_kolem.ogg',
+      'transition_1.ogg',
+      'transition_2.ogg'
     ];
-    const loadBatch = () => {
-      coreFiles.forEach((f) => this.loadBuffer(f));
+
+    // Priorytet 2: Najczęstsze dźwięki przeciwników (wczytywane w tle podczas bezczynności)
+    const priority2 = [
+      'szczeniak_atak.ogg',
+      'szczeniak_obrona.ogg',
+      'kolezanka_atak.ogg',
+      'kolezanka_obrona.ogg',
+      'mala_kalamarnica_dzwiek.ogg',
+      'kot_dzwiek.ogg',
+      'kroliczek_atak.ogg',
+      'kroliczek_obrona.ogg',
+      'jezyk_atak.ogg',
+      'jezyk_obrona.ogg',
+      'zaba_atak.ogg',
+      'zaba_obrona.ogg',
+      'glosny_ptak_dzwiek_1.ogg',
+      'mysli_dzwiek_1.ogg',
+      'Nauczycielka_atak.ogg',
+      'nauczycielka_obrona.ogg',
+      'Thief_atak.ogg',
+      'Thief_obrona.ogg',
+      'Robot_atak.ogg',
+      'Robot_obrona.ogg',
+      'witch_atak.ogg',
+      'witch_obrona.ogg',
+      'Inventor_atak.ogg',
+      'Inventor_obrona.ogg',
+      'Jester_atak.ogg',
+      'Jester_obrona.ogg'
+    ];
+
+    const loadList = (list) => {
+      list.forEach((f) => this.loadBuffer(f));
     };
+
+    // Priorytet 1 natychmiast
+    loadList(priority1);
+
+    // Priorytet 2 w idle callback
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      window.requestIdleCallback(loadBatch, { timeout: 1500 });
+      window.requestIdleCallback(() => loadList(priority2), { timeout: 2500 });
     } else {
-      setTimeout(loadBatch, 600);
+      setTimeout(() => loadList(priority2), 800);
     }
   }
 
@@ -234,12 +291,17 @@ class SoundManager {
 
     try {
       const encoded = encodeURIComponent(filename);
+      const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+        ? import.meta.env.BASE_URL
+        : './';
+      const cleanBase = base.endsWith('/') ? base : base + '/';
       const candidates = [
-        `./assets/music/${encoded}`,
-        `/assets/music/${encoded}`,
-        `assets/music/${encoded}`,
-        `./public/assets/music/${encoded}`
+        `${cleanBase}assets/music/${encoded}`,
+        `./assets/music/${encoded}`
       ];
+      if (encoded !== filename) {
+        candidates.push(`${cleanBase}assets/music/${filename}`);
+      }
       let idx = 0;
       const audio = new Audio(candidates[0]);
       audio.volume = htmlVol;
@@ -835,8 +897,9 @@ class SoundManager {
       const charName = typeof options === 'object' ? (options?.character || options?.charName || '') : '';
       const isFemale = options?.gender === 'female' || this.isFemaleCharacter(charName);
 
-      const voices = window.speechSynthesis.getVoices();
-      const plVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().startsWith('pl'));
+      const plVoices = (this.cachedPlVoices && this.cachedPlVoices.length > 0)
+        ? this.cachedPlVoices
+        : (window.speechSynthesis.getVoices() || []).filter((v) => v.lang && v.lang.toLowerCase().startsWith('pl'));
 
       if (isFemale) {
         // Żeński lektor: Nauczycielka, Kot, Żaba, Kasjerka, Instagramerka, Biletomat, Pielęgniarka

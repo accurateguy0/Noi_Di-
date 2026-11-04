@@ -1133,6 +1133,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   right: 0;
   width: 100%;
   box-sizing: border-box;
+  z-index: 25;
 }
 
 /* Licznik odblokowanych kart w Księdze Słów */
@@ -1292,8 +1293,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .arena-mount.floor-room-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/pokoj_arena.png'),
-    url('./public/assets/tla/pokoj_arena.png');
+    url('/assets/tla/pokoj_arena.png');
 }
 
 .arena-overlay {
@@ -2463,8 +2463,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   z-index: 60;
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/tla/szatnia_lub_korytarz_arena.jpg'),
-    url('./public/assets/tla/szatnia_lub_korytarz_arena.jpg');
+    url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -2487,9 +2486,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
     url('/assets/tla/miasto_arena.png'),
-    url('./public/assets/tla/miasto_arena.png'),
-    url('/assets/tla/miasto.png'),
-    url('./public/assets/tla/miasto.png');
+    url('/assets/tla/miasto.png');
 }
 
 .dicey-chest-scene.floor-theme-school,
@@ -2504,8 +2501,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-m3_boss-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/tla/klasa.png'),
-    url('./public/assets/tla/klasa.png');
+    url('/assets/tla/klasa.png');
 }
 
 .dicey-chest-scene.floor-theme-clinic,
@@ -2515,8 +2511,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-m4_boss-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/tla/gabinet.png'),
-    url('./public/assets/tla/gabinet.png');
+    url('/assets/tla/gabinet.png');
 }
 
 .dicey-chest-scene.floor-theme-room,
@@ -2525,8 +2520,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-m5_boss-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/tla/pokoj.png'),
-    url('./public/assets/tla/pokoj.png');
+    url('/assets/tla/pokoj.png');
 }
 
 .dicey-chest-scene.floor-theme-szatnia,
@@ -2534,8 +2528,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .dicey-chest-scene.floor-2-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.35) 0%, rgba(10, 12, 20, 0.82) 100%),
-    url('/assets/tla/szatnia_lub_korytarz_arena.jpg'),
-    url('./public/assets/tla/szatnia_lub_korytarz_arena.jpg');
+    url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
 }
 
 .btn-chest-scene-close {
@@ -4342,8 +4335,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .b3-intro-scene {
   background-image:
     radial-gradient(circle at center, rgba(20, 16, 28, 0.45) 0%, rgba(10, 12, 20, 0.88) 100%),
-    url('/assets/tla/klasa.png'),
-    url('./public/assets/tla/klasa.png');
+    url('/assets/tla/klasa.png');
   background-size: cover;
   background-position: center;
 }
@@ -4427,7 +4419,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url('/assets/tla/kramik_background.png'), url('./public/assets/tla/kramik_background.png');
+  background-image: url('/assets/tla/kramik_background.png');
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -6051,8 +6043,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .boss-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/szatnia_lub_korytarz_arena.jpg'),
-    url('./public/assets/tla/szatnia_lub_korytarz_arena.jpg');
+    url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
 }
@@ -6334,7 +6325,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 .board-background-container.floor-city_1,
 .board-background-container.floor-8 {
-  background-image: url('/assets/tla/miasto.png'), url('./public/assets/tla/miasto.png');
+  background-image: url('/assets/tla/miasto.png');
 }
 
 .sprite-kasjerka,
@@ -6349,19 +6340,19 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 .otb-arena,
 .ro-arena {
-  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
+  background-image: url('/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
 }
 
 .ro-arena.ro-theme-school {
-  background-image: radial-gradient(circle at center, rgba(10, 14, 22, 0.15) 0%, rgba(10, 14, 22, 0.45) 100%), url('/assets/tla/klasa_arena.png'), url('./public/assets/tla/klasa_arena.png');
+  background-image: radial-gradient(circle at center, rgba(10, 14, 22, 0.15) 0%, rgba(10, 14, 22, 0.45) 100%), url('/assets/tla/klasa_arena.png');
   background-size: cover;
   background-position: center;
 }
 
 .ro-arena.ro-theme-city {
-  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png');
+  background-image: url('/assets/tla/miasto_arena.png');
   background-size: cover;
   background-position: center;
 }
@@ -6794,7 +6785,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 .board-background-container.floor-city_2,
 .board-background-container.floor-9 {
-  background-image: url('/assets/tla/miasto.png'), url('./public/assets/tla/miasto.png');
+  background-image: url('/assets/tla/miasto.png');
 }
 
 .sprite-kebab-master {
@@ -6803,7 +6794,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 /* Arena walki / dialogu z Mistrzem Kebaba */
 .km-arena {
-  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
+  background-image: url('/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
 }
@@ -7105,7 +7096,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .board-background-container.floor-10,
 .board-background-container.floor-city_boss,
 .board-background-container.floor-11 {
-  background-image: url('/assets/tla/miasto.png'), url('./public/assets/tla/miasto.png');
+  background-image: url('/assets/tla/miasto.png');
 }
 
 /* ==================== BILETOMAT MIEJSKI ==================== */
@@ -7118,8 +7109,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   height: 100%;
   background-image:
     radial-gradient(circle at center, rgba(5, 10, 20, 0.72) 0%, rgba(5, 10, 20, 0.94) 100%),
-    url('/assets/tla/sklep_biletow.jpg'),
-    url('./public/assets/tla/sklep_biletow.jpg');
+    url('/assets/tla/sklep_biletow.jpg');
   background-size: cover;
   background-position: center;
   backdrop-filter: blur(8px);
@@ -7710,7 +7700,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 /* ==================== BOSS CWANIAK ARENA & CHALLEGES ==================== */
 
 .cwaniak-arena {
-  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
+  background-image: url('/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
 }
 
 .opponent-sprite-container.boss-opponent-sprite-container .dd-fighter-sprite,
@@ -8002,25 +7992,25 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 .board-background-container.floor-m3_2,
 .board-background-container.floor-m3_3,
 .board-background-container.floor-m3_boss {
-  background-image: url('/assets/tla/klasa.png'), url('./public/assets/tla/klasa.png');
+  background-image: url('/assets/tla/klasa.png');
 }
 
 .board-background-container.floor-m4_1,
 .board-background-container.floor-m4_2,
 .board-background-container.floor-m4_3,
 .board-background-container.floor-m4_boss {
-  background-image: url('/assets/tla/gabinet.png'), url('./public/assets/tla/gabinet.png');
+  background-image: url('/assets/tla/gabinet.png');
 }
 
 .board-background-container.floor-m5_1,
 .board-background-container.floor-m5_2,
 .board-background-container.floor-m5_boss {
-  background-image: url('/assets/tla/pokoj.png'), url('./public/assets/tla/pokoj.png');
+  background-image: url('/assets/tla/pokoj.png');
 }
 
 /* ==================== CHARACTER DIALOG ARENA (Wuefista, Pielęgniarka, Gejmer, Piłkarz, Cwaniak) ==================== */
 .cd-arena {
-  background-image: url('/assets/tla/miasto_arena.png'), url('./public/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
+  background-image: url('/assets/tla/miasto_arena.png'), url('/assets/tla/szatnia_lub_korytarz_arena.jpg');
   background-size: cover;
   background-position: center;
 }
@@ -8029,57 +8019,49 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
     url('/assets/tla/sala_gimnastyczna_arena.jpg'),
-    url('./public/assets/tla/sala_gimnastyczna_arena.jpg'),
     url('/assets/tla/sala_gimnastyczna.jpg');
 }
 
 .cd-arena.school-dialog-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/klasa.png'),
-    url('./public/assets/tla/klasa.png');
+    url('/assets/tla/klasa.png');
 }
 
 .cd-arena.clinic-dialog-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/gabinet.png'),
-    url('./public/assets/tla/gabinet.png');
+    url('/assets/tla/gabinet.png');
 }
 
 .cd-arena.room-dialog-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/pokoj_arena.png'),
-    url('./public/assets/tla/pokoj_arena.png');
+    url('/assets/tla/pokoj_arena.png');
 }
 
 .boss-arena.cwaniak-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/miasto_arena.png'),
-    url('./public/assets/tla/miasto_arena.png');
+    url('/assets/tla/miasto_arena.png');
 }
 
 .boss-arena.nauczycielka-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/klasa.png'),
-    url('./public/assets/tla/klasa.png');
+    url('/assets/tla/klasa.png');
 }
 
 .boss-arena.lekarz-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/gabinet.png'),
-    url('./public/assets/tla/gabinet.png');
+    url('/assets/tla/gabinet.png');
 }
 
 .boss-arena.instagramerka-arena {
   background-image:
     radial-gradient(circle at center, transparent 70%, rgba(10, 14, 22, 0.22) 100%),
-    url('/assets/tla/pokoj_arena.png'),
-    url('./public/assets/tla/pokoj_arena.png');
+    url('/assets/tla/pokoj_arena.png');
 }
 
 .cd-stage-wrapper {
@@ -8219,7 +8201,6 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   background-image:
     radial-gradient(circle at center, rgba(16, 24, 38, 0.45) 0%, rgba(10, 14, 22, 0.9) 100%),
     url('/assets/tla/miasto_arena.png'),
-    url('./public/assets/tla/miasto_arena.png'),
     url('/assets/tla/miasto.png');
   background-size: cover;
   background-position: center;

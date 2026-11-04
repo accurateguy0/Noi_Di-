@@ -4,6 +4,14 @@
 import { MATCH_UP_DATA, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class MatchUpGame {
   constructor(container, options = {}) {
@@ -16,6 +24,7 @@ export class MatchUpGame {
     this.items = (options.items && options.items.length > 0) ? [...options.items] : [...MATCH_UP_DATA];
     this.titleText = options.title || 'Match up';
     this.tanDamage = options.tanDamage || getPlayerDamage(this.player);
+    initLimitBreak(this);
     this.enemyMaxHp = (this.items && this.items.length > 0) ? (this.items.length * this.tanDamage) : (options.enemyMaxHp || 12);
     this.enemyHp = this.enemyMaxHp;
     this.enemyDamage = options.enemyDamage !== undefined ? options.enemyDamage : 2;
@@ -96,10 +105,13 @@ export class MatchUpGame {
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="mp-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const introLayer = this.container.querySelector('#mp-intro-click-layer');
     const animatedTitle = this.container.querySelector('#mp-animated-title');
@@ -336,9 +348,10 @@ export class MatchUpGame {
       }
 
       this.score += 150;
-      this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
+      const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+      this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
       this.updateEnemyHud();
-      this.triggerFighterHit('opponent', `-${this.tanDamage}`);
+      this.triggerFighterHit('opponent', `-${finalDmg}`);
 
       setTimeout(() => {
         this.lockInput = false;
@@ -350,21 +363,26 @@ export class MatchUpGame {
       }, 550);
     } else {
       // Błędne dopasowanie -> przeciwnik atakuje!
-      sound.playEnemyHit(this.enemyName);
       this.selectedWordId = null;
 
       if (sourceTile) {
         sourceTile.classList.remove('is-dragging-origin');
       }
 
-      if (this.onPlayerDamaged) {
-        this.onPlayerDamaged(this.enemyDamage);
+      const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
+      if (dodged) {
+        this.triggerFighterHit('player', 'UNIK!');
       } else {
-        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+        sound.playEnemyHit(this.enemyName);
+        if (this.onPlayerDamaged) {
+          this.onPlayerDamaged(this.enemyDamage);
+        } else {
+          this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+        }
+        this.triggerFighterHit('player', `-${this.enemyDamage}`);
       }
 
       this.updatePlayerHud();
-      this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
       if (targetSlot) targetSlot.classList.add('is-wrong');
 
@@ -418,6 +436,7 @@ export class MatchUpGame {
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     if (fill) fill.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   finishBattle() {

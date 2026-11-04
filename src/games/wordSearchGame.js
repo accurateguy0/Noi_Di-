@@ -5,6 +5,15 @@
 import { WORD_SEARCH_WORDS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import { resolveAsset } from '../ui/CharacterSelectModal.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class WordSearchGame {
   constructor(container, options = {}) {
@@ -28,6 +37,7 @@ export class WordSearchGame {
 
     this.enemyDamage = options.enemyDamage !== undefined ? options.enemyDamage : 1;
     this.tanDamage = options.tanDamage || getPlayerDamage(this.player);
+    initLimitBreak(this);
     this.enemyMaxHp = (this.wordsToFind && this.wordsToFind.length > 0) ? (this.wordsToFind.length * this.tanDamage) : (options.enemyMaxHp || 12);
     this.enemyHp = this.enemyMaxHp;
 
@@ -138,11 +148,11 @@ export class WordSearchGame {
           </div>
           <div class="dd-sprite-container opponent-sprite-container ${wideClass}" id="mp-opponent-sprite-wrap">
             <img
-              src="${this.opponentAvatar}"
+              src="${resolveAsset(this.opponentAvatar)}"
               alt="${this.enemyName}"
               class="dd-fighter-sprite sprite-opponent"
               id="mp-opponent-sprite"
-              onerror="this.src='./public${this.opponentAvatar.replace(/^\./, '')}'"
+              onerror="this.onerror=null; this.src='${resolveAsset(this.opponentAvatar)}';"
             />
           </div>
         </div>
@@ -178,11 +188,11 @@ export class WordSearchGame {
         <div class="dd-arena-fighter dd-arena-player" id="mp-player-box">
           <div class="dd-sprite-container player-sprite-container" id="mp-player-sprite-wrap">
             <img
-              src="${this.player?.avatar || './assets/Warrior.png'}"
+              src="${resolveAsset(this.player?.avatar || './assets/Warrior.png')}"
               alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
               id="mp-player-sprite"
-              onerror="this.src='./assets/Warrior.png'"
+              onerror="this.onerror=null; this.src='${resolveAsset('./assets/Warrior.png')}';"
             />
           </div>
           <div class="dd-fighter-hud">
@@ -193,10 +203,13 @@ export class WordSearchGame {
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="mp-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const introLayer = this.container.querySelector('#mp-intro-click-layer');
     const animatedTitle = this.container.querySelector('#mp-animated-title');
@@ -303,17 +316,21 @@ export class WordSearchGame {
   handleTimeout() {
     this.stopTimer();
     this.lockInput = true;
-    sound.playEnemyHit(this.enemyName);
 
-    // Przeciwnik zadaje obrażenia
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
+    if (dodged) {
+      this.triggerFighterHit('player', 'UNIK!');
     } else {
-      this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      sound.playEnemyHit(this.enemyName);
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(this.enemyDamage);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      }
+      this.triggerFighterHit('player', `-${this.enemyDamage}`);
     }
 
     this.updatePlayerHud();
-    this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
     setTimeout(() => {
       if (this.player.hp <= 0) {
@@ -406,7 +423,8 @@ export class WordSearchGame {
 
       this.score += 150;
       const isLastWord = this.foundWords.size >= this.wordsToFind.length;
-      const dmg = isLastWord ? this.enemyHp : Math.min(this.enemyHp, this.tanDamage);
+      let rawDmg = isLastWord ? this.enemyHp : Math.min(this.enemyHp, this.tanDamage);
+      const dmg = consumeLimitBreakAttack(this, rawDmg);
       this.enemyHp = Math.max(0, this.enemyHp - dmg);
       this.updateEnemyHud();
       this.triggerFighterHit('opponent', `-${dmg}`);
@@ -579,6 +597,7 @@ export class WordSearchGame {
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     if (fill) fill.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   finishBattle() {

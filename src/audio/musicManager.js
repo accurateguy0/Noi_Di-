@@ -65,7 +65,11 @@ class MusicManager {
 
   getAudioUrl(filename) {
     const encoded = encodeURIComponent(filename);
-    return `./assets/music/${encoded}`;
+    const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+      ? import.meta.env.BASE_URL
+      : './';
+    const cleanBase = base.endsWith('/') ? base : base + '/';
+    return `${cleanBase}assets/music/${encoded}`;
   }
 
   setMasterVolume(vol) {

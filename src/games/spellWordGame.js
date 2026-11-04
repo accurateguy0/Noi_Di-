@@ -4,6 +4,14 @@
 import { BOARD_3_SPELL_QUESTIONS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class SpellWordGame {
   constructor(container, { player, onPlayerDamaged, onComplete, onClose, opponentName = 'olek', opponentAvatar = './assets/Postacie/Gejmer.png' }) {
@@ -20,6 +28,7 @@ export class SpellWordGame {
     this.currentQuestionIndex = 0;
 
     this.tanDamage = getPlayerDamage(this.player);
+    initLimitBreak(this);
     this.enemyMaxHp = 30;
     this.enemyHp = 30;
     this.enemyDamage = 2;
@@ -122,10 +131,13 @@ export class SpellWordGame {
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="mp-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const introLayer = this.container.querySelector('#mp-intro-click-layer');
     const animatedTitle = this.container.querySelector('#mp-animated-title');
@@ -256,16 +268,21 @@ export class SpellWordGame {
   handleTimeout() {
     this.stopTimer();
     this.lockInput = true;
-    sound.playEnemyHit(this.opponentName);
 
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
+    if (dodged) {
+      this.triggerFighterHit('player', 'UNIK!');
     } else {
-      this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      sound.playEnemyHit(this.opponentName);
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(this.enemyDamage);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      }
+      this.triggerFighterHit('player', `-${this.enemyDamage}`);
     }
 
     this.updatePlayerHud();
-    this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
     if (this.player.hp <= 0) {
       setTimeout(() => {
@@ -379,17 +396,22 @@ export class SpellWordGame {
       const textEl = this.container.querySelector('#spell-timer-text');
       if (fillEl) fillEl.style.width = '100%';
       if (textEl) textEl.textContent = `${this.timeLeft}s`;
-      sound.playEnemyHit(this.opponentName);
       if (btnEl) btnEl.classList.add('is-wrong');
 
-      if (this.onPlayerDamaged) {
-        this.onPlayerDamaged(this.enemyDamage);
+      const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
+      if (dodged) {
+        this.triggerFighterHit('player', 'UNIK!');
       } else {
-        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+        sound.playEnemyHit(this.opponentName);
+        if (this.onPlayerDamaged) {
+          this.onPlayerDamaged(this.enemyDamage);
+        } else {
+          this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+        }
+        this.triggerFighterHit('player', `-${this.enemyDamage}`);
       }
 
       this.updatePlayerHud();
-      this.triggerFighterHit('player', `-${this.enemyDamage}`);
 
       if (this.player.hp <= 0) {
         setTimeout(() => {
@@ -417,9 +439,10 @@ export class SpellWordGame {
     }
 
     this.score += 150;
-    this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
+    const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+    this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
     this.updateEnemyHud();
-    this.triggerFighterHit('opponent', `-${this.tanDamage}`);
+    this.triggerFighterHit('opponent', `-${finalDmg}`);
 
     const slotsRow = this.container.querySelector('#spell-slots-row');
     if (slotsRow) slotsRow.classList.add('spell-phrase-solved');
@@ -452,12 +475,21 @@ export class SpellWordGame {
     if (txt) txt.textContent = `${this.enemyHp}/${this.enemyMaxHp}`;
   }
 
+  addBonusTime(secs = 5) {
+    this.timeLeft = Math.min(this.maxTime + 10, this.timeLeft + secs);
+    const fillEl = this.container.querySelector('#spell-timer-fill');
+    const textEl = this.container.querySelector('#spell-timer-text');
+    if (fillEl) fillEl.style.width = '100%';
+    if (textEl) textEl.textContent = `${this.timeLeft}s`;
+  }
+
   updatePlayerHud() {
     const bar = this.container.querySelector('#mp-player-hp-fill');
     const txt = this.container.querySelector('#mp-player-hp-text');
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     if (bar) bar.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   triggerFighterHit(target = 'opponent', dmgText = '-5') {

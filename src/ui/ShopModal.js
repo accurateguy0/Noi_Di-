@@ -48,6 +48,12 @@ export function openShopModal(app, node) {
     const currentShopData = FLOOR_SHOPS[fNum] || FLOOR_SHOPS[1];
     const itemsToDisplay = currentShopData.items;
 
+    const heroAvatar = app.player?.avatar || './assets/Warrior.png';
+    const heroName = app.player?.heroName || app.player?.name || 'Bohater';
+    const curFloor = app.currentFloor === 0 ? 1 : (Number(app.currentFloor) || 1);
+    const xpToNext = Math.max(1, (app.player?.xpToNext || 2) - (app.player?.xp || 0));
+    const totalDmg = getPlayerDamage(app.player);
+
     modalMount.innerHTML = `
       <div class="dd-shop-screen" style="background-image: url('./assets/tla/kramik_background.png'), url('/assets/tla/kramik_background.png');">
         <!-- Sekcja lady sklepowej z kartami na blacie w stylu Dicey Dungeons -->
@@ -104,33 +110,54 @@ export function openShopModal(app, node) {
           </div>
         </div>
 
-        <!-- Dolna listwa w stylu Dicey Dungeons HUD -->
-        <div class="dd-shop-bottombar">
-          <div class="dd-shop-hud-left">
-            <div class="dd-shop-hud-portrait">
-              <img src="${app.player.avatar || './assets/Warrior.png'}" alt="${app.player.heroName || 'Bohater'}" onerror="this.src='./assets/Warrior.png'" />
+        <!-- Dolny pasek HUD (Identyczny z paskiem planszowym w stylu Dicey Dungeons) -->
+        <footer class="dicey-hud-bar dd-shop-hud-bar">
+          <!-- Lewa strona: Awatar + LEVEL + EXP -->
+          <div class="hud-hero-cluster">
+            <div class="hud-dice-avatar-frame" id="shop-hud-character-card" title="${heroName}">
+              <img id="shop-hud-portrait-img" src="${heroAvatar}" alt="${heroName}" onerror="this.src='./assets/Warrior.png'" />
             </div>
-            <div class="dd-shop-hud-name">${app.player.heroName || app.player.name || 'Bohater'}</div>
-            <div class="dd-shop-hud-hp">
-              <div class="dd-shop-hud-hp-bar" style="width: ${Math.max(0, Math.min(100, (app.player.hp / app.player.maxHp) * 100))}%"></div>
-              <span class="dd-shop-hud-hp-text">${app.player.hp}/${app.player.maxHp} HP</span>
-            </div>
-            <div class="dd-shop-hud-gold">
-              <span>🪙</span> <b>${app.player.coins}</b>
+            <div class="hud-level-info">
+              <div class="hud-level-text" id="shop-hud-level-title">POZIOM ${app.player?.level || 1}</div>
+              <div class="hud-levelup-sub" id="shop-hud-xp-sub">Awans za ★ ${xpToNext}</div>
             </div>
           </div>
 
-          <div class="dd-shop-hud-center">
-            <span style="margin-right: 18px;">⚔️ Atak: <b>${getPlayerDamage(app.player)} DMG</b></span>
-            <span>💡 Podpowiedzi: <b>${app.player.hints ?? 5}</b></span>
+          <!-- Środek-Lewo: Pasek HP + monety i atak mieczem (DMG) -->
+          <div class="hud-hp-cluster">
+            <div class="hud-hp-pill">
+              <div class="hud-hp-pill-fill" id="shop-hud-hp-fill" style="width: ${Math.max(0, Math.min(100, (app.player.hp / app.player.maxHp) * 100))}%;"></div>
+              <span class="hud-hp-pill-label" id="shop-hud-hp-text">${app.player.hp}/${app.player.maxHp}</span>
+            </div>
+            <div class="hud-stats-under-hp">
+              <span class="hud-stat-coin" title="Złote monety">🪙 <b id="shop-coins">${app.player.coins || 0}</b></span>
+              <span class="hud-stat-dmg" title="Siła ataku (DMG)">⚔️ <b id="shop-damage-val">${totalDmg}</b></span>
+            </div>
           </div>
 
-          <div class="dd-shop-hud-right">
-            <button type="button" class="btn-dd-shop-exit" id="shop-leave-btn">
+          <!-- Środek-Prawo: Przycisk WYJDŹ Z KRAMIKU -->
+          <div class="hud-buttons-cluster">
+            <button type="button" class="btn-dd-hud-pill btn-dd-equipment" id="shop-leave-btn" title="Wyjdź z kramiku na planszę">
               WYJDŹ Z KRAMIKU
             </button>
           </div>
-        </div>
+
+          <!-- Prawa strona: Drabina / Piętra z czaszkami i kapturem bossa -->
+          <div class="hud-floor-cluster" id="shop-hud-floor-display" title="Aktualne piętro">
+            <div class="hud-floor-top-row">
+              <span class="hud-floor-stair-icon">🪜</span>
+              <div class="hud-floor-skulls" id="shop-floor-skulls">
+                <span class="hud-skull ${curFloor === 1 ? 'is-current' : (curFloor > 1 ? 'is-cleared' : '')}" data-floor="1">💀</span>
+                <span class="hud-skull ${curFloor === 2 ? 'is-current' : (curFloor > 2 ? 'is-cleared' : '')}" data-floor="2">💀</span>
+                <span class="hud-skull ${curFloor === 3 ? 'is-current' : (curFloor > 3 ? 'is-cleared' : '')}" data-floor="3">💀</span>
+                <span class="hud-skull ${curFloor === 4 ? 'is-current' : (curFloor > 4 ? 'is-cleared' : '')}" data-floor="4">💀</span>
+                <span class="hud-skull ${curFloor === 5 ? 'is-current' : (curFloor > 5 ? 'is-cleared' : '')}" data-floor="5">💀</span>
+                <span class="hud-boss-hood ${curFloor === 6 ? 'is-current' : (curFloor > 6 ? 'is-cleared' : '')}" data-floor="6">🦹</span>
+              </div>
+            </div>
+            <div class="hud-floor-label" id="shop-hud-floor-title">Piętro ${curFloor}</div>
+          </div>
+        </footer>
       </div>
     `;
 

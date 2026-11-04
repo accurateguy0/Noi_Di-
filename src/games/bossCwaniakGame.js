@@ -9,6 +9,7 @@ import { CWANIAK_CHALLENGES } from '../data/dialogSteps.js';
 import { getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import { resolveAsset } from '../ui/CharacterSelectModal.js';
 import {
   getHeroLevelStats,
   WITCH_SPELLS
@@ -159,11 +160,11 @@ export class BossCwaniakGame {
           </div>
           <div class="dd-sprite-container opponent-sprite-container boss-opponent-sprite-container" id="cwaniak-opponent-sprite-wrap">
             <img
-              src="${this.enemyAvatar}"
+              src="${resolveAsset(this.enemyAvatar)}"
               alt="${this.enemyName}"
               class="dd-fighter-sprite sprite-${(this.enemyName || 'cwaniak').toLowerCase()}"
               id="cwaniak-sprite"
-              onerror="this.src='./public${this.enemyAvatar.replace(/^\./, '')}'"
+              onerror="this.onerror=null; this.src='${resolveAsset(this.enemyAvatar)}';"
             />
           </div>
         </div>
@@ -175,10 +176,10 @@ export class BossCwaniakGame {
         <div class="dd-arena-fighter dd-arena-player" id="cwaniak-player-box">
           <div class="dd-sprite-container player-sprite-container" id="cwaniak-player-sprite-wrap">
             <img
-              src="${this.player?.avatar || './assets/Warrior.png'}"
+              src="${resolveAsset(this.player?.avatar || './assets/Warrior.png')}"
               alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
-              onerror="this.src='./assets/Warrior.png'"
+              onerror="this.onerror=null; this.src='${resolveAsset('./assets/Warrior.png')}';"
             />
           </div>
           <div class="dd-fighter-hud">

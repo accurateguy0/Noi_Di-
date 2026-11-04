@@ -6,6 +6,14 @@
 import { sound } from '../audio/sound.js';
 import { getPlayerDamage } from '../data/vocabulary.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class OpenTheBoxGame {
   constructor(container, { player, onPlayerDamaged, onComplete, onClose, shoppingChoices = {} }) {
@@ -20,6 +28,7 @@ export class OpenTheBoxGame {
     this.enemyHp = 20;
     this.enemyDamage = 10;
     this.tanDamage = getPlayerDamage(this.player);
+    initLimitBreak(this);
 
     this.maxTime = 5;
     this.timeLeft = 5;
@@ -160,10 +169,13 @@ export class OpenTheBoxGame {
               <div class="dd-fighter-hp-fill" id="otb-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="otb-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const titleEl = this.container.querySelector('.mp-animated-title');
     if (titleEl) {
@@ -277,8 +289,9 @@ export class OpenTheBoxGame {
     this.stopTimer();
     sound.playAttackHit('kasjerka');
     sound.playSuccess();
-    this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
-    this.triggerFighterHit('opponent', `-${this.tanDamage}`);
+    const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+    this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
+    this.triggerFighterHit('opponent', `-${finalDmg}`);
     this.updateEnemyHud();
 
     setTimeout(() => {
@@ -293,10 +306,17 @@ export class OpenTheBoxGame {
 
   handleWrong() {
     this.stopTimer();
-    sound.playEnemyHit('kasjerka');
-    this.triggerFighterHit('player', `-${this.enemyDamage}`);
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
+    if (dodged) {
+      this.triggerFighterHit('player', 'UNIK!');
+    } else {
+      sound.playEnemyHit('kasjerka');
+      this.triggerFighterHit('player', `-${this.enemyDamage}`);
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(this.enemyDamage);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      }
     }
     this.updatePlayerHud();
 
@@ -312,10 +332,17 @@ export class OpenTheBoxGame {
 
   handleTimeout() {
     this.stopTimer();
-    sound.playEnemyHit('kasjerka');
-    this.triggerFighterHit('player', `-${this.enemyDamage}`);
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    const dodged = handleLimitBreakDamageTaken(this, this.enemyDamage);
+    if (dodged) {
+      this.triggerFighterHit('player', 'UNIK!');
+    } else {
+      sound.playEnemyHit('kasjerka');
+      this.triggerFighterHit('player', `-${this.enemyDamage}`);
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(this.enemyDamage);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - this.enemyDamage);
+      }
     }
     this.updatePlayerHud();
 
@@ -368,6 +395,7 @@ export class OpenTheBoxGame {
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     if (fill) fill.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   finishBattle() {

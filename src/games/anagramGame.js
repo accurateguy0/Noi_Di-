@@ -4,6 +4,15 @@
 import { SLANG_WORDS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import { resolveAsset } from '../ui/CharacterSelectModal.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class AnagramGame {
   constructor(container, options = {}) {
@@ -25,6 +34,7 @@ export class AnagramGame {
     this.opponentAvatar = options?.opponentAvatar || './assets/Kotek_Pomoc.png';
     this.currentWordIndex = 0;
     this.tanDamage = getPlayerDamage(this.player);
+    initLimitBreak(this);
     this.enemyDamage = 1; // Kotek / Kotek Pomocnik zadaje 1 obrażenie bohaterowi
     this.enemyMaxHp = this.words.length * this.tanDamage;
     this.enemyHp = this.enemyMaxHp;
@@ -127,11 +137,11 @@ export class AnagramGame {
           </div>
           <div class="dd-sprite-container opponent-sprite-container ${wideClass}" id="mp-opponent-sprite-wrap">
             <img
-              src="${this.opponentAvatar}"
+              src="${resolveAsset(this.opponentAvatar)}"
               alt="${this.enemyName}"
               class="dd-fighter-sprite sprite-opponent"
               id="mp-opponent-sprite"
-              onerror="this.src='./public${this.opponentAvatar.replace(/^\./, '')}'"
+              onerror="this.onerror=null; this.src='${resolveAsset('./assets/Postacie/mala_kalamarnica.png')}';"
             />
           </div>
         </div>
@@ -143,11 +153,11 @@ export class AnagramGame {
         <div class="dd-arena-fighter dd-arena-player" id="mp-player-box">
           <div class="dd-sprite-container player-sprite-container" id="mp-player-sprite-wrap">
             <img
-              src="${this.player?.avatar || './assets/Warrior.png'}"
+              src="${resolveAsset(this.player?.avatar || './assets/Warrior.png')}"
               alt="${this.player?.heroName || this.player?.name || 'Bohater'}"
               class="dd-fighter-sprite sprite-tan"
               id="mp-player-sprite"
-              onerror="this.src='./assets/Warrior.png'"
+              onerror="this.onerror=null; this.src='${resolveAsset('./assets/Warrior.png')}';"
             />
           </div>
           <div class="dd-fighter-hud">
@@ -158,10 +168,13 @@ export class AnagramGame {
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="mp-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const introLayer = this.container.querySelector('#mp-intro-click-layer');
     const animatedTitle = this.container.querySelector('#mp-animated-title');
@@ -427,12 +440,13 @@ export class AnagramGame {
         submitBtn.innerHTML = 'Świetnie! Poprawnie';
       }
 
-      this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
+      const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+      this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
       this.updateOpponentBar();
       sound.playAttackHit(this.enemyName);
       sound.playSuccess();
       setTimeout(() => sound.speakPolish(item.cleanWord), 260);
-      this.triggerFighterHit('opponent', `-${this.tanDamage}`);
+      this.triggerFighterHit('opponent', `-${finalDmg}`);
 
       if (rowEl) {
         rowEl.classList.add('anagram-word-solved');
@@ -455,17 +469,23 @@ export class AnagramGame {
       // Błędna odpowiedź: bohater otrzymuje 1 obrażenie, lektor podaje poprawne słowo, i przechodzimy do kolejnego zadania (adaptacyjno-sytuacyjny)
       this.lockInput = true;
       const item = this.words[this.currentWordIndex];
-      sound.playWrong();
-      sound.playEnemyHit(this.enemyName);
-
       const dmg = this.enemyDamage > 0 ? this.enemyDamage : 1;
-      if (this.onPlayerDamaged) {
-        this.onPlayerDamaged(dmg);
+      const dodged = handleLimitBreakDamageTaken(this, dmg);
+
+      if (dodged) {
+        this.triggerFighterHit('player', 'UNIK!');
       } else {
-        this.player.hp = Math.max(0, this.player.hp - dmg);
+        sound.playWrong();
+        sound.playEnemyHit(this.enemyName);
+        if (this.onPlayerDamaged) {
+          this.onPlayerDamaged(dmg);
+        } else {
+          this.player.hp = Math.max(0, this.player.hp - dmg);
+        }
+        this.triggerFighterHit('player', `-${dmg}`);
       }
+
       this.updatePlayerHud();
-      this.triggerFighterHit('player', `-${dmg}`);
 
       if (this.player.hp <= 0) {
         setTimeout(() => {
@@ -476,10 +496,10 @@ export class AnagramGame {
 
       const tanWrap = this.container.querySelector('#mp-player-sprite-wrap');
       if (tanWrap) {
-        tanWrap.classList.remove('shake-hit', 'hit-flash');
+        tanWrap.classList.remove('shake-hit');
         void tanWrap.offsetWidth;
-        tanWrap.classList.add('shake-hit', 'hit-flash');
-        setTimeout(() => tanWrap.classList.remove('shake-hit', 'hit-flash'), 600);
+        tanWrap.classList.add('shake-hit');
+        setTimeout(() => tanWrap.classList.remove('shake-hit'), 500);
       }
 
       if (submitBtn) {
@@ -517,6 +537,7 @@ export class AnagramGame {
     const txt = this.container.querySelector('#mp-player-hp-text');
     if (fill) fill.style.width = `${playerHpPct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   updateOpponentBar() {

@@ -630,10 +630,10 @@ class NoiDiGameApp {
       playJaggedCurtainWipe(() => {
         this.launchFindMatch(node.id, node);
       });
-    } else if (node.type === 'classmate_rank' || node.type === 'girl_rank_order') {
+    } else if (node.type === 'classmate_rank' || node.type === 'girl_rank_order' || node.type === 'classmate_dialog') {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        this.launchModuleRankOrder(node.id, 'classmate_rank', node);
+        this.launchClassmateDialog(node.id, node);
       });
     } else if (node.type === 'doctor_visit') {
       await this.playFighterCollisionOnBoard(node.id);
@@ -840,7 +840,9 @@ class NoiDiGameApp {
     } else if (this.isCompletableFighterType(node.type, node)) {
       await this.playFighterCollisionOnBoard(node.id);
       playJaggedCurtainWipe(() => {
-        if (node.steps && node.steps.length) {
+        if (node.type === 'classmate_rank' || node.type === 'girl_rank_order' || node.type === 'classmate_dialog' || node.dialogSteps) {
+          this.launchClassmateDialog(node.id, node);
+        } else if (node.steps && node.steps.length) {
           this.launchModuleRankOrder(node.id, node.type || 'classmate_rank', node);
         } else if (node.items && node.items.length) {
           this.launchMatchUp(node.id, node);
@@ -1037,6 +1039,9 @@ class NoiDiGameApp {
   }
   launchOlekSchoolQuiz(...args) {
     return this.minigameLauncher.launchOlekSchoolQuiz(...args);
+  }
+  launchClassmateDialog(...args) {
+    return this.minigameLauncher.launchClassmateDialog(...args);
   }
   launchModuleRankOrder(...args) {
     return this.minigameLauncher.launchModuleRankOrder(...args);

@@ -1,4 +1,4 @@
-// Żaba - Postać Sytuacyjna (Zielona Żabka, 20 HP)
+// Żaba - Postać Sytuacyjna (Zielona Żabka, 8 HP, bije 2 HP)
 // Szybkie pytania błyskawiczne z puli szkolnej (Find the Match - 20 pytań na każde piętro).
 
 import { HERO_ZABA_SETS } from '../heroCurriculumEncounters.js';
@@ -565,7 +565,7 @@ export function getZabaEncounter(floor = 1, variant = null, heroId = null) {
       subtitlePl: data.subtitlePl,
       icon: './assets/Postacie/zaba.png',
       enemyName: 'Żaba',
-      enemyMaxHp: 24,
+      enemyMaxHp: 8,
       enemyDamage: 2,
       descriptionPl: data.descriptionPl,
       questions: [...data.questions]
@@ -584,7 +584,7 @@ export function getZabaEncounter(floor = 1, variant = null, heroId = null) {
     subtitlePl: data.subtitlePl,
     icon: './assets/Postacie/zaba.png',
     enemyName: 'Żaba',
-    enemyMaxHp: 24,
+    enemyMaxHp: 8,
     enemyDamage: 2,
     descriptionPl: data.descriptionPl,
     questions: [...data.questions]

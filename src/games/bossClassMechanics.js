@@ -3,6 +3,64 @@
 import { sound } from '../audio/sound.js';
 import { ROBOT_JACKPOT_BONUSES } from '../data/characterProgression.js';
 
+export function initLimitBreak(game) {
+  game.heroClass = (game.player?.characterClass || game.player?.heroId || 'warrior').toLowerCase();
+  game.limitBreakMax = game.player?.limitBreakHp || 8;
+  game.warriorFuryDamage = 0;
+  game.warriorDoubleReady = false;
+  game.warriorDoubleActive = false;
+  game.jesterDodgeTurns = 0;
+}
+
+export function handleLimitBreakDamageTaken(game, dmg) {
+  const cls = (game.heroClass || game.player?.characterClass || 'warrior').toLowerCase();
+  if (cls.includes('jester') && game.jesterDodgeTurns > 0) {
+    game.jesterDodgeTurns -= 1;
+    sound.playSuccess();
+    return true; // uniknięto obrażeń
+  }
+  if (!game.warriorDoubleActive) {
+    const wasReady = game.warriorDoubleReady;
+    game.warriorFuryDamage = Math.min(game.limitBreakMax, (game.warriorFuryDamage || 0) + dmg);
+    if (game.warriorFuryDamage >= game.limitBreakMax) {
+      game.warriorDoubleReady = true;
+      if (!wasReady) sound.playLimitReady();
+    }
+  }
+  return false;
+}
+
+export function consumeLimitBreakAttack(game, baseDamage) {
+  let dmg = baseDamage;
+  if (game.warriorDoubleActive) {
+    dmg = Math.round(baseDamage * 2);
+    game.warriorDoubleActive = false;
+    game.warriorFuryDamage = 0;
+    const cls = (game.heroClass || game.player?.characterClass || 'warrior').toLowerCase();
+    if (cls.includes('thief')) {
+      const heal = Math.max(1, Math.round(dmg / 2));
+      game.player.hp = Math.min(game.player.maxHp, game.player.hp + heal);
+      if (typeof game.updatePlayerBar === 'function') game.updatePlayerBar();
+      else if (typeof game.updatePlayerHud === 'function') game.updatePlayerHud();
+      else if (typeof game.updatePlayerHp === 'function') game.updatePlayerHp();
+    }
+  }
+  return dmg;
+}
+
+export function updateLimitBreakUI(game) {
+  const lbBar = game.container.querySelector('#dd-limit-break-bar');
+  const lbFill = game.container.querySelector('#dd-limit-break-fill');
+  const lbTxt = game.container.querySelector('#dd-limit-break-text');
+  if (lbBar && lbFill && lbTxt) {
+    const { isReady, isActive, pct, label } = getLimitBreakLabels(game);
+    lbFill.style.width = `${pct}%`;
+    lbBar.classList.toggle('is-ready', isReady);
+    lbBar.classList.toggle('is-active', isActive);
+    lbTxt.textContent = label;
+  }
+}
+
 export function renderClassMechanicBar(game) {
   if (game.heroClass.includes('robot')) {
     const cpuPct = Math.min(100, Math.round((game.robotCurrentCpu / game.robotMaxCpu) * 100));
@@ -156,6 +214,8 @@ export function bindClassMechanicEvents(game) {
         game.updatePlayerBar();
       } else if (typeof game.updatePlayerHud === 'function') {
         game.updatePlayerHud();
+      } else if (typeof game.updatePlayerHp === 'function') {
+        game.updatePlayerHp();
       }
     });
   }

@@ -58,6 +58,7 @@ import {
   CWANIAK_M5_DIALOG_STEPS
 } from '../data/vocabulary.js';
 
+import { getKolezankaEncounter, buildKolezankaDialogSteps } from '../data/characters/kolezanka.js';
 import { isRelaxedMode } from '../ui/SettingsModal.js';
 
 function getAdjustedEnemyHp(hp) {
@@ -929,6 +930,41 @@ export class MinigameLauncher {
         });
       });
     });
+  }
+
+  launchClassmateDialog(nodeId = 'm3_1_node_2', node = null) {
+    const arenaMount = this.app.openArena();
+    const heroId = this.app.player?.heroId || this.app.player?.characterClass || 'warrior';
+    const encounter = (node?.dialogSteps && node.dialogSteps.length) ? node : getKolezankaEncounter(null, heroId);
+    const steps = encounter.dialogSteps || (encounter.scenarios ? buildKolezankaDialogSteps(encounter.scenarios, 0) : null) || (node?.steps ? buildKolezankaDialogSteps([{ steps: node.steps }], 0) : null);
+
+    this.app.activeMinigame = new CharacterDialogGame(arenaMount, {
+      player: this.app.player,
+      enemyName: encounter.enemyName || 'Koleżanka',
+      enemyTitle: 'KOLEŻANKA Z KLASY',
+      enemySubtitle: encounter.subtitlePl || 'Pogawędka w ławce i kulturalna współpraca',
+      enemyAvatar: encounter.icon || './assets/Postacie/kolezanka.png',
+      arenaClass: 'school-dialog-arena',
+      enemyMaxHp: encounter.enemyMaxHp || 26,
+      enemyDamage: encounter.enemyDamage || 2,
+      archetype: 'gadula',
+      steps: steps,
+      onPlayerDamaged: (dmg) => {
+        this.app.player.hp = Math.max(0, this.app.player.hp - dmg);
+        this.app.updateHUD();
+      },
+      onClose: this.createCloseHandler(arenaMount),
+      onComplete: ({ score, damageTaken = 0 } = {}) => {
+        this.app.handleFighterVictory(
+          arenaMount,
+          nodeId,
+          score || 200,
+          'Wspaniała rozmowa! Koleżanka z ławki jest zachwycona twoją kulturą i współpracą!',
+          { damageTaken }
+        );
+      }
+    });
+    this.app.activeMinigame.mount();
   }
 
   launchWuefistaDialog(nodeId = 'm3_3_node_2', node = null) {
