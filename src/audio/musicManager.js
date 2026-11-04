@@ -102,18 +102,9 @@ class MusicManager {
     } catch (e) {}
   }
 
-  // Krótkie ściszenie muzyki tła (ducking) podczas zadawania/otrzymywania ciosu, aby efekty uderzeń były wyraźnie słyszalne
+  // Ducking ciosów wyłączony - muzyka tła gra nieprzerwanie na stałym poziomie
   duck(durationMs = 650) {
-    if (this.muted || !this.currentTrack || this.currentTrack.paused) return;
-    try {
-      this.currentTrack.volume = Math.max(0.08, this.volume * 0.32);
-      if (this.duckTimeout) clearTimeout(this.duckTimeout);
-      this.duckTimeout = setTimeout(() => {
-        if (this.currentTrack && !this.muted) {
-          this.currentTrack.volume = this.volume;
-        }
-      }, durationMs);
-    } catch (e) {}
+    // Celowo puste: muzyka tła nie ścisza się podczas walki i zadawania/otrzymywania obrażeń
   }
 
   playTrack(filename, loop = true) {

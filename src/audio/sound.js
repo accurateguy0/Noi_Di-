@@ -892,7 +892,6 @@ class SoundManager {
   // ==================== ZADANIE CIOSU PRZEZ BOHATERA ====================
   // Sekwencja: ścisz lekko muzykę tła -> atak bohatera (0ms) -> uderzenie fizyczne hit + obrona wroga (220ms)
   playAttackHit(charName = null) {
-    musicManager.duck(650);
     this.playTanAttack();
     setTimeout(() => {
       this.playHitImpact(false);
@@ -913,7 +912,6 @@ class SoundManager {
   // ==================== OBERWANIE PRZEZ BOHATERA (DOSTAJE OBRAŻENIA) ====================
   // Sekwencja: ścisz lekko muzykę tła -> atak wroga (0ms) -> uderzenie fizyczne hit + obrona bohatera (300ms)
   playEnemyHit(charName = null) {
-    musicManager.duck(750);
     const enemy = charName || 'pilkarz';
     this.playCharacterAttack(enemy);
     setTimeout(() => {
