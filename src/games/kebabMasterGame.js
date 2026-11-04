@@ -5,6 +5,14 @@
 import { sound } from '../audio/sound.js';
 import { getPlayerDamage } from '../data/vocabulary.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class KebabMasterGame {
   constructor(container, { player, onPlayerDamaged, onComplete, onClose, foodChoices = {} }) {
@@ -21,6 +29,7 @@ export class KebabMasterGame {
     this.tanDamage = getPlayerDamage(this.player);
     this.currentStepIdx = 0;
     this.lockInput = false;
+    initLimitBreak(this);
 
     this.buildDialogSteps();
   }
@@ -199,14 +208,17 @@ export class KebabMasterGame {
             <div class="dd-fighter-top-row">
               <span class="dd-fighter-name">${this.player?.heroName || this.player?.name || 'Bohater'}</span>
             </div>
-            <div class="dd-fighter-hp-bar">
+            <div class="dd-fighter-hp-bar" id="km-player-hp-bar">
               <div class="dd-fighter-hp-fill" id="km-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="km-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const titleEl = this.container.querySelector('.mp-animated-title');
     if (titleEl) {
@@ -281,7 +293,8 @@ export class KebabMasterGame {
     sound.playHit();
     sound.speakPolish(answerText.replace(/[„”«»]/g, ''));
 
-    this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
+    const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+    this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
     this.updateOpponentBar();
 
     const opponentSprite = this.container.querySelector('#km-opponent-sprite');
@@ -301,22 +314,30 @@ export class KebabMasterGame {
   }
 
   handleWrong() {
-    sound.playWrong();
-    if (this.onPlayerDamaged) {
-      this.onPlayerDamaged(this.enemyDamage);
+    const rawDmg = this.enemyDamage || 3;
+    const dodged = handleLimitBreakDamageTaken(this, rawDmg);
+    if (dodged) {
+      const playerSprite = this.container.querySelector('.sprite-tan');
+      if (playerSprite) {
+        playerSprite.classList.add('shake-hit');
+        setTimeout(() => playerSprite.classList.remove('shake-hit'), 500);
+      }
+    } else {
+      sound.playWrong();
+      if (this.onPlayerDamaged) {
+        this.onPlayerDamaged(rawDmg);
+      } else {
+        this.player.hp = Math.max(0, this.player.hp - rawDmg);
+      }
+
+      const playerSprite = this.container.querySelector('.sprite-tan');
+      if (playerSprite) {
+        playerSprite.classList.add('shake-hit');
+        setTimeout(() => playerSprite.classList.remove('shake-hit'), 500);
+      }
     }
 
-    const playerHpPct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
-    const playerHpFill = this.container.querySelector('#km-player-hp-fill');
-    const playerHpText = this.container.querySelector('#km-player-hp-text');
-    if (playerHpFill) playerHpFill.style.width = `${playerHpPct}%`;
-    if (playerHpText) playerHpText.textContent = `${this.player.hp}/${this.player.maxHp}`;
-
-    const playerSprite = this.container.querySelector('.sprite-tan');
-    if (playerSprite) {
-      playerSprite.classList.add('shake-hit');
-      setTimeout(() => playerSprite.classList.remove('shake-hit'), 500);
-    }
+    this.updatePlayerHud();
 
     const bubbleEl = this.container.querySelector('#km-chef-bubble .km-chef-text');
     if (bubbleEl) {
@@ -335,6 +356,19 @@ export class KebabMasterGame {
       const wrongBtn = this.container.querySelector('.km-choice-btn.is-wrong');
       if (wrongBtn) wrongBtn.classList.remove('is-wrong');
     }, 1000);
+  }
+
+  updatePlayerHud() {
+    const playerHpPct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
+    const playerHpFill = this.container.querySelector('#km-player-hp-fill');
+    const playerHpText = this.container.querySelector('#km-player-hp-text');
+    if (playerHpFill) playerHpFill.style.width = `${playerHpPct}%`;
+    if (playerHpText) playerHpText.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
+  }
+
+  updatePlayerBar() {
+    this.updatePlayerHud();
   }
 
   updateOpponentBar() {

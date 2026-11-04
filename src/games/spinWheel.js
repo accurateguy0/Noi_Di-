@@ -4,6 +4,14 @@
 import { BOARD_3_WHEEL_SCENARIOS, getPlayerDamage } from '../data/vocabulary.js';
 import { sound } from '../audio/sound.js';
 import { playHeroDefeatAnimation } from '../ui/victoryScreen.js';
+import {
+  initLimitBreak,
+  handleLimitBreakDamageTaken,
+  consumeLimitBreakAttack,
+  updateLimitBreakUI,
+  renderLimitBreakBar,
+  bindClassMechanicEvents
+} from './bossClassMechanics.js';
 
 export class SpinWheelGame {
   constructor(container, options = {}) {
@@ -30,6 +38,7 @@ export class SpinWheelGame {
     this.enemyHp = this.enemyMaxHp;
     this.enemyDamage = options.enemyDamage !== undefined ? options.enemyDamage : 2;
     this.score = 0;
+    initLimitBreak(this);
 
     this.angle = 0;
     this.angularVelocity = 0;
@@ -125,10 +134,13 @@ ZAKRĘĆ KOŁEM (${this.remainingSlices.length}/${this.totalCount})
               <div class="dd-fighter-hp-fill" id="mp-player-hp-fill" style="width: ${playerHpPct}%"></div>
               <span class="dd-fighter-hp-text" id="mp-player-hp-text">${this.player.hp}/${this.player.maxHp}</span>
             </div>
+            ${renderLimitBreakBar(this)}
           </div>
         </div>
       </div>
     `;
+
+    bindClassMechanicEvents(this);
 
     const animatedTitle = this.container.querySelector('#mp-animated-title');
     if (animatedTitle) {
@@ -368,27 +380,34 @@ Posłuchaj
           if (fullAudioText) sound.speakPolish(fullAudioText);
 
           this.score += 120;
-          this.enemyHp = Math.max(0, this.enemyHp - this.tanDamage);
+          const finalDmg = consumeLimitBreakAttack(this, this.tanDamage);
+          this.enemyHp = Math.max(0, this.enemyHp - finalDmg);
           this.updateEnemyHud();
-          this.triggerFighterHit('opponent', `-${this.tanDamage}`);
+          this.triggerFighterHit('opponent', `-${finalDmg}`);
 
           setTimeout(() => {
             this.eliminateSlice(scenario.id);
           }, 720);
         } else {
-          sound.playWrong();
-          sound.playEnemyHit(this.enemyName);
           btn.classList.add('opt-wrong');
           btn.disabled = true;
 
-          const dmg = this.enemyDamage || 1;
-          if (this.onPlayerDamaged) {
-            this.onPlayerDamaged(dmg);
+          const rawDmg = this.enemyDamage || 1;
+          const dodged = handleLimitBreakDamageTaken(this, rawDmg);
+          if (dodged) {
+            this.triggerFighterHit('player', 'UNIK!');
           } else {
-            this.player.hp = Math.max(0, this.player.hp - dmg);
+            sound.playWrong();
+            sound.playEnemyHit(this.enemyName);
+
+            if (this.onPlayerDamaged) {
+              this.onPlayerDamaged(rawDmg);
+            } else {
+              this.player.hp = Math.max(0, this.player.hp - rawDmg);
+            }
+            this.triggerFighterHit('player', `-${rawDmg}`);
           }
           this.updatePlayerHud();
-          this.triggerFighterHit('player', `-${dmg}`);
 
           if (this.player.hp <= 0) {
             setTimeout(() => {
@@ -470,6 +489,7 @@ Posłuchaj
     const pct = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
     if (fill) fill.style.width = `${pct}%`;
     if (txt) txt.textContent = `${this.player.hp}/${this.player.maxHp}`;
+    updateLimitBreakUI(this);
   }
 
   updatePlayerBar() {
