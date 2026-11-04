@@ -95,7 +95,7 @@ export class SpellWordGame {
               alt="${this.opponentName}"
               class="dd-fighter-sprite sprite-olek"
               id="mp-opponent-sprite"
-              onerror="this.src='./public${this.opponentAvatar?.slice(1)}'"
+              onerror="this.onerror=null; this.src=this.opponentAvatar || './assets/Postacie/Gejmer.png';"
             />
           </div>
         </div>

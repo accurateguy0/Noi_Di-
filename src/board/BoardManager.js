@@ -180,9 +180,15 @@ export class BoardManager {
       let spriteWrap = spriteSlot?.querySelector('.node-sprite-wrap');
 
       if (node.icon) {
-        const cleanPath = node.icon.startsWith('./') ? node.icon.slice(1) : (node.icon.startsWith('/') ? node.icon : '/' + node.icon);
-        const fallback = `/public${cleanPath}`;
-        const itemkiFallback = cleanPath.includes('/itemki/') ? cleanPath : cleanPath.replace('/assets/', '/assets/itemki/');
+        const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+          ? import.meta.env.BASE_URL
+          : './';
+        const cleanBase = base.endsWith('/') ? base : base + '/';
+        const relIcon = String(node.icon).replace(/^(\.\/|\/)+/, '');
+        const cleanPath = `${cleanBase}${relIcon}`;
+        const relativeFallback = `./${relIcon}`;
+        const itemkiRel = relIcon.includes('itemki/') ? relIcon : relIcon.replace('assets/', 'assets/itemki/');
+        const itemkiFallback = `${cleanBase}${itemkiRel}`;
         const sharedSideClass = isCurrent && node.type !== 'apple' && !isHidden
           ? (this.app.lastApproachFromRight ? 'shared-pad-left' : 'shared-pad-right')
           : '';
@@ -190,8 +196,8 @@ export class BoardManager {
         const setupImgFallback = (img) => {
           img.onerror = () => {
             const cur = img.getAttribute('src');
-            if (cur !== fallback) {
-              img.setAttribute('src', fallback);
+            if (cur !== relativeFallback && cur !== itemkiFallback) {
+              img.setAttribute('src', relativeFallback);
             } else if (cur !== itemkiFallback) {
               img.setAttribute('src', itemkiFallback);
             }
@@ -207,6 +213,7 @@ export class BoardManager {
             spriteWrap.className = `node-sprite-wrap ${node.type} ${sharedSideClass}`.trim();
             const img = document.createElement('img');
             img.className = 'node-sprite-img';
+            img.decoding = 'async';
             img.alt = cleanTitle;
             img.src = cleanPath;
             setupImgFallback(img);
@@ -215,7 +222,7 @@ export class BoardManager {
           } else {
             spriteWrap.className = `node-sprite-wrap ${node.type} ${node.completed ? 'sprite-completed' : ''} ${sharedSideClass}`.trim();
             const img = spriteWrap.querySelector('.node-sprite-img');
-            if (img && img.getAttribute('src') !== cleanPath && img.getAttribute('src') !== fallback) {
+            if (img && img.getAttribute('src') !== cleanPath && img.getAttribute('src') !== relativeFallback && img.getAttribute('src') !== itemkiFallback) {
               img.setAttribute('src', cleanPath);
               setupImgFallback(img);
             }

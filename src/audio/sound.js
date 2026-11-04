@@ -99,100 +99,25 @@ class SoundManager {
   // Preload najważniejszych dźwięków walki i efektów, aby odtwarzały się z zerowym opóźnieniem
   preloadCoreAudio() {
     const coreFiles = [
-      'Thief_atak.ogg',
-      'Thief_obrona.ogg',
-      'warrior_atak.ogg',
-      'Warrior_obrona.ogg',
-      'damage_warrior.ogg',
-      'Inventor_atak.ogg',
-      'Inventor_obrona.ogg',
-      'witch_atak.ogg',
-      'witch_obrona.ogg',
-      'Robot_atak.ogg',
-      'Robot_obrona.ogg',
-      'Jester_atak.ogg',
-      'Jester_obrona.ogg',
       'hit.ogg',
       'fight_start.ogg',
-      'limitready.ogg',
-      'jackpotrolldice.ogg',
-      'jackpotcounterincrease.ogg',
-      'fire.ogg',
-      'ice2.ogg',
-      'magic.ogg',
-      'sonic.ogg',
-      'pilkarz_atak.ogg',
-      'pilkarz_obrona.ogg',
-      'cwaniak_atak.ogg',
-      'cwaniak_obrona.ogg',
-      'szczeniak_atak.ogg',
-      'szczeniak_obrona.ogg',
-      'wuefista_atak.ogg',
-      'wuefista_obrona.ogg',
-      'Nauczycielka_atak.ogg',
-      'nauczycielka_obrona.ogg',
-      'Instagramerka_atak.ogg',
-      'Instagramerka_obrona.ogg',
-      'jezyk_atak.ogg',
-      'jezyk_obrona.ogg',
-      'Kasjerka_atak.ogg',
-      'Kasjerka_obrona.ogg',
-      'kroliczek_atak.ogg',
-      'kroliczek_obrona.ogg',
-      'mistrz_kebaba_atak.ogg',
-      'mistrz_kebaba_obrona.ogg',
-      'pielegniarka_atak.ogg',
-      'pielegniarka_obrona.ogg',
-      'zaba_atak.ogg',
-      'zaba_obrona.ogg',
-      'gejmer_atak.ogg',
-      'gejmer_obrona.ogg',
-      'glosny_ptak_dzwiek_1.ogg',
-      'glosny_ptak_dzwiek_2.ogg',
-      'kolezanka_atak.ogg',
-      'kolezanka_obrona.ogg',
-      'kraken_dzwiek.ogg',
-      'krol_szczurow_dzwiek.ogg',
-      'lekarz_atak.ogg',
-      'lekarz_obrona.ogg',
-      'mysli_dzwiek_1.ogg',
-      'mysli_dzwiek_2.ogg',
-      'spiewaczka_atak.ogg',
-      'spiewaczka_obrona.ogg',
-      'szkieleton_atak.ogg',
-      'szkieleton_obrona.ogg',
-      'smok_atak.ogg',
-      'smok_obrona.ogg',
-      'Profesor_atak.ogg',
-      'Profesor_obrona.ogg',
-      'dyrektorka_atak.ogg',
-      'dyrektorka_obrona.ogg',
-      'Silaczka_atak.ogg',
-      'Silaczka_obrona.ogg',
-      'wilczur_atak.ogg',
-      'wilczur_obrona.ogg',
-      'zuk_nosorozec_atak.ogg',
-      'zuk_nosorozec_obrona.ogg',
-      'kot_dzwiek.ogg',
-      'pokonanyprzeciwnik.ogg',
-      'levelup.ogg',
-      'nastepna_plansza.ogg',
+      'warrior_atak.ogg',
+      'Warrior_obrona.ogg',
       'krec_kolem.ogg',
       'heal.ogg',
       'gainxp.ogg',
-      'entershop.ogg',
-      'defeatplayer.ogg',
-      'lowhealth.ogg',
+      'levelup.ogg',
       'openchest.ogg',
-      'inspektor_biletow_dzwiek.ogg',
-      'mala_kalamarnica_dzwiek.ogg',
-      'Dzwonek_Szkolny.mp3',
-      "Referee's whistle.mp3",
-      'pilka_kopniecie.wav',
-      'transition_1.ogg',
-      'transition_2.ogg'
+      'transition_1.ogg'
     ];
-    coreFiles.forEach((f) => this.loadBuffer(f));
+    const loadBatch = () => {
+      coreFiles.forEach((f) => this.loadBuffer(f));
+    };
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(loadBatch, { timeout: 1500 });
+    } else {
+      setTimeout(loadBatch, 600);
+    }
   }
 
   async loadBuffer(filename) {
@@ -210,12 +135,18 @@ class SoundManager {
     const promise = (async () => {
       try {
         const encoded = encodeURIComponent(filename);
+        const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+          ? import.meta.env.BASE_URL
+          : './';
+        const cleanBase = base.endsWith('/') ? base : base + '/';
+
         const candidatePaths = [
-          `/assets/music/${encoded}`,
-          `./assets/music/${encoded}`,
-          `assets/music/${encoded}`,
-          `/public/assets/music/${encoded}`
+          `${cleanBase}assets/music/${encoded}`,
+          `./assets/music/${encoded}`
         ];
+        if (encoded !== filename) {
+          candidatePaths.push(`${cleanBase}assets/music/${filename}`);
+        }
 
         let validResp = null;
         for (const url of candidatePaths) {

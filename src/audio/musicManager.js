@@ -147,11 +147,18 @@ class MusicManager {
 
       try {
         const encoded = encodeURIComponent(filename);
+        const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+          ? import.meta.env.BASE_URL
+          : './';
+        const cleanBase = base.endsWith('/') ? base : base + '/';
+
         const candidates = [
+          `${cleanBase}assets/music/${encoded}`,
+          `${cleanBase}assets/music/${filename}`,
           `./assets/music/${encoded}`,
-          `/assets/music/${encoded}`,
-          `assets/music/${encoded}`,
-          `./public/assets/music/${encoded}`
+          `./assets/music/${filename}`,
+          `/Noi_Di-/assets/music/${encoded}`,
+          `/Noi_Di-/assets/music/${filename}`
         ];
         let candidateIdx = 0;
         const audio = new Audio(candidates[0]);

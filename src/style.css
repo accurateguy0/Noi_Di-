@@ -243,6 +243,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+  will-change: transform;
 }
 
 .board-node:hover {
@@ -536,6 +537,7 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   z-index: 5;
   pointer-events: none;
   transition: left 0.26s ease-in-out, top 0.26s ease-in-out;
+  will-change: left, top;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8599,8 +8601,9 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   height: calc(100% + 80px);
   object-fit: cover;
   object-position: center;
-  filter: blur(28px) brightness(0.35) saturate(1.2);
-  transform: scale(1.05);
+  filter: blur(24px) brightness(0.35) saturate(1.2);
+  transform: translateZ(0) scale(1.05);
+  will-change: transform;
   z-index: 1;
   pointer-events: none;
 }
@@ -8614,7 +8617,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   object-position: center;
   z-index: 2;
   pointer-events: none;
-  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.7));
+  filter: drop-shadow(0 0 16px rgba(0, 0, 0, 0.7));
+  transform: translateZ(0);
 }
 
 .title-screen-backdrop {

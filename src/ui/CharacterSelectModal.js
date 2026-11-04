@@ -81,6 +81,7 @@ export const HEROES = [
     characterClass: 'Robot',
     avatar: './assets/Robot.png',
     fallbackAvatar: './assets/Robot.png',
+    animationVideo: './assets/animacje/Robot_animacje.webm',
     diceIcon: './assets/dice_heads/die_robot.png',
     tagline: 'Logika składni i precyzja analizy',
     desc: 'Mistrz budowy zdania i interpunkcji. Trafienie w limit CPU aktywuje Jackpot!',
@@ -557,28 +558,43 @@ export function openCharacterSelectModal(app) {
       ? Boolean(document.createElement('video').canPlayType('video/webm'))
       : true;
     const isVideo = Boolean(data.isHeroUnlocked && data.hero.animationVideo && canPlayWebm);
+    const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+      ? import.meta.env.BASE_URL
+      : './';
+    const cleanBase = base.endsWith('/') ? base : base + '/';
+    const resolve = (p) => {
+      if (!p) return '';
+      const rel = String(p).replace(/^(\.\/|\/)+/, '');
+      return `${cleanBase}${rel}`;
+    };
+
     if (isVideo) {
+      const vidSrc = resolve(data.hero.animationVideo);
+      const posterSrc = resolve(data.hero.avatar);
+      const fallbackSrc = resolve(data.hero.fallbackAvatar || data.hero.avatar);
       return `
         <video
           class="cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}"
           id="cs-hero-sprite"
-          src="${data.hero.animationVideo}"
+          src="${vidSrc}"
           autoplay
           loop
           muted
           playsinline
-          poster="${data.hero.avatar}"
-          onerror="this.outerHTML='<img class=\\'cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}\\' id=\\'cs-hero-sprite\\' src=\\'${data.hero.avatar}\\' alt=\\'${data.hero.name}\\' onerror=\\'this.src=\\\\\\'${data.hero.fallbackAvatar}\\\\\\'\\'>'"
+          poster="${posterSrc}"
+          onerror="this.outerHTML='<img class=\\'cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}\\' id=\\'cs-hero-sprite\\' src=\\'${posterSrc}\\' alt=\\'${data.hero.name}\\' onerror=\\'this.src=\\\\\\'${fallbackSrc}\\\\\\'\\'>'"
         ></video>
       `;
     }
+    const avatarSrc = resolve(data.hero.avatar);
+    const fallbackSrc = resolve(data.hero.fallbackAvatar || data.hero.avatar);
     return `
       <img
         class="cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}"
         id="cs-hero-sprite"
-        src="${data.hero.avatar}"
+        src="${avatarSrc}"
         alt="${data.hero.name}"
-        onerror="this.src='${data.hero.fallbackAvatar}'"
+        onerror="this.src='${fallbackSrc}'"
       />
     `;
   };

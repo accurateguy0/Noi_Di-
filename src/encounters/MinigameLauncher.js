@@ -335,7 +335,7 @@ export class MinigameLauncher {
     const renderTopic = () => {
       const topic = topics[currentTopicIdx];
       const playerHpPct = Math.max(0, Math.min(100, (this.app.player.hp / this.app.player.maxHp) * 100));
-      const cleanImg = topic.image.startsWith('./') ? topic.image.slice(1) : topic.image;
+      const cleanImg = topic.image;
 
       arenaMount.innerHTML = `
         <div class="dd-combat-arena thoughts-arena">
@@ -367,7 +367,7 @@ export class MinigameLauncher {
                   alt="${topic.name}"
                   class="dd-topic-img"
                   style="width: 100%; height: 100%; object-fit: cover;"
-                  onerror="this.onerror=null; this.src='/public${cleanImg}';"
+                  onerror="this.onerror=null; this.src=topic.image;"
                 />
               </div>
               <h3 class="dd-topic-name" style="font-family:'Fredoka',sans-serif; font-size:1.45rem; color:#ffd166; margin:0 0 6px;">${topic.name}</h3>
@@ -479,7 +479,7 @@ export class MinigameLauncher {
 
       const hpPct = Math.max(0, Math.min(100, (thoughtsHp / maxThoughtsHp) * 100));
       const playerHpPct = Math.max(0, Math.min(100, (this.app.player.hp / this.app.player.maxHp) * 100));
-      const cleanImg = topic.image.startsWith('./') ? topic.image.slice(1) : topic.image;
+      const cleanImg = topic.image;
 
       arenaMount.innerHTML = `
         <div class="dd-combat-arena thoughts-arena">
@@ -515,7 +515,7 @@ export class MinigameLauncher {
                   alt="${topic.name}"
                   class="topic-mini-img"
                   style="width:64px; height:64px; object-fit:cover; border-radius:8px;"
-                  onerror="this.onerror=null; this.src='/public${cleanImg}';"
+                  onerror="this.onerror=null; this.src=topic.image;"
                 />
                 <div style="text-align:left;">
                   <strong style="font-size:1.15rem; color:#ffd166;">${topic.name}</strong>

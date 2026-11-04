@@ -860,7 +860,7 @@ export function openCreditsModal(app) {
           <div style="display: flex; flex-direction: column; gap: 24px;">
             <!-- 1. Dawid Kowalski: Solo Dev -->
             <div class="credits-person-card">
-              <img src="./assets/Warrior.png" alt="Dawid Kowalski" class="credits-dice-sprite" onerror="this.src='/assets/Warrior.png'" />
+              <img src="./assets/Warrior.png" alt="Dawid Kowalski" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/Warrior.png'" />
               <div>
                 <div class="credits-role-tag">SOLO DEVELOPER & PROGRAMOWANIE</div>
                 <div class="credits-name-tag">Dawid Kowalski</div>
@@ -870,7 +870,7 @@ export function openCreditsModal(app) {
 
             <!-- 2. Cel i misja edukacyjna -->
             <div class="credits-person-card">
-              <img src="./assets/Kotek_Pomoc.png" alt="Edukacja" class="credits-dice-sprite" onerror="this.src='/assets/Kotek_Pomoc.png'" />
+              <img src="./assets/Kotek_Pomoc.png" alt="Edukacja" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/Kotek_Pomoc.png'" />
               <div>
                 <div class="credits-role-tag">CEL I MISJA PROJEKTU</div>
                 <div class="credits-name-tag">Nauka polskiego dla dzieci wietnamskich</div>
@@ -880,7 +880,7 @@ export function openCreditsModal(app) {
 
             <!-- 3. Projekt Nói Đi! -->
             <div class="credits-person-card">
-              <img src="./assets/Robot.png" alt="Robot" class="credits-dice-sprite" onerror="this.src='/assets/Robot.png'" />
+              <img src="./assets/Robot.png" alt="Robot" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/Robot.png'" />
               <div>
                 <div class="credits-role-tag">PROJEKT I LOGIKA GRY</div>
                 <div class="credits-name-tag">Nói Đi! (Mów Śmiało!)</div>
@@ -893,7 +893,7 @@ export function openCreditsModal(app) {
           <div style="display: flex; flex-direction: column; gap: 24px;">
             <!-- 4. Inspiracja artystyczna: Marlowe Dobbe -->
             <div class="credits-person-card">
-              <img src="./assets/Inventor.png" alt="Marlowe Dobbe" class="credits-dice-sprite" onerror="this.src='/assets/Inventor.png'" />
+              <img src="./assets/Inventor.png" alt="Marlowe Dobbe" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/Inventor.png'" />
               <div>
                 <div class="credits-role-tag">INSPIRACJA GRAFICZNA</div>
                 <div class="credits-name-tag">Marlowe Dobbe</div>
@@ -903,7 +903,7 @@ export function openCreditsModal(app) {
 
             <!-- 5. Muzyka: Chipzel -->
             <div class="credits-person-card">
-              <img src="./assets/Jester.png" alt="Chipzel" class="credits-dice-sprite" style="filter: brightness(0);" onerror="this.src='/assets/Jester.png'" />
+              <img src="./assets/Jester.png" alt="Chipzel" class="credits-dice-sprite" style="filter: brightness(0);" onerror="this.onerror=null; this.src='./assets/Jester.png'" />
               <div>
                 <div class="credits-role-tag">INSPIRACJA MUZYCZNA</div>
                 <div class="credits-name-tag">Chipzel (Niamh Houston)</div>
@@ -913,7 +913,7 @@ export function openCreditsModal(app) {
 
             <!-- 6. Mechanika kości: Terry Cavanagh -->
             <div class="credits-person-card">
-              <img src="./assets/Thief.png" alt="Terry Cavanagh" class="credits-dice-sprite" onerror="this.src='/assets/Thief.png'" />
+              <img src="./assets/Thief.png" alt="Terry Cavanagh" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/Thief.png'" />
               <div>
                 <div class="credits-role-tag">INSPIRACJA MECHANIKĄ</div>
                 <div class="credits-name-tag">Terry Cavanagh</div>
@@ -931,7 +931,7 @@ export function openCreditsModal(app) {
           <!-- Kolumna 1 -->
           <div style="display: flex; flex-direction: column; gap: 24px;">
             <div class="credits-person-card">
-              <img src="./assets/itemki/zeszyt.png" alt="Zeszyt" class="credits-dice-sprite" />
+              <img src="./assets/itemki/zeszyt.png" alt="Zeszyt" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/zeszyt.png'" />
               <div>
                 <div class="credits-role-tag">PROGRAM DYDAKTYCZNY</div>
                 <div class="credits-name-tag">Podstawa Języka Polskiego CKE</div>
@@ -940,7 +940,7 @@ export function openCreditsModal(app) {
             </div>
 
             <div class="credits-person-card">
-              <img src="./assets/itemki/kebab.png" alt="Kebab" class="credits-dice-sprite" />
+              <img src="./assets/itemki/kebab.png" alt="Kebab" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/kebab.png'" />
               <div>
                 <div class="credits-role-tag">INTEGRACJA KULTUROWA</div>
                 <div class="credits-name-tag">Konsultacje Polsko-Wietnamskie</div>
@@ -952,7 +952,7 @@ export function openCreditsModal(app) {
           <!-- Kolumna 2 -->
           <div style="display: flex; flex-direction: column; gap: 24px;">
             <div class="credits-person-card">
-              <img src="./assets/itemki/sluchawki_gamingowe.png" alt="Słuchawki" class="credits-dice-sprite" />
+              <img src="./assets/itemki/sluchawki_gamingowe.png" alt="Słuchawki" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/sluchawki_gamingowe.png'" />
               <div>
                 <div class="credits-role-tag">UDŹWIĘKOWIENIE & SYNTEZA MOWY</div>
                 <div class="credits-name-tag">Lektorzy PL (Web Speech API)</div>
@@ -961,7 +961,7 @@ export function openCreditsModal(app) {
             </div>
 
             <div class="credits-person-card">
-              <img src="./assets/apple.png" alt="SGGW" class="credits-dice-sprite" onerror="this.src='/assets/apple.png'" />
+              <img src="./assets/itemki/apple.png" alt="SGGW" class="credits-dice-sprite" onerror="this.onerror=null; this.src='./assets/apple.png'" />
               <div>
                 <div class="credits-role-tag">ŚRODOWISKO AKADEMICKIE</div>
                 <div class="credits-name-tag">SGGW w Warszawie</div>

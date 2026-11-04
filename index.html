@@ -10,6 +10,14 @@
       href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // Na GitHub Pages automatycznie dodaj końcowy ukośnik do repozytorium, aby nie psuć ścieżek zasobów
+      if (window.location.hostname.includes('github.io') && window.location.pathname.replace(/\/$/, '') === '/Noi_Di-') {
+        if (!window.location.pathname.endsWith('/')) {
+          window.location.replace('/Noi_Di-/' + window.location.search + window.location.hash);
+        }
+      }
+    </script>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
