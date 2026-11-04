@@ -10367,3 +10367,21 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
 
 
 
+
+
+.opponent-sprite-container.kotek-sprite-container {
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+}
+.kotek-sprite-container .dd-fighter-sprite.sprite-kotek {
+  height: 200px;
+  max-width: 380px;
+  object-fit: contain;
+}
+.wheel-dd-arena .dd-arena-opponent {
+  top: 14px;
+  right: 20px;
+  align-items: flex-start;
+  z-index: 25;
+}

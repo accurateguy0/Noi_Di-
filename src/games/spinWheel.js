@@ -49,6 +49,14 @@ export class SpinWheelGame {
       Math.min(100, (this.enemyHp / this.enemyMaxHp) * 100)
     );
 
+    const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+      ? import.meta.env.BASE_URL
+      : './';
+    const cleanBase = base.endsWith('/') ? base : base + '/';
+    const kotekSrc = `${cleanBase}assets/Kotek_Pomoc.png`;
+    const playerRel = this.player?.avatar ? String(this.player.avatar).replace(/^(\.\/|\/)+/, '') : 'assets/Warrior.png';
+    const playerSrc = `${cleanBase}${playerRel}`;
+
     this.container.innerHTML = `
       <div class="dd-combat-arena wheel-dd-arena">
         <h2 class="mp-animated-title" id="mp-animated-title">${this.title}</h2>
@@ -64,13 +72,13 @@ export class SpinWheelGame {
               <span class="dd-fighter-hp-text" id="mp-enemy-hp-text">${this.enemyHp}/${this.enemyMaxHp}</span>
             </div>
           </div>
-          <div class="dd-sprite-container opponent-sprite-container wide-sprite-container szczeniak-sprite-container" id="mp-opponent-sprite-wrap">
+          <div class="dd-sprite-container opponent-sprite-container kotek-sprite-container" id="mp-opponent-sprite-wrap">
             <img
-              src="./assets/Kotek_Pomoc.png"
+              src="${kotekSrc}"
               alt="Kotek Pomocnik"
               class="dd-fighter-sprite sprite-kotek"
               id="mp-opponent-sprite"
-              onerror="if (!this.src.endsWith('/assets/Kotek_Pomoc.png')) this.src='./assets/Kotek_Pomoc.png'"
+              onerror="this.onerror=null; this.src='./assets/Kotek_Pomoc.png'"
             />
           </div>
         </div>
