@@ -1151,7 +1151,7 @@ export class MinigameLauncher {
       enemyName: 'Wilczur',
       enemyTitle: 'PIES OBRONNY (WILCZUR)',
       enemySubtitle: node?.subtitlePl || 'Wilczur (42 HP, 4 dmg)',
-      enemyAvatar: node?.icon || './assets/Postacie/Wilczur.png',
+      enemyAvatar: node?.icon || './assets/Postacie/wilczur.png',
       arenaClass: 'street-dialog-arena',
       enemyMaxHp: node?.enemyMaxHp || 42,
       enemyDamage: node?.enemyDamage || 4,

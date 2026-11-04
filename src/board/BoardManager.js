@@ -187,6 +187,7 @@ export class BoardManager {
         const relIcon = String(node.icon).replace(/^(\.\/|\/)+/, '');
         const cleanPath = `${cleanBase}${relIcon}`;
         const relativeFallback = `./${relIcon}`;
+        const lowerFallback = `${cleanBase}${relIcon.toLowerCase()}`;
         const itemkiRel = relIcon.includes('itemki/') ? relIcon : relIcon.replace('assets/', 'assets/itemki/');
         const itemkiFallback = `${cleanBase}${itemkiRel}`;
         const sharedSideClass = isCurrent && node.type !== 'apple' && !isHidden
@@ -194,12 +195,19 @@ export class BoardManager {
           : '';
 
         const setupImgFallback = (img) => {
+          let attempts = 0;
           img.onerror = () => {
+            attempts++;
             const cur = img.getAttribute('src');
-            if (cur !== relativeFallback && cur !== itemkiFallback) {
+            if (attempts === 1 && cur !== relativeFallback) {
               img.setAttribute('src', relativeFallback);
-            } else if (cur !== itemkiFallback) {
+            } else if (attempts === 2 && cur !== lowerFallback) {
+              img.setAttribute('src', lowerFallback);
+            } else if (attempts === 3 && cur !== itemkiFallback) {
               img.setAttribute('src', itemkiFallback);
+            } else {
+              img.onerror = null;
+              img.style.display = 'none';
             }
           };
         };

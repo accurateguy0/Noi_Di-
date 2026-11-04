@@ -574,7 +574,7 @@ export function getPielegniarkaEncounter(index = null) {
     type: 'pielegniarka_dialog',
     titlePl: data.titlePl,
     subtitlePl: data.subtitlePl,
-    icon: './assets/Postacie/pielegniarka.png',
+    icon: './assets/Postacie/Pielegniarka.png',
     archetype: 'adaptive',
     enemyName: 'Pielęgniarka',
     enemyMaxHp: 44,
