@@ -8803,6 +8803,8 @@ h1, h2, h3, .hud-level-title, .btn-dicey-spellbook, .dicey-walka-btn {
   position: relative;
   aspect-ratio: 16 / 9;
   box-sizing: border-box;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .char-select-stage-inner {

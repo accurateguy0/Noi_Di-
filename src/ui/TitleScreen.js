@@ -5,7 +5,7 @@
 import { sound } from '../audio/sound.js';
 import { musicManager } from '../audio/musicManager.js';
 import { playJaggedCurtainWipe } from './victoryScreen.js';
-import { openCharacterSelectModal } from './CharacterSelectModal.js';
+import { openCharacterSelectModal, preloadCharacterSelectAssets, resolveAsset } from './CharacterSelectModal.js';
 import { openSettingsModal, openCreditsModal } from './SettingsModal.js';
 
 export class TitleScreen {
@@ -29,22 +29,23 @@ export class TitleScreen {
     const currentHeroName = this.app.player?.characterClass || this.app.player?.heroName || 'Warrior';
     const currentClass = this.app.player?.characterClass || 'Warrior';
 
+    const titleBgSrc = resolveAsset('./assets/tla/Start_page_background.png');
     this.container.innerHTML = `
       <!-- Rozmyte tło ambientne eliminujące czarne pasy na nietypowych proporcjach ekranu -->
       <img
         class="title-bg-ambient"
-        src="./assets/tla/Start_page_background.png"
-        onerror="if(!this.src.includes('public/')) { this.onerror=null; this.src='./assets/tla/Start_page_background.png'; } else { this.src='/assets/tla/Start_page_background.png'; }"
+        src="${titleBgSrc}"
         alt=""
         aria-hidden="true"
+        decoding="async"
       />
 
       <!-- Główne tło w pełnej krasie (bez ucinania góry i dołu - object-fit: contain) -->
       <img
         class="title-bg-img"
-        src="./assets/tla/Start_page_background.png"
-        onerror="if(!this.src.includes('public/')) { this.onerror=null; this.src='./assets/tla/Start_page_background.png'; } else { this.src='/assets/tla/Start_page_background.png'; }"
+        src="${titleBgSrc}"
         alt="Noi Di Start"
+        decoding="async"
       />
 
       <div class="title-screen-backdrop">
@@ -72,6 +73,9 @@ export class TitleScreen {
 
     // Odtwórz motyw tytułowy Chipzela (Your Host For Tonight)
     musicManager.playTitleMusic();
+
+    // Wstępnie załaduj tło i assety wyboru bohatera w tle
+    preloadCharacterSelectAssets();
   }
 
   bindEvents() {
@@ -86,9 +90,15 @@ export class TitleScreen {
     const playBtn = document.getElementById('title-btn-play');
     if (playBtn) {
       playBtn.addEventListener('click', () => {
+        if (playBtn.disabled) return;
+        playBtn.disabled = true;
         sound.playStep();
-        playJaggedCurtainWipe(() => {
-          openCharacterSelectModal(this.app);
+        playJaggedCurtainWipe(async () => {
+          if (this.app.titleScreen) {
+            this.app.titleScreen.hide();
+          }
+          await openCharacterSelectModal(this.app);
+          playBtn.disabled = false;
         });
       });
     }
@@ -119,7 +129,7 @@ export class TitleScreen {
     if (this.app.player) {
       const cls = this.app.player.characterClass || 'Warrior';
       if (heroSub) heroSub.textContent = cls;
-      if (heroAvatar) heroAvatar.src = this.app.player.avatar || './assets/Warrior.png';
+      if (heroAvatar) heroAvatar.src = resolveAsset(this.app.player.avatar || './assets/Warrior.png');
     }
   }
 

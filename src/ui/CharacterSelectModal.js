@@ -12,6 +12,45 @@ import { showEpisodeIntroModal } from './StoryModal.js';
 import { getHeroLevelStats, WITCH_SPELLS } from '../data/characterProgression.js';
 import { openSettingsModal } from './SettingsModal.js';
 
+export function resolveAsset(p) {
+  if (!p) return '';
+  if (/^(?:https?:|\/\/|data:)/i.test(p)) return p;
+  const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+    ? import.meta.env.BASE_URL
+    : './';
+  const cleanBase = base.endsWith('/') ? base : base + '/';
+  const rel = String(p).replace(/^(\.\/|\/)+/, '');
+  return cleanBase + rel;
+}
+
+let _preloadedAssets = false;
+export function preloadCharacterSelectAssets() {
+  if (_preloadedAssets || typeof window === 'undefined') return;
+  _preloadedAssets = true;
+
+  try {
+    const bg = new Image();
+    bg.decoding = 'async';
+    bg.src = resolveAsset('./assets/tla/character_selection_background.png');
+
+    HEROES.forEach((h) => {
+      if (h.avatar) {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = resolveAsset(h.avatar);
+      }
+    });
+
+    const canPlayWebm = Boolean(typeof document !== 'undefined' && document.createElement('video').canPlayType('video/webm'));
+    if (canPlayWebm) {
+      const vid = document.createElement('video');
+      vid.preload = 'auto';
+      vid.muted = true;
+      vid.src = resolveAsset('./assets/animacje/Warrior_animacje.webm');
+    }
+  } catch (e) {}
+}
+
 function buildHeroEpisodes(heroId) {
   return (STORY[heroId] || STORY.warrior).map((ep, idx) => {
     const boss = getBoss(ep.bossId);
@@ -249,7 +288,7 @@ export function selectHero(app, heroId, playSoundEffect = true) {
   }
 }
 
-export function openCharacterSelectModal(app) {
+export async function openCharacterSelectModal(app) {
   sound.playStep();
 
   // Ukryj przyciski planszy, aby nie nakładały się na ekran wyboru
@@ -550,6 +589,26 @@ export function openCharacterSelectModal(app) {
     if (bottomArea) {
       bottomArea.innerHTML = renderBottomAreaHtml(data);
       bindStartButton();
+    attachHeroSpriteListeners();
+    }
+  };
+
+    const attachHeroSpriteListeners = () => {
+    const sprite = document.getElementById('cs-hero-sprite');
+    if (sprite && sprite.tagName === 'VIDEO') {
+      sprite.addEventListener('error', () => {
+        const poster = sprite.getAttribute('poster') || sprite.dataset.poster;
+        const fallback = sprite.dataset.fallback || poster;
+        const heroName = sprite.dataset.hero || '';
+        const img = document.createElement('img');
+        img.className = sprite.className;
+        img.id = 'cs-hero-sprite';
+        img.src = poster;
+        img.alt = heroName;
+        img.decoding = 'async';
+        img.onerror = () => { img.src = fallback; };
+        sprite.replaceWith(img);
+      }, { once: true });
     }
   };
 
@@ -558,20 +617,11 @@ export function openCharacterSelectModal(app) {
       ? Boolean(document.createElement('video').canPlayType('video/webm'))
       : true;
     const isVideo = Boolean(data.isHeroUnlocked && data.hero.animationVideo && canPlayWebm);
-    const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
-      ? import.meta.env.BASE_URL
-      : './';
-    const cleanBase = base.endsWith('/') ? base : base + '/';
-    const resolve = (p) => {
-      if (!p) return '';
-      const rel = String(p).replace(/^(\.\/|\/)+/, '');
-      return `${cleanBase}${rel}`;
-    };
 
     if (isVideo) {
-      const vidSrc = resolve(data.hero.animationVideo);
-      const posterSrc = resolve(data.hero.avatar);
-      const fallbackSrc = resolve(data.hero.fallbackAvatar || data.hero.avatar);
+      const vidSrc = resolveAsset(data.hero.animationVideo);
+      const posterSrc = resolveAsset(data.hero.avatar);
+      const fallbackSrc = resolveAsset(data.hero.fallbackAvatar || data.hero.avatar);
       return `
         <video
           class="cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}"
@@ -581,19 +631,23 @@ export function openCharacterSelectModal(app) {
           loop
           muted
           playsinline
+          preload="auto"
           poster="${posterSrc}"
-          onerror="this.outerHTML='<img class=\\'cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}\\' id=\\'cs-hero-sprite\\' src=\\'${posterSrc}\\' alt=\\'${data.hero.name}\\' onerror=\\'this.src=\\\\\\'${fallbackSrc}\\\\\\'\\'>'"
+          data-poster="${posterSrc}"
+          data-fallback="${fallbackSrc}"
+          data-hero="${data.hero.name}"
         ></video>
       `;
     }
-    const avatarSrc = resolve(data.hero.avatar);
-    const fallbackSrc = resolve(data.hero.fallbackAvatar || data.hero.avatar);
+    const avatarSrc = resolveAsset(data.hero.avatar);
+    const fallbackSrc = resolveAsset(data.hero.fallbackAvatar || data.hero.avatar);
     return `
       <img
         class="cs-hero-pedestal-sprite ${!data.isHeroUnlocked ? 'is-locked-hero' : ''}"
         id="cs-hero-sprite"
         src="${avatarSrc}"
         alt="${data.hero.name}"
+        decoding="async"
         onerror="this.src='${fallbackSrc}'"
       />
     `;
@@ -628,6 +682,7 @@ export function openCharacterSelectModal(app) {
         spriteTimer = null;
         const data = getHeroData(currentHeroIndex);
         wrap.innerHTML = renderPedestalSpriteHtml(data);
+        attachHeroSpriteListeners();
         const newSprite = document.getElementById('cs-hero-sprite');
         if (newSprite) {
           newSprite.classList.add('hero-popping');
@@ -657,7 +712,7 @@ export function openCharacterSelectModal(app) {
           title="${h.name} (${isUnlocked ? 'Odblokowany' : 'Zablokowany'})"
         >
           <div class="cs-pip-dice">
-            <img src="${h.avatar}" alt="${h.name}" draggable="false" />
+            <img src="${resolveAsset(h.avatar)}" alt="${h.name}" draggable="false" decoding="async" onerror="this.src='${resolveAsset(h.fallbackAvatar || h.avatar)}'" />
           </div>
         </button>
       `;
@@ -669,9 +724,10 @@ export function openCharacterSelectModal(app) {
           <!-- Bezpośredni element IMG tła sceny z fallbackiem -->
           <img
             class="cs-stage-bg-img"
-            src="./assets/tla/character_selection_background.png"
-            onerror="if(!this.src.includes('public/')) { this.onerror=null; this.src='./assets/tla/character_selection_background.png'; } else { this.src='/assets/tla/character_selection_background.png'; }"
+            src="${resolveAsset('./assets/tla/character_selection_background.png')}"
             alt="Character Selection Stage"
+            decoding="async"
+            loading="eager"
           />
 
           <!-- 1. Przycisk MENU / TYTUŁ (górny lewy róg w ramce tła) -->
@@ -808,5 +864,35 @@ export function openCharacterSelectModal(app) {
   };
   window.addEventListener('resize', onResize);
 
-  initStage();
+  const alreadyMounted = Boolean(screen && screen.querySelector('.char-select-stage-wrap'));
+  if (alreadyMounted) {
+    updateHeroBoards(currentHeroIndex);
+    updateSliderPosition(currentHeroIndex, true);
+    const wrap = screen.querySelector('.cs-center-hero-wrap');
+    if (wrap) {
+      const data = getHeroData(currentHeroIndex);
+      wrap.innerHTML = renderPedestalSpriteHtml(data);
+      attachHeroSpriteListeners();
+      startHeroAnimation(data.hero.id, data.isHeroUnlocked);
+    }
+  } else {
+    initStage();
+  }
+
+  // Upewnij się, że tło sceny zostało zdekodowane przez przeglądarkę zanim kurtyna odsłoni ekran
+  const bgImg = screen.querySelector('.cs-stage-bg-img');
+  if (bgImg) {
+    if (!bgImg.complete) {
+      await Promise.race([
+        bgImg.decode().catch(() => {}),
+        new Promise((r) => setTimeout(r, 600))
+      ]);
+    } else {
+      try {
+        await bgImg.decode();
+      } catch (e) {}
+    }
+  }
+
+  await new Promise((r) => requestAnimationFrame(r));
 }

@@ -40,7 +40,7 @@ import {
   handleFighterVictory as handleFighterVictoryScreen,
   completeCharacterBattle as completeCharacterBattleScreen
 } from './ui/VictoryModals.js';
-import { openCharacterSelectModal, selectHero } from './ui/CharacterSelectModal.js';
+import { openCharacterSelectModal, selectHero, preloadCharacterSelectAssets } from './ui/CharacterSelectModal.js';
 import { episodeManager } from './data/episodeManager.js';
 import { TitleScreen } from './ui/TitleScreen.js';
 import { openSettingsModal } from './ui/SettingsModal.js';
@@ -150,6 +150,7 @@ class NoiDiGameApp {
 
     // Wyświetl ekran startowy z przyciskami (Title Screen)
     this.titleScreen.mount(this.root);
+    preloadCharacterSelectAssets();
   }
 
   renderBoardStage() {

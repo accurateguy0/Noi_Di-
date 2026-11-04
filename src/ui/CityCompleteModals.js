@@ -129,9 +129,9 @@ export function showCityVictoryModal(app) {
   if (charSelectBtn) {
     charSelectBtn.addEventListener('click', () => {
       sound.playStep();
-      playJaggedCurtainWipe(() => {
+      playJaggedCurtainWipe(async () => {
         app.closeModal();
-        openCharacterSelectModal(app);
+        await openCharacterSelectModal(app);
       });
     });
   }
