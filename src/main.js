@@ -456,6 +456,7 @@ class NoiDiGameApp {
   // Obsługa przegranej (skończenie życia gracza -> powrót do menu tytułowego)
   handleGameOver() {
     sound.stopLowHealth();
+    musicManager.stopTrack();
     playJaggedCurtainWipe(() => {
       if (this.activeMinigame) {
         try {
@@ -466,13 +467,13 @@ class NoiDiGameApp {
       this.closeArena();
       this.closeModal();
 
-      // Zresetuj bieg i statystyki do pełnego zdrowia na start nowej rozgrywki
-      this.resetBoard(true);
-
       // Pokaż menu tytułowe
       if (this.titleScreen) {
         this.titleScreen.show();
       }
+
+      // Zresetuj bieg i statystyki do pełnego zdrowia na start nowej rozgrywki (BEZ odpalania muzyki planszy)
+      this.resetBoard(true, 0, { playMusic: false });
 
       // Odtwórz muzykę ekranu startowego
       musicManager.playTitleMusic();

@@ -47,7 +47,7 @@ export class OlekQuizGame {
     this.score = 0;
     this.introDismissed = false;
 
-    this.baseTime = 10; // 10s na odpowiedź (realistyczny czas reakcji)
+    this.baseTime = 20; // 10s na odpowiedź (realistyczny czas reakcji)
     this.maxTime = this.baseTime + (this.player.bonusTimeSec || 0);
     this.timeLeft = this.maxTime;
     this.timerInterval = null;

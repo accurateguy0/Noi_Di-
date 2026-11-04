@@ -32,7 +32,7 @@ export class FindMatchGame {
     this.enemyHp = this.enemyMaxHp;
     this.enemyDamage = enemyDamage || 2;
 
-    this.baseTime = 10; // 10s na szybką reakcję w sytuacji życiowej
+    this.baseTime = 20; // 10s na szybką reakcję w sytuacji życiowej
     this.maxTime = this.baseTime + (this.player.bonusTimeSec || 0);
     this.timeLeft = this.maxTime;
     this.timerInterval = null;

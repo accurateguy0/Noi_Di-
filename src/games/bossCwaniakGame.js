@@ -68,7 +68,7 @@ export class BossCwaniakGame {
 
     // Inventor ma umiejętność +5s w grach czasowych
     const inventorBonus = this.heroClass.includes('inventor') ? 5 : (this.player.bonusTimeSec || 0);
-    this.maxTime = 14 + Math.max(0, inventorBonus);
+    this.maxTime = 20 + Math.max(0, inventorBonus);
     this.timeLeft = this.maxTime;
     this.timerInterval = null;
     this.isTimerPaused = false;

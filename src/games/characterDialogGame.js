@@ -48,7 +48,7 @@ export class CharacterDialogGame {
     this.currentStepIdx = 0;
     this.lockInput = false;
     this.damageTakenInBattle = 0;
-    this.baseTime = 10;
+    this.baseTime = 20;
     this.maxTime = this.baseTime + (this.player.bonusTimeSec || 0);
     this.timeLeft = this.maxTime;
     this.timerInterval = null;

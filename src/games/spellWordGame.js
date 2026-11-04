@@ -202,7 +202,7 @@ export class SpellWordGame {
       used: false
     }));
 
-    this.maxTime = (q.timeSeconds || 16) + (this.player.bonusTimeSec || 0);
+    this.maxTime = Math.max(20, q.timeSeconds || 20) + (this.player.bonusTimeSec || 0);
     this.timeLeft = this.maxTime;
 
     this.renderSpellBoard();

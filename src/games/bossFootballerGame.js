@@ -29,8 +29,8 @@ export class BossFootballerGame {
     this.warriorDoubleActive = false;
     this.jesterDodgeTurns = 0;
 
-    this.maxTime = 10;
-    this.timeLeft = 10;
+    this.maxTime = 20;
+    this.timeLeft = 20;
     this.timerInterval = null;
 
     this.questions = [...BOSS_FOOTBALLER_QUESTIONS].sort(() => Math.random() - 0.5);
@@ -72,7 +72,7 @@ export class BossFootballerGame {
         <!-- Górny licznik czasu (10s + 5s za poprawną) -->
         <div class="boss-timer-badge" id="boss-timer-badge">
           <span class="boss-timer-icon"></span>
-          <span class="boss-timer-text" id="boss-timer-num">10s</span>
+          <span class="boss-timer-text" id="boss-timer-num">20s</span>
           <div class="boss-timer-bar">
             <div class="boss-timer-fill" id="boss-timer-fill" style="width: 100%"></div>
           </div>
@@ -364,14 +364,14 @@ export class BossFootballerGame {
     const fillEl = this.container.querySelector('#boss-timer-fill');
     if (textEl) textEl.textContent = `${this.timeLeft}s`;
     if (fillEl) {
-      const pct = Math.max(0, Math.min(100, (this.timeLeft / 15) * 100));
+      const pct = Math.max(0, Math.min(100, (this.timeLeft / this.maxTime) * 100));
       fillEl.style.width = `${pct}%`;
       fillEl.style.background = this.timeLeft <= 3 ? '#ef476f' : '#06d6a0';
     }
   }
 
   addBonusTime(seconds = 5) {
-    this.timeLeft = Math.min(20, this.timeLeft + seconds);
+    this.timeLeft = Math.min(30, this.timeLeft + seconds);
     this.updateTimerDisplay();
     sound.playSuccess();
     const badge = this.container.querySelector('#boss-timer-badge');
@@ -435,7 +435,7 @@ export class BossFootballerGame {
 
     stageEl.innerHTML = `
       <div class="boss-card-challenge">
-        <div class="boss-challenge-badge">PYTANIE QUIZOWE (Odpowiedz w 10s!)</div>
+        <div class="boss-challenge-badge">PYTANIE QUIZOWE (Odpowiedz w 20s!)</div>
         <h3 class="boss-question-prompt">${q.promptPl}</h3>
         <div class="boss-options-grid">
           ${shuffled.map((opt, idx) => `

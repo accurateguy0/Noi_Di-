@@ -301,6 +301,7 @@ export function playHeroDefeatAnimation(container, player, onClose) {
   if (arenaEl.dataset.defeatTriggered === '1') return;
   arenaEl.dataset.defeatTriggered = '1';
 
+  musicManager.stopTrack();
   sound.playPlayerDefeat();
 
   const characterName = player?.characterClass || player?.heroName || player?.name || 'Warrior';

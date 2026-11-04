@@ -121,7 +121,7 @@ export class FloorManager {
     }
   }
 
-  resetBoard(manualReset = false, targetFloor = null) {
+  resetBoard(manualReset = false, targetFloor = null, options = {}) {
     if (this.app.activeMinigame) {
       this.app.activeMinigame.destroy();
       this.app.activeMinigame = null;
@@ -138,7 +138,7 @@ export class FloorManager {
     this.app.closeModal();
 
     if (manualReset) {
-      this.loadFloor(0);
+      this.loadFloor(0, { playMusic: false, ...options });
       this.app.player.level = 1;
       this.app.player.maxHp = 20;
       this.app.player.hp = 20;

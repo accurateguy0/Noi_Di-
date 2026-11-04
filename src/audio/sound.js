@@ -270,7 +270,7 @@ class SoundManager {
 
   playTanAttack() {
     const cls = (this.playerClass || 'Warrior').toLowerCase();
-    const vol = 1.45;
+    const vol = 0.95;
     if (cls.includes('warrior') || cls.includes('wojownik')) {
       this.playFile('warrior_atak.ogg', vol);
     } else if (cls.includes('inventor') || cls.includes('wynalazc')) {
@@ -289,7 +289,7 @@ class SoundManager {
 
   playTanHurt() {
     const cls = (this.playerClass || 'Warrior').toLowerCase();
-    const vol = 1.45;
+    const vol = 0.95;
     if (cls.includes('warrior') || cls.includes('wojownik')) {
       this.playFile('Warrior_obrona.ogg', vol);
     } else if (cls.includes('inventor') || cls.includes('wynalazc')) {
@@ -308,7 +308,7 @@ class SoundManager {
 
   // Soczysty efekt fizycznego uderzenia (plik hit.ogg + syntezator uderzenia basowego Web Audio)
   playHitImpact(isHeavy = false) {
-    this.playFile('hit.ogg', isHeavy ? 1.55 : 1.35);
+    this.playFile('hit.ogg', isHeavy ? 0.95 : 0.85);
     if (this.muted) return;
     this.init();
     if (!this.ctx) return;
@@ -320,7 +320,7 @@ class SoundManager {
       osc.type = isHeavy ? 'sawtooth' : 'triangle';
       osc.frequency.setValueAtTime(isHeavy ? 190 : 155, now);
       osc.frequency.exponentialRampToValueAtTime(38, now + 0.16);
-      gain.gain.setValueAtTime(isHeavy ? 0.42 : 0.32, now);
+      gain.gain.setValueAtTime(isHeavy ? 0.20 : 0.14, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
@@ -386,99 +386,8 @@ class SoundManager {
   }
 
   startLowHealthLoop() {
-    if (this.muted || this.lowHealthPlaying) return;
-    this.init();
-    this.lowHealthPlaying = true;
-
-    const effectiveVol = this.sfxVolume * (this.masterVolume ?? 1.0) * 0.95;
-
-    // 1. Z bufora Web Audio API
-    const buffer = this.audioBuffers.get('lowhealth.ogg') || this.audioBuffers.get('lowhealth.ogg'.toLowerCase());
-    if (buffer && this.ctx && this.ctx.state === 'running') {
-      try {
-        const source = this.ctx.createBufferSource();
-        source.buffer = buffer;
-        source.loop = true;
-        const gainNode = this.ctx.createGain();
-        gainNode.gain.setValueAtTime(effectiveVol, this.ctx.currentTime);
-        source.connect(gainNode);
-        gainNode.connect(this.ctx.destination);
-        source.start(0);
-        this.lowHealthAudio = {
-          source,
-          gainNode,
-          stop: () => {
-            try {
-              gainNode.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
-              setTimeout(() => {
-                try {
-                  source.stop();
-                  source.disconnect();
-                  gainNode.disconnect();
-                } catch (e) {}
-              }, 200);
-            } catch (e) {
-              try { source.stop(); } catch (e) {}
-            }
-          }
-        };
-        return;
-      } catch (e) {}
-    }
-
-    // 2. Jeśli bufor wczytuje się w locie
-    this.loadBuffer('lowhealth.ogg').then((buf) => {
-      if (buf && this.ctx && !this.muted && this.lowHealthPlaying && !this.lowHealthAudio) {
-        try {
-          if (this.ctx.state === 'suspended') this.ctx.resume();
-          const source = this.ctx.createBufferSource();
-          source.buffer = buf;
-          source.loop = true;
-          const gainNode = this.ctx.createGain();
-          const curVol = this.sfxVolume * (this.masterVolume ?? 1.0) * 0.95;
-          gainNode.gain.setValueAtTime(curVol, this.ctx.currentTime);
-          source.connect(gainNode);
-          gainNode.connect(this.ctx.destination);
-          source.start(0);
-          this.lowHealthAudio = {
-            source,
-            gainNode,
-            stop: () => {
-              try {
-                gainNode.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
-                setTimeout(() => {
-                  try {
-                    source.stop();
-                    source.disconnect();
-                    gainNode.disconnect();
-                  } catch (e) {}
-                }, 200);
-              } catch (e) {
-                try { source.stop(); } catch (e) {}
-              }
-            }
-          };
-        } catch (e) {}
-      }
-    });
-
-    // 3. Fallback HTML5 Audio z pętlą
-    try {
-      const audio = new Audio('./assets/music/lowhealth.ogg');
-      audio.loop = true;
-      audio.volume = Math.max(0, Math.min(1.0, effectiveVol));
-      audio.play().catch(() => {});
-      this.lowHealthAudio = {
-        audio,
-        stop: () => {
-          try {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.src = '';
-          } catch (e) {}
-        }
-      };
-    } catch (e) {}
+    // Wyłączone: muzykę niskiego zdrowia (Chipzel - 08 Prepare To Dice) odtwarza wyłącznie musicManager,
+    // co eliminuje nakładanie się dwóch różnych utworów na raz.
   }
 
   stopLowHealth() {
@@ -506,20 +415,7 @@ class SoundManager {
   }
 
   checkLowHealth(player) {
-    if (!player || player.hp <= 0) {
-      this.stopLowHealth();
-      return;
-    }
-    const isLow = player.hp <= Math.ceil(player.maxHp / 6);
-    if (isLow && !this.muted) {
-      if (!this.lowHealthPlaying) {
-        this.startLowHealthLoop();
-      }
-    } else {
-      if (this.lowHealthPlaying) {
-        this.stopLowHealth();
-      }
-    }
+    // Muzykę niskiego zdrowia (Prepare To Dice) obsługuje w całości musicManager
   }
 
   playLevelUp() {

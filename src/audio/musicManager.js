@@ -169,6 +169,7 @@ class MusicManager {
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
+            if (audio._cancelled) return;
             this.pendingPlay = () => this.playTrack(filename, loop);
             this._unlockBound = false;
             this.attachInteractionUnlock();
@@ -272,6 +273,11 @@ class MusicManager {
         this.playTrack('Chipzel - 08 Prepare To Dice.mp3', true);
       }
     } else if (this.currentTrackName === 'Chipzel - 08 Prepare To Dice.mp3') {
+      const isTitleActive = typeof document !== 'undefined' && document.getElementById('title-screen-container') && !document.getElementById('title-screen-container').classList.contains('hidden');
+      if (isTitleActive) {
+        this.playTitleMusic();
+        return;
+      }
       const inArena = typeof document !== 'undefined' && document.querySelector('.in-arena');
       if (inArena) {
         this.playCombatMusic(this.currentFloor, player);
